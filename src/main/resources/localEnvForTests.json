@@ -7,5 +7,7 @@
     "jwtIssuer": "https://sts.windows.net/XXXXXXXX/",
     "kafkaBootstrapServers": "kafkaurl",
     "oppfolgingstilfelleTopic": "topic",
-    "clientid": "999999"
+    "clientid": "999999",
+    "stsRestUrl": "http://localhost:8080",
+    "aktoerregisterV1Url": "http://localhost:8080"
 }

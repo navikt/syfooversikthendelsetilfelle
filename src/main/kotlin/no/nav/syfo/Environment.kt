@@ -24,7 +24,9 @@ fun getEnvironment(): Environment {
                 getEnvVar("JWT_ISSUER"),
                 getEnvVar("OPPFOLGINGSTILFELLE_TOPIC"),
                 getEnvVar("KAFKA_BOOTSTRAP_SERVERS_URL"),
-                getEnvVar("CLIENT_ID")
+                getEnvVar("CLIENT_ID"),
+                getEnvVar("AKTORREGISTER_V1_URL"),
+                getEnvVar("SECURITY_TOKEN_SERVICE_REST_URL")
         )
     }
 }
@@ -40,7 +42,9 @@ data class Environment(
         val jwtIssuer: String,
         val oppfolgingstilfelleTopic: String,
         override val kafkaBootstrapServers: String,
-        val clientid: String
+        val clientid: String,
+        val aktoerregisterV1Url: String,
+        val stsRestUrl: String
 ) : KafkaConfig
 
 data class VaultSecrets(

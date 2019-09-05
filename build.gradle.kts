@@ -5,7 +5,9 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 group = "no.nav.syfo"
 version = "1.0-SNAPSHOT"
 
+val arrowVersion = "0.9.0"
 val coroutinesVersion = "1.2.1"
+val fuelVersion = "1.15.1"
 val kluentVersion = "1.39"
 val ktorVersion = "1.2.0"
 val logbackVersion = "1.2.3"
@@ -14,9 +16,10 @@ val spekVersion = "2.0.4"
 val logstashEncoderVersion = "5.1"
 val jacksonVersion = "2.9.8"
 val mockkVersion = "1.9"
+val orgJsonVersion = "20180813"
 val kafkaVersion = "2.0.0"
 val kafkaEmbeddedVersion = "2.0.2"
-val smCommonVersion = "1.0.22"
+val smCommonVersion = "2019.09.03-11-07-64032e3b6381665e9f9c0914cef626331399e66d"
 
 tasks.withType<Jar> {
     manifest.attributes["Main-Class"] = "no.nav.syfo.MainApplicationKt"
@@ -44,6 +47,7 @@ repositories {
     maven(url = "https://dl.bintray.com/spekframework/spek-dev")
     maven(url = "https://dl.bintray.com/kotlin/kotlinx/")
     maven(url = "http://packages.confluent.io/maven/")
+    maven(url = "https://oss.sonatype.org/content/groups/staging/")
 }
 
 dependencies {
@@ -54,7 +58,9 @@ dependencies {
     implementation("io.prometheus:simpleclient_hotspot:$prometheusVersion")
     implementation("io.prometheus:simpleclient_common:$prometheusVersion")
     implementation("io.ktor:ktor-server-netty:$ktorVersion")
-    implementation("io.ktor:ktor-client-apache:$ktorVersion")
+    implementation ("io.ktor:ktor-client-cio:$ktorVersion")
+    implementation ("io.ktor:ktor-client-apache:$ktorVersion")
+    implementation ("io.ktor:ktor-client-auth-basic-jvm:$ktorVersion")
     implementation("io.ktor:ktor-client-logging:$ktorVersion")
     implementation("io.ktor:ktor-client-logging-jvm:$ktorVersion")
 
@@ -64,7 +70,13 @@ dependencies {
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVersion")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion")
 
+    implementation("io.arrow-kt:arrow-core-data:$arrowVersion")
+    implementation("org.json:json:$orgJsonVersion")
+    implementation("com.github.kittinunf.fuel:fuel:$fuelVersion")
+
     implementation("org.apache.kafka:kafka_2.12:$kafkaVersion")
+    implementation ("no.nav.syfo.sm:syfosm-common-networking:$smCommonVersion")
+    implementation ("no.nav.syfo.sm:syfosm-common-rest-sts:$smCommonVersion")
     implementation("no.nav.syfo.sm:syfosm-common-models:$smCommonVersion")
     implementation("no.nav.syfo.sm:syfosm-common-kafka:$smCommonVersion")
 

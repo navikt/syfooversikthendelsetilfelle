@@ -65,7 +65,7 @@ suspend fun blockingApplicationLogic(
             logValues = arrayOf(
                     StructuredArguments.keyValue("oppfolgingstilfelleId", it.key())
             )
-            LOG.info("Mottatt oppfolgingstilfeller, klar for behandling, $logKeys, {}", *logValues, CallIdArgument(callId))
+            LOG.info("Mottatt oppfolgingstilfelle, klar for behandling, $logKeys, {}", *logValues, CallIdArgument(callId))
 
             if (isPreProd()) {
                 oppfolgingstilfelleService.receiveOppfolgingstilfeller(oppfolgingstilfeller, callId)

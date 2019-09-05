@@ -23,11 +23,14 @@ import io.ktor.response.respond
 import io.ktor.routing.routing
 import io.ktor.server.engine.*
 import io.ktor.server.netty.Netty
+import io.ktor.util.KtorExperimentalAPI
 import kotlinx.coroutines.*
 import kotlinx.coroutines.slf4j.MDCContext
 import no.nav.syfo.api.registerNaisApi
+import no.nav.syfo.client.*
 import no.nav.syfo.kafka.setupKafka
 import no.nav.syfo.oppfolgingstilfelle.OppfolgingstilfelleService
+import no.nav.syfo.sts.StsRestClient
 import no.nav.syfo.util.NAV_CALL_ID_HEADER
 import no.nav.syfo.util.getCallId
 import org.slf4j.LoggerFactory
@@ -39,7 +42,7 @@ import java.util.concurrent.TimeUnit
 
 data class ApplicationState(var running: Boolean = true, var initialized: Boolean = false)
 
-val LOG: org.slf4j.Logger = LoggerFactory.getLogger("no.nav.syfo.MainApplicationKt")
+val log: org.slf4j.Logger = LoggerFactory.getLogger("no.nav.syfo.MainApplicationKt")
 
 private val objectMapper: ObjectMapper = ObjectMapper().apply {
     registerKotlinModule()
@@ -51,6 +54,8 @@ private val objectMapper: ObjectMapper = ObjectMapper().apply {
 val backgroundTasksContext = Executors.newFixedThreadPool(4).asCoroutineDispatcher() + MDCContext()
 
 fun main() {
+    val vaultSecrets =
+            objectMapper.readValue<VaultSecrets>(Paths.get("/var/run/secrets/nais.io/vault/credentials.json").toFile())
     val server = embeddedServer(Netty, applicationEngineEnvironment {
         log = LoggerFactory.getLogger("ktor.application")
         config = HoconApplicationConfig(ConfigFactory.load())
@@ -59,10 +64,26 @@ fun main() {
             port = env.applicationPort
         }
 
+        val config: HttpClientConfig<ApacheEngineConfig>.() -> Unit = {
+            install(JsonFeature) {
+                serializer = JacksonSerializer {
+                    registerKotlinModule()
+                    registerModule(JavaTimeModule())
+                    configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
+                }
+            }
+            install(Logging) {
+                logger = Logger.DEFAULT
+                level = LogLevel.INFO
+            }
+        }
+
+        val httpClient = HttpClient(Apache, config)
+
         module {
             init()
-            kafkaModule()
-            serverModule()
+            kafkaModule(vaultSecrets, httpClient)
+            serverModule(vaultSecrets)
         }
     })
     Runtime.getRuntime().addShutdownHook(Thread {
@@ -86,23 +107,30 @@ fun Application.init() {
     }
 }
 
-fun Application.kafkaModule() {
+fun Application.kafkaModule(
+        vaultSecrets: VaultSecrets,
+        httpClient: HttpClient
+) {
 
     isDev {
     }
 
     isProd {
-        val oppfolgingstilfelleService = OppfolgingstilfelleService()
+        val stsClientRest = StsRestClient(env.stsRestUrl, vaultSecrets.serviceuserUsername, vaultSecrets.serviceuserPassword)
+
+        val aktorregisterClient = AktorregisterClient(env.aktoerregisterV1Url, stsClientRest)
+        val aktorService = AktorService(aktorregisterClient)
+
+        val oppfolgingstilfelleService = OppfolgingstilfelleService(aktorService)
 
         launch(backgroundTasksContext) {
-            val vaultSecrets =
-                    objectMapper.readValue<VaultSecrets>(Paths.get("/var/run/secrets/nais.io/vault/credentials.json").toFile())
             setupKafka(vaultSecrets, oppfolgingstilfelleService)
         }
     }
 }
 
-fun Application.serverModule() {
+@KtorExperimentalAPI
+fun Application.serverModule(vaultSecrets: VaultSecrets) {
     install(ContentNegotiation) {
         jackson {
             registerKotlinModule()
@@ -127,7 +155,6 @@ fun Application.serverModule() {
         }
     }
 
-
     isProd {
         intercept(ApplicationCallPipeline.Call) {
             if (call.request.uri.contains(Regex("is_alive|is_ready|prometheus"))) {
@@ -136,22 +163,6 @@ fun Application.serverModule() {
             }
         }
     }
-
-    val config: HttpClientConfig<ApacheEngineConfig>.() -> Unit = {
-        install(JsonFeature) {
-            serializer = JacksonSerializer {
-                registerKotlinModule()
-                registerModule(JavaTimeModule())
-                configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
-            }
-        }
-        install(Logging) {
-            logger = Logger.DEFAULT
-            level = LogLevel.INFO
-        }
-    }
-    val httpClient = HttpClient(Apache, config)
-
 
     routing {
         registerNaisApi(state)

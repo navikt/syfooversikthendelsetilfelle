@@ -38,7 +38,9 @@ object KafkaITSpek : Spek({
             jwkKeysUrl = "",
             jwtIssuer = "",
             aadDiscoveryUrl = "",
-            clientid = ""
+            clientid = "",
+            aktoerregisterV1Url = "aktorurl",
+            stsRestUrl = "stsurl"
     )
 
     fun Properties.overrideForTest(): Properties = apply {
