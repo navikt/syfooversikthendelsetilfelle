@@ -10,7 +10,7 @@ import kotlinx.coroutines.delay
 import net.logstash.logback.argument.StructuredArguments
 import no.nav.syfo.*
 import no.nav.syfo.oppfolgingstilfelle.OppfolgingstilfelleService
-import no.nav.syfo.oppfolgingstilfellehendelse.producer.domain.KOppfolgingstilfeller
+import no.nav.syfo.oppfolgingstilfelle.domain.KOppfolgingstilfelle
 import no.nav.syfo.util.*
 import org.apache.kafka.clients.consumer.KafkaConsumer
 import org.apache.kafka.common.serialization.StringDeserializer
@@ -60,7 +60,7 @@ suspend fun blockingApplicationLogic(
 
         kafkaConsumer.poll(Duration.ofMillis(0)).forEach {
             val callId = kafkaCallId()
-            val oppfolgingstilfeller: KOppfolgingstilfeller =
+            val oppfolgingstilfeller: KOppfolgingstilfelle =
                     objectMapper.readValue(it.value())
             logValues = arrayOf(
                     StructuredArguments.keyValue("oppfolgingstilfelleId", it.key())
@@ -84,7 +84,7 @@ suspend fun CoroutineScope.launchListeners(
 
     val kafkaconsumerOppgave = KafkaConsumer<String, String>(consumerProperties)
     kafkaconsumerOppgave.subscribe(
-            listOf("aapen-syfo-oppfolgingstilfelle-v1")
+            listOf("aapen-syfo-oppfolgingstilfeller-v1")
     )
 
     createListener(applicationState) {

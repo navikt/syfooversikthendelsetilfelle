@@ -1,4 +1,4 @@
-package no.nav.syfo.oppfolgingstilfellehendelse.producer.domain
+package no.nav.syfo.oppfolgingstilfelle.domain
 
 import java.time.LocalDate
 

@@ -1,8 +1,10 @@
-package no.nav.syfo.oppfolgingstilfellehendelse.producer.domain
+package no.nav.syfo.oppfolgingstilfelle.domain
+
+import java.time.LocalDateTime
 
 data class KOppfolgingstilfelle(
-        val tidslinje: List<KSyketilfelledag>,
-        val sisteDagIArbeidsgiverperiode: KSyketilfelledag,
-        val antallBrukteDager: Int,
-        val oppbruktArbeidsgvierperiode: Boolean
+        val aktorId: String,
+        val orgnummer: String?,
+        val tilfelle: KTilfelle,
+        val utsendelsestidspunkt: LocalDateTime
 )
