@@ -9,7 +9,7 @@ class OppfolgingstilfelleService {
     fun receiveOppfolgingstilfeller(oppfolgingstilfeller: KOppfolgingstilfelle, callId: String = "") {
         COUNT_OPPFOLGINGSTILFELLE_RECEIVED.inc()
 
-        if (oppfolgingstilfeller.tilfelle.tidslinje[0].syketilfellebiter[0].tags.indexOf("") > -1) {
+        if (oppfolgingstilfeller.tidslinje[0].syketilfellebiter[0].tags.indexOf("") > -1) {
             COUNT_OPPFOLGINGSTILFELLE_GRADERT_RECEIVED.inc()
         } else {
             COUNT_OPPFOLGINGSTILFELLE_RECEIVED.inc()

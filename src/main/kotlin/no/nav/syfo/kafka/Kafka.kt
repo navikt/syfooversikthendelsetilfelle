@@ -84,7 +84,7 @@ suspend fun CoroutineScope.launchListeners(
 
     val kafkaconsumerOppgave = KafkaConsumer<String, String>(consumerProperties)
     kafkaconsumerOppgave.subscribe(
-            listOf("aapen-syfo-oppfolgingstilfeller-v1")
+            listOf("aapen-syfo-oppfolgingstilfelle-v1")
     )
 
     createListener(applicationState) {
