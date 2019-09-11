@@ -11,7 +11,7 @@ private val log = LoggerFactory.getLogger(AktorregisterClient::class.java)
 
 class AktorregisterClient(val baseUrl: String, val stsRestClient: StsRestClient) {
 
-    fun getIdenter(ident: String): Either<String, List<Ident>> {
+    fun getIdenter(ident: String, callId: String): Either<String, List<Ident>> {
         log.info("lookup gjeldende identer with ident=$ident")
 
         val bearer = stsRestClient.token()
@@ -20,7 +20,7 @@ class AktorregisterClient(val baseUrl: String, val stsRestClient: StsRestClient)
                 .header(mapOf(
                         "Authorization" to "Bearer $bearer",
                         "Accept" to "application/json",
-                        "Nav-Call-Id" to "anything",
+                        "Nav-Call-Id" to callId,
                         "Nav-Consumer-Id" to "syfooversikthendelsetilfelle",
                         "Nav-Personidenter" to ident
                 ))
@@ -43,20 +43,20 @@ class AktorregisterClient(val baseUrl: String, val stsRestClient: StsRestClient)
         }
     }
 
-    private fun gjeldendeIdent(ident: String, type: IdentType): Either<String, String> {
-        return getIdenter(ident).flatMap {
+    private fun getIdent(ident: String, type: IdentType, callId: String): Either<String, String> {
+        return getIdenter(ident, callId).flatMap {
             Either.Right(it.first {
                 it.type == type
             }.ident)
         }
     }
 
-    fun getAktorId(ident: String): Either<String, String> {
-        return gjeldendeIdent(ident, IdentType.AktoerId)
+    fun getAktorId(ident: String, callId: String): Either<String, String> {
+        return getIdent(ident, IdentType.AktoerId, callId)
     }
 
-    fun getNorskIdent(ident: String): Either<String, String> {
-        return gjeldendeIdent(ident, IdentType.NorskIdent)
+    fun getNorskIdent(ident: String, callId: String): Either<String, String> {
+        return getIdent(ident, IdentType.NorskIdent, callId)
     }
 }
 

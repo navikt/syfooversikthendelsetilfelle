@@ -16,7 +16,7 @@ class OppfolgingstilfelleService(private val aktorService: AktorService) {
         var fnr: Either<Nothing, String>? = null
         runBlocking {
             val aktor = AktorId(oppfolgingstilfelle.aktorId)
-            fnr = aktorService.getFodselsnummerForAktor(aktor)
+            fnr = aktorService.getFodselsnummerForAktor(aktor, callId)
         }
         if (fnr != null) {
             log.info("COUNT_OPPFOLGINGSTILFELLE_RECEIVED")
