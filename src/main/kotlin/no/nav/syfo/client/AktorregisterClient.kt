@@ -12,8 +12,6 @@ private val log = LoggerFactory.getLogger(AktorregisterClient::class.java)
 class AktorregisterClient(val baseUrl: String, val stsRestClient: StsRestClient) {
 
     fun getIdenter(ident: String, callId: String): Either<String, List<Ident>> {
-        log.info("lookup gjeldende identer with ident=$ident")
-
         val bearer = stsRestClient.token()
 
         val (_, _, result) = "$baseUrl/identer?gjeldende=true".httpGet()
