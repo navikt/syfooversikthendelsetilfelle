@@ -1,4 +1,4 @@
-package no.nav.syfo.client
+package no.nav.syfo.client.aktor
 
 import arrow.core.Either
 import com.fasterxml.jackson.databind.SerializationFeature
@@ -21,7 +21,7 @@ import kotlinx.coroutines.runBlocking
 import no.nav.syfo.env
 import no.nav.syfo.helper.UserConstants.BRUKER_AKTORID
 import no.nav.syfo.helper.UserConstants.BRUKER_FNR
-import no.nav.syfo.sts.StsRestClient
+import no.nav.syfo.client.sts.StsRestClient
 import org.amshove.kluent.shouldEqual
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.specification.describe

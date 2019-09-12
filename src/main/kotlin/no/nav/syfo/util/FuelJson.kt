@@ -1,4 +1,4 @@
-package no.nav.syfo
+package no.nav.syfo.util
 
 import com.github.kittinunf.fuel.core.Deserializable
 import com.github.kittinunf.fuel.core.Request

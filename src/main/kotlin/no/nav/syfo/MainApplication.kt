@@ -27,10 +27,11 @@ import io.ktor.util.KtorExperimentalAPI
 import kotlinx.coroutines.*
 import kotlinx.coroutines.slf4j.MDCContext
 import no.nav.syfo.api.registerNaisApi
-import no.nav.syfo.client.*
+import no.nav.syfo.client.aktor.AktorService
+import no.nav.syfo.client.aktor.AktorregisterClient
 import no.nav.syfo.kafka.setupKafka
 import no.nav.syfo.oppfolgingstilfelle.OppfolgingstilfelleService
-import no.nav.syfo.sts.StsRestClient
+import no.nav.syfo.client.sts.StsRestClient
 import no.nav.syfo.util.NAV_CALL_ID_HEADER
 import no.nav.syfo.util.getCallId
 import org.slf4j.LoggerFactory

@@ -1,7 +1,7 @@
-package no.nav.syfo.sts
+package no.nav.syfo.client.sts
 
 import com.github.kittinunf.fuel.httpGet
-import no.nav.syfo.responseJSON
+import no.nav.syfo.util.responseJSON
 import org.json.JSONObject
 import java.time.LocalDateTime
 

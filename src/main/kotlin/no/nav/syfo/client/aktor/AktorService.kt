@@ -1,4 +1,7 @@
-package no.nav.syfo.client
+package no.nav.syfo.client.aktor
+
+import no.nav.syfo.client.aktor.domain.AktorId
+import no.nav.syfo.client.aktor.domain.Fodselsnummer
 
 class AktorService(private val aktorregisterClient: AktorregisterClient) {
 

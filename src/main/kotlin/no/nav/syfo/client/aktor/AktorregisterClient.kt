@@ -1,9 +1,9 @@
-package no.nav.syfo.client
+package no.nav.syfo.client.aktor
 
 import arrow.core.Either
 import arrow.core.flatMap
 import com.github.kittinunf.fuel.httpGet
-import no.nav.syfo.sts.StsRestClient
+import no.nav.syfo.client.sts.StsRestClient
 import org.json.JSONObject
 import org.slf4j.LoggerFactory
 

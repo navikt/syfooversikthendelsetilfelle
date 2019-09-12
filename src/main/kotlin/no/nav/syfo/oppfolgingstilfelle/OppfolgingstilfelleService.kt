@@ -2,7 +2,8 @@ package no.nav.syfo.oppfolgingstilfelle
 
 import arrow.core.Either
 import kotlinx.coroutines.runBlocking
-import no.nav.syfo.client.*
+import no.nav.syfo.client.aktor.domain.AktorId
+import no.nav.syfo.client.aktor.AktorService
 import no.nav.syfo.log
 import no.nav.syfo.metric.COUNT_OPPFOLGINGSTILFELLE_GRADERT_RECEIVED
 import no.nav.syfo.metric.COUNT_OPPFOLGINGSTILFELLE_RECEIVED
