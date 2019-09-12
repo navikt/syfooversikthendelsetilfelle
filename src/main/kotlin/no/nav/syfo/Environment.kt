@@ -23,8 +23,10 @@ fun getEnvironment(): Environment {
                 getEnvVar("JWKKEYS_URL", "https://login.microsoftonline.com/common/discovery/keys"),
                 getEnvVar("JWT_ISSUER"),
                 getEnvVar("OPPFOLGINGSTILFELLE_TOPIC"),
+                getEnvVar("OVERSIKTHENDELSE_OPPFOLGINGSTILFELLE_TOPIC", "aapen-syfo-oversikthendelse-tilfelle-v1"),
                 getEnvVar("KAFKA_BOOTSTRAP_SERVERS_URL"),
                 getEnvVar("CLIENT_ID"),
+                getEnvVar("TOOGLE_OVERSIKTHENDELSETILFELLE", "false").toBoolean(),
                 getEnvVar("AKTORREGISTER_V1_URL"),
                 getEnvVar("SECURITY_TOKEN_SERVICE_REST_URL")
         )
@@ -41,8 +43,10 @@ data class Environment(
         val jwkKeysUrl: String,
         val jwtIssuer: String,
         val oppfolgingstilfelleTopic: String,
+        val oversikthendelseOppfolgingstilfelleTopic: String,
         override val kafkaBootstrapServers: String,
         val clientid: String,
+        val toggleOversikthendelsetilfelle: Boolean,
         val aktoerregisterV1Url: String,
         val stsRestUrl: String
 ) : KafkaConfig

@@ -6,13 +6,6 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import com.typesafe.config.ConfigFactory
 import io.ktor.application.*
-import io.ktor.client.HttpClient
-import io.ktor.client.HttpClientConfig
-import io.ktor.client.engine.apache.Apache
-import io.ktor.client.engine.apache.ApacheEngineConfig
-import io.ktor.client.features.json.JacksonSerializer
-import io.ktor.client.features.json.JsonFeature
-import io.ktor.client.features.logging.*
 import io.ktor.config.HoconApplicationConfig
 import io.ktor.features.*
 import io.ktor.http.HttpHeaders
@@ -30,7 +23,6 @@ import no.nav.syfo.api.registerNaisApi
 import no.nav.syfo.client.aktor.AktorService
 import no.nav.syfo.client.aktor.AktorregisterClient
 import no.nav.syfo.kafka.setupKafka
-import no.nav.syfo.oppfolgingstilfelle.OppfolgingstilfelleService
 import no.nav.syfo.client.sts.StsRestClient
 import no.nav.syfo.util.NAV_CALL_ID_HEADER
 import no.nav.syfo.util.getCallId
@@ -65,26 +57,15 @@ fun main() {
             port = env.applicationPort
         }
 
-        val config: HttpClientConfig<ApacheEngineConfig>.() -> Unit = {
-            install(JsonFeature) {
-                serializer = JacksonSerializer {
-                    registerKotlinModule()
-                    registerModule(JavaTimeModule())
-                    configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
-                }
-            }
-            install(Logging) {
-                logger = Logger.DEFAULT
-                level = LogLevel.INFO
-            }
-        }
+        val stsClientRest = StsRestClient(env.stsRestUrl, vaultSecrets.kafkaUsername, vaultSecrets.kafkaPassword)
 
-        val httpClient = HttpClient(Apache, config)
+        val aktorregisterClient = AktorregisterClient(env.aktoerregisterV1Url, stsClientRest)
+        val aktorService = AktorService(aktorregisterClient)
 
         module {
             init()
-            kafkaModule(vaultSecrets, httpClient)
-            serverModule(vaultSecrets)
+            kafkaModule(vaultSecrets, aktorService)
+            serverModule()
         }
     })
     Runtime.getRuntime().addShutdownHook(Thread {
@@ -110,28 +91,21 @@ fun Application.init() {
 
 fun Application.kafkaModule(
         vaultSecrets: VaultSecrets,
-        httpClient: HttpClient
+        aktorService: AktorService
 ) {
 
     isDev {
     }
 
     isProd {
-        val stsClientRest = StsRestClient(env.stsRestUrl, vaultSecrets.serviceuserUsername, vaultSecrets.serviceuserPassword)
-
-        val aktorregisterClient = AktorregisterClient(env.aktoerregisterV1Url, stsClientRest)
-        val aktorService = AktorService(aktorregisterClient)
-
-        val oppfolgingstilfelleService = OppfolgingstilfelleService(aktorService)
-
         launch(backgroundTasksContext) {
-            setupKafka(vaultSecrets, oppfolgingstilfelleService)
+            setupKafka(vaultSecrets, aktorService)
         }
     }
 }
 
 @KtorExperimentalAPI
-fun Application.serverModule(vaultSecrets: VaultSecrets) {
+fun Application.serverModule() {
     install(ContentNegotiation) {
         jackson {
             registerKotlinModule()

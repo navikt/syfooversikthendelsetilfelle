@@ -33,12 +33,14 @@ object KafkaITSpek : Spek({
             applicationPort = getRandomPort(),
             applicationThreads = 1,
             oppfolgingstilfelleTopic = "topic1",
+            oversikthendelseOppfolgingstilfelleTopic = "oversikthendelse-oppfolgingstilfelle-topic",
             kafkaBootstrapServers = embeddedEnvironment.brokersURL,
             applicationName = "syfooversikthendelsetilfelle",
             jwkKeysUrl = "",
             jwtIssuer = "",
             aadDiscoveryUrl = "",
             clientid = "",
+            toggleOversikthendelsetilfelle = true,
             aktoerregisterV1Url = "aktorurl",
             stsRestUrl = "stsurl"
     )

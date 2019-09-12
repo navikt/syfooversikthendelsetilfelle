@@ -9,11 +9,15 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import net.logstash.logback.argument.StructuredArguments
 import no.nav.syfo.*
+import no.nav.syfo.client.aktor.AktorService
 import no.nav.syfo.oppfolgingstilfelle.OppfolgingstilfelleService
 import no.nav.syfo.oppfolgingstilfelle.domain.KOppfolgingstilfelle
+import no.nav.syfo.oppfolgingstilfelle.domain.KOversikthendelsetilfelle
 import no.nav.syfo.util.*
 import org.apache.kafka.clients.consumer.KafkaConsumer
+import org.apache.kafka.clients.producer.KafkaProducer
 import org.apache.kafka.common.serialization.StringDeserializer
+import org.apache.kafka.common.serialization.StringSerializer
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.time.Duration
@@ -28,8 +32,7 @@ private val objectMapper: ObjectMapper = ObjectMapper().apply {
 
 private val LOG: Logger = LoggerFactory.getLogger("no.nav.syfo.Kafka")
 
-suspend fun CoroutineScope.setupKafka(vaultSecrets: KafkaCredentials, oppfolgingstilfelleService: OppfolgingstilfelleService) {
-
+suspend fun CoroutineScope.setupKafka(vaultSecrets: KafkaCredentials, aktorService: AktorService) {
     LOG.info("Setting up kafka consumer")
 
     // Kafka
@@ -38,6 +41,12 @@ suspend fun CoroutineScope.setupKafka(vaultSecrets: KafkaCredentials, oppfolging
     val consumerProperties = kafkaBaseConfig.toConsumerConfig(
             "${env.applicationName}-consumer", valueDeserializer = StringDeserializer::class
     )
+    val producerProperties = kafkaBaseConfig.toProducerConfig(
+            "${env.applicationName}-producer", valueSerializer = StringSerializer::class
+    )
+    val oversikthendelseTilfelleProducer = KafkaProducer<String, KOversikthendelsetilfelle>(producerProperties)
+
+    val oppfolgingstilfelleService = OppfolgingstilfelleService(aktorService, oversikthendelseTilfelleProducer)
 
     launchListeners(consumerProperties, state, oppfolgingstilfelleService)
 }

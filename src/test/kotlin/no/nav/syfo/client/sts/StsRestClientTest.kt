@@ -81,15 +81,3 @@ private val default_token = OidcToken(
         expires_in = 3600,
         token_type = "Bearer"
 )
-
-private val short_lived_token = OidcToken(
-        access_token = "short lived token",
-        expires_in = 1,
-        token_type = "Bearer"
-)
-
-private val bad_token = OidcToken(
-        access_token = "this token shouldn't be requested",
-        expires_in = 1000000000000,
-        token_type = "Bearer"
-)
