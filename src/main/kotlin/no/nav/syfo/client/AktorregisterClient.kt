@@ -31,7 +31,9 @@ class AktorregisterClient(val baseUrl: String, val stsRestClient: StsRestClient)
         val identResponse = response.getJSONObject(ident)
 
         return if (identResponse.isNull("identer")) {
-            Either.Left(identResponse.getString("feilmelding"))
+            val errorMessage = identResponse.getString("feilmelding")
+            log.error("lookup gjeldende identer feilet med feilmelding $errorMessage")
+            Either.Left(errorMessage)
         } else {
             val identer = identResponse.getJSONArray("identer")
 

@@ -19,9 +19,6 @@ class OppfolgingstilfelleService(private val aktorService: AktorService) {
             fnr = aktorService.getFodselsnummerForAktor(aktor, callId)
         }
         if (fnr != null) {
-            log.info("COUNT_OPPFOLGINGSTILFELLE_RECEIVED")
-            COUNT_OPPFOLGINGSTILFELLE_RECEIVED.inc()
-
             if (oppfolgingstilfelle.tidslinje[0].prioritertSyketilfellebit?.let { it.tags.indexOf(GRADERT_AKTIVITET) > -1 }!!) {
                 log.info("COUNT_OPPFOLGINGSTILFELLE_GRADERT_RECEIVED")
 
