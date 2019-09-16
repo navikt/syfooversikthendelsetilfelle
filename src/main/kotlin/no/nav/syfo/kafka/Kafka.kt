@@ -17,7 +17,6 @@ import no.nav.syfo.util.*
 import org.apache.kafka.clients.consumer.KafkaConsumer
 import org.apache.kafka.clients.producer.KafkaProducer
 import org.apache.kafka.common.serialization.StringDeserializer
-import org.apache.kafka.common.serialization.StringSerializer
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.time.Duration
@@ -42,7 +41,7 @@ suspend fun CoroutineScope.setupKafka(vaultSecrets: KafkaCredentials, aktorServi
             "${env.applicationName}-consumer", valueDeserializer = StringDeserializer::class
     )
     val producerProperties = kafkaBaseConfig.toProducerConfig(
-            "${env.applicationName}-producer", valueSerializer = StringSerializer::class
+            "${env.applicationName}-producer", valueSerializer = JacksonKafkaSerializer::class
     )
     val oversikthendelseTilfelleProducer = KafkaProducer<String, KOversikthendelsetilfelle>(producerProperties)
 
