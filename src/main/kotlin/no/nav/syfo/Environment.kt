@@ -26,6 +26,7 @@ fun getEnvironment(): Environment {
                 getEnvVar("OVERSIKTHENDELSE_OPPFOLGINGSTILFELLE_TOPIC", "aapen-syfo-oversikthendelse-tilfelle-v1"),
                 getEnvVar("KAFKA_BOOTSTRAP_SERVERS_URL"),
                 getEnvVar("CLIENT_ID"),
+                getEnvVar("SYFOBEHANDLENDEENHET_URL", "http://syfobehandlendeenhet"),
                 getEnvVar("TOOGLE_OVERSIKTHENDELSETILFELLE", "false").toBoolean(),
                 getEnvVar("AKTORREGISTER_V1_URL"),
                 getEnvVar("SECURITY_TOKEN_SERVICE_REST_URL")
@@ -46,6 +47,7 @@ data class Environment(
         val oversikthendelseOppfolgingstilfelleTopic: String,
         override val kafkaBootstrapServers: String,
         val clientid: String,
+        val behandlendeenhetUrl: String,
         val toggleOversikthendelsetilfelle: Boolean,
         val aktoerregisterV1Url: String,
         val stsRestUrl: String
