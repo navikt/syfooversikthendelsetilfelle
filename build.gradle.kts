@@ -9,7 +9,7 @@ val arrowVersion = "0.9.0"
 val coroutinesVersion = "1.2.1"
 val fuelVersion = "1.15.1"
 val kluentVersion = "1.39"
-val ktorVersion = "1.2.0"
+val ktorVersion = "1.2.4"
 val logbackVersion = "1.2.3"
 val prometheusVersion = "0.5.0"
 val spekVersion = "2.0.4"
@@ -26,7 +26,7 @@ tasks.withType<Jar> {
 }
 
 plugins {
-    kotlin("jvm") version "1.3.21"
+    kotlin("jvm") version "1.3.50"
     id("com.diffplug.gradle.spotless") version "3.18.0"
     id("com.github.johnrengelman.shadow") version "4.0.4"
 }
@@ -58,9 +58,9 @@ dependencies {
     implementation("io.prometheus:simpleclient_hotspot:$prometheusVersion")
     implementation("io.prometheus:simpleclient_common:$prometheusVersion")
     implementation("io.ktor:ktor-server-netty:$ktorVersion")
-    implementation ("io.ktor:ktor-client-cio:$ktorVersion")
-    implementation ("io.ktor:ktor-client-apache:$ktorVersion")
-    implementation ("io.ktor:ktor-client-auth-basic-jvm:$ktorVersion")
+    implementation("io.ktor:ktor-client-cio:$ktorVersion")
+    implementation("io.ktor:ktor-client-apache:$ktorVersion")
+    implementation("io.ktor:ktor-client-auth-basic-jvm:$ktorVersion")
     implementation("io.ktor:ktor-client-logging:$ktorVersion")
     implementation("io.ktor:ktor-client-logging-jvm:$ktorVersion")
 
@@ -75,8 +75,8 @@ dependencies {
     implementation("com.github.kittinunf.fuel:fuel:$fuelVersion")
 
     implementation("org.apache.kafka:kafka_2.12:$kafkaVersion")
-    implementation ("no.nav.syfo.sm:syfosm-common-networking:$smCommonVersion")
-    implementation ("no.nav.syfo.sm:syfosm-common-rest-sts:$smCommonVersion")
+    implementation("no.nav.syfo.sm:syfosm-common-networking:$smCommonVersion")
+    implementation("no.nav.syfo.sm:syfosm-common-rest-sts:$smCommonVersion")
     implementation("no.nav.syfo.sm:syfosm-common-models:$smCommonVersion")
     implementation("no.nav.syfo.sm:syfosm-common-kafka:$smCommonVersion")
 
