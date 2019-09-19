@@ -25,7 +25,7 @@ object OppfolgingstilfelleServiceTest : Spek({
         val tagsMedGradertAktivitet = listOf(GRADERT_AKTIVITET)
         val tagsUtenGradertAktivitet: List<String> = emptyList()
 
-        it("should return true, if GRADERT_AKTIVITET is present today") {
+        it("should return true, if $GRADERT_AKTIVITET is present today") {
             val tidslinje = listOf(
                     KSyketilfelledag(
                             dag = LocalDate.now(),
@@ -40,7 +40,7 @@ object OppfolgingstilfelleServiceTest : Spek({
             res shouldEqual true
         }
 
-        it("should return false, if GRADERT_AKTIVITET is present, but not today") {
+        it("should return false, if $GRADERT_AKTIVITET is present, but not today") {
             val tidslinje = listOf(
                     KSyketilfelledag(
                             dag = LocalDate.now().minusDays(1),
@@ -55,7 +55,7 @@ object OppfolgingstilfelleServiceTest : Spek({
             res shouldEqual false
         }
 
-        it("should return false, if GRADERT_AKTIVITET is not present") {
+        it("should return false, if $GRADERT_AKTIVITET is not present") {
             val tidslinje = listOf(
                     KSyketilfelledag(
                             dag = LocalDate.now(),
