@@ -10,5 +10,6 @@
     "oversikthendelseOppfolgingstilfelleTopic": "topic-oversikthendelse-oppfolgingstilfelle",
     "clientid": "999999",
     "stsRestUrl": "http://localhost:8080",
-    "aktoerregisterV1Url": "http://localhost:8080"
+    "aktoerregisterV1Url": "http://localhost:8080",
+    "eregApiBaseUrl": "http://localhost:8080/ereg/api/"
 }

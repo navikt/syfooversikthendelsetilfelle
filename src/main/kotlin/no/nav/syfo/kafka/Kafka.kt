@@ -10,6 +10,7 @@ import kotlinx.coroutines.delay
 import net.logstash.logback.argument.StructuredArguments
 import no.nav.syfo.*
 import no.nav.syfo.client.aktor.AktorService
+import no.nav.syfo.client.ereg.EregService
 import no.nav.syfo.oppfolgingstilfelle.OppfolgingstilfelleService
 import no.nav.syfo.oppfolgingstilfelle.domain.KOppfolgingstilfelle
 import no.nav.syfo.oppfolgingstilfelle.domain.KOversikthendelsetilfelle
@@ -31,7 +32,7 @@ private val objectMapper: ObjectMapper = ObjectMapper().apply {
 
 private val LOG: Logger = LoggerFactory.getLogger("no.nav.syfo.Kafka")
 
-suspend fun CoroutineScope.setupKafka(vaultSecrets: KafkaCredentials, aktorService: AktorService) {
+suspend fun CoroutineScope.setupKafka(vaultSecrets: KafkaCredentials, aktorService: AktorService, eregService: EregService) {
     LOG.info("Setting up kafka consumer")
 
     // Kafka
@@ -45,7 +46,7 @@ suspend fun CoroutineScope.setupKafka(vaultSecrets: KafkaCredentials, aktorServi
     )
     val oversikthendelseTilfelleProducer = KafkaProducer<String, KOversikthendelsetilfelle>(producerProperties)
 
-    val oppfolgingstilfelleService = OppfolgingstilfelleService(aktorService, oversikthendelseTilfelleProducer)
+    val oppfolgingstilfelleService = OppfolgingstilfelleService(aktorService, oversikthendelseTilfelleProducer, eregService)
 
     launchListeners(consumerProperties, state, oppfolgingstilfelleService)
 }

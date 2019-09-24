@@ -22,6 +22,8 @@ import kotlinx.coroutines.slf4j.MDCContext
 import no.nav.syfo.api.registerNaisApi
 import no.nav.syfo.client.aktor.AktorService
 import no.nav.syfo.client.aktor.AktorregisterClient
+import no.nav.syfo.client.ereg.EregClient
+import no.nav.syfo.client.ereg.EregService
 import no.nav.syfo.kafka.setupKafka
 import no.nav.syfo.client.sts.StsRestClient
 import no.nav.syfo.util.NAV_CALL_ID_HEADER
@@ -59,12 +61,15 @@ fun main() {
 
         val stsClientRest = StsRestClient(env.stsRestUrl, vaultSecrets.kafkaUsername, vaultSecrets.kafkaPassword)
 
+        val eregClient = EregClient(env.eregApiBaseUrl, stsClientRest)
+        val eregService = EregService(eregClient)
+
         val aktorregisterClient = AktorregisterClient(env.aktoerregisterV1Url, stsClientRest)
         val aktorService = AktorService(aktorregisterClient)
 
         module {
             init()
-            kafkaModule(vaultSecrets, aktorService)
+            kafkaModule(vaultSecrets, aktorService, eregService)
             serverModule()
         }
     })
@@ -91,7 +96,8 @@ fun Application.init() {
 
 fun Application.kafkaModule(
         vaultSecrets: VaultSecrets,
-        aktorService: AktorService
+        aktorService: AktorService,
+        eregService: EregService
 ) {
 
     isDev {
@@ -99,7 +105,7 @@ fun Application.kafkaModule(
 
     isProd {
         launch(backgroundTasksContext) {
-            setupKafka(vaultSecrets, aktorService)
+            setupKafka(vaultSecrets, aktorService, eregService)
         }
     }
 }

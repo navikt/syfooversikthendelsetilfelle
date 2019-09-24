@@ -18,6 +18,8 @@ import io.ktor.util.InternalAPI
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
+import no.nav.syfo.client.ereg.EregOrganisasjonNavn
+import no.nav.syfo.client.ereg.EregOrganisasjonResponse
 import no.nav.syfo.env
 import no.nav.syfo.helper.UserConstants.BRUKER_AKTORID
 import no.nav.syfo.helper.UserConstants.BRUKER_FNR

@@ -28,7 +28,8 @@ fun getEnvironment(): Environment {
                 getEnvVar("CLIENT_ID"),
                 getEnvVar("TOOGLE_OVERSIKTHENDELSETILFELLE", "false").toBoolean(),
                 getEnvVar("AKTORREGISTER_V1_URL"),
-                getEnvVar("SECURITY_TOKEN_SERVICE_REST_URL")
+                getEnvVar("SECURITY_TOKEN_SERVICE_REST_URL"),
+                getEnvVar("EREG_API_BASE_URL", "https://modapp-q1.adeo.no/")
         )
     }
 }
@@ -48,7 +49,8 @@ data class Environment(
         val clientid: String,
         val toggleOversikthendelsetilfelle: Boolean,
         val aktoerregisterV1Url: String,
-        val stsRestUrl: String
+        val stsRestUrl: String,
+        val eregApiBaseUrl: String
 ) : KafkaConfig
 
 data class VaultSecrets(
