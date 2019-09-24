@@ -8,7 +8,7 @@ import no.nav.syfo.log
 
 
 data class EregOrganisasjonNavn(
-    val navn: String
+    val redigertnavn: String
 )
 
 data class EregOrganisasjonResponse
