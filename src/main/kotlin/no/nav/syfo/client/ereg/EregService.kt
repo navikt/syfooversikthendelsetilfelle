@@ -6,6 +6,6 @@ class EregService(private val eregClient: EregClient) {
 
     fun finnOrganisasjonsNavn(orgNr: String): String {
         val regResponse = eregClient.hentOrgByOrgnr(orgNr)
-        return regResponse.navn.navn
+        return regResponse.navn.redigertnavn
     }
 }
