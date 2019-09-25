@@ -22,6 +22,7 @@ import kotlinx.coroutines.slf4j.MDCContext
 import no.nav.syfo.api.registerNaisApi
 import no.nav.syfo.client.aktor.AktorService
 import no.nav.syfo.client.aktor.AktorregisterClient
+import no.nav.syfo.client.enhet.BehandlendeEnhetClient
 import no.nav.syfo.kafka.setupKafka
 import no.nav.syfo.client.sts.StsRestClient
 import no.nav.syfo.util.NAV_CALL_ID_HEADER
@@ -61,10 +62,11 @@ fun main() {
 
         val aktorregisterClient = AktorregisterClient(env.aktoerregisterV1Url, stsClientRest)
         val aktorService = AktorService(aktorregisterClient)
+        val behandlendeEnhetClient = BehandlendeEnhetClient(env.behandlendeenhetUrl, stsClientRest)
 
         module {
             init()
-            kafkaModule(vaultSecrets, aktorService)
+            kafkaModule(vaultSecrets, aktorService, behandlendeEnhetClient)
             serverModule()
         }
     })
@@ -91,7 +93,8 @@ fun Application.init() {
 
 fun Application.kafkaModule(
         vaultSecrets: VaultSecrets,
-        aktorService: AktorService
+        aktorService: AktorService,
+        behandlendeEnhetClient: BehandlendeEnhetClient
 ) {
 
     isDev {
@@ -99,7 +102,7 @@ fun Application.kafkaModule(
 
     isProd {
         launch(backgroundTasksContext) {
-            setupKafka(vaultSecrets, aktorService)
+            setupKafka(vaultSecrets, aktorService, behandlendeEnhetClient)
         }
     }
 }

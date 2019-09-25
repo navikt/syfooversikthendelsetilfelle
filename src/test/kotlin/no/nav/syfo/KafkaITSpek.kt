@@ -57,6 +57,7 @@ object KafkaITSpek : Spek({
             jwtIssuer = "",
             aadDiscoveryUrl = "",
             clientid = "",
+            behandlendeenhetUrl = "behandlendeenhet",
             toggleOversikthendelsetilfelle = true,
             aktoerregisterV1Url = "aktorurl",
             stsRestUrl = "stsurl"
