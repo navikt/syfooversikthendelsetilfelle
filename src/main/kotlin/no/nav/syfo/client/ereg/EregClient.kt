@@ -22,8 +22,8 @@ class EregClient(private val baseUrl: String, private val stsRestClient: StsRest
 
     fun hentOrgByOrgnr(orgnr: String): EregOrganisasjonResponse {
         val token = stsRestClient.token()
-
-        val (_, _, result) = "$baseUrl/${hentOrganisasjonPath.replace("orgNr", orgnr)}"
+        val url = "$baseUrl/${hentOrganisasjonPath.replace("orgNr", orgnr)}"
+        val (request, response, result) = url
                 .httpGet()
                 .header(mapOf(
                         "Authorization" to "Bearer $token"
@@ -33,6 +33,7 @@ class EregClient(private val baseUrl: String, private val stsRestClient: StsRest
         return when (result) {
             is Result.Success -> jacksonObjectMapper().registerKotlinModule().readValue(result.value)
             is Result.Failure -> {
+                log.info("Request med url: ${request.url} feilet med statuskode ${response.statusCode}")
                 val exception = result.getException()
                 log.error("Feil under henting av organisasjon: ${exception.message}", exception)
                 throw exception
