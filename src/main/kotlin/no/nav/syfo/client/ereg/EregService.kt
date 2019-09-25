@@ -5,8 +5,8 @@ import no.nav.syfo.log
 
 class EregService(private val eregClient: EregClient) {
 
-    fun finnOrganisasjonsNavn(orgNr: String): String? {
-        log.info("Henter organisasjonsnavn for orgNr={}", orgNr)
+    fun finnOrganisasjonsNavn(orgNr: String, callId: String): String? {
+        log.info("Henter organisasjonsnavn for orgNr={}, callId={}", orgNr, callId)
         val regResponse = eregClient.hentOrgByOrgnr(orgNr)
         return regResponse?.navn?.redigertnavn
     }

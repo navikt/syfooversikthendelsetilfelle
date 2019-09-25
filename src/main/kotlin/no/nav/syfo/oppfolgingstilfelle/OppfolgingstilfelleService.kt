@@ -23,12 +23,19 @@ class OppfolgingstilfelleService(
     fun receiveOppfolgingstilfeller(oppfolgingstilfelle: KOppfolgingstilfelle, callId: String = "") {
         val aktor = AktorId(oppfolgingstilfelle.aktorId)
 
-        val fnr: String = aktorService.fodselsnummerForAktor(aktor, callId) ?: return
-        val orgNummer = oppfolgingstilfelle.orgnummer ?: return
-        val organisasjonNavn = eregService.finnOrganisasjonsNavn(orgNummer) ?: return
+        val fnr: String = aktorService.fodselsnummerForAktor(aktor, callId)
+                ?: return hoppOver("fødselsnummer")
+        val orgNummer = oppfolgingstilfelle.orgnummer
+                ?: return hoppOver("organiasasjonsnummer")
+        val organisasjonNavn = eregService.finnOrganisasjonsNavn(orgNummer, callId)
+                ?: return hoppOver("organisasjonsnavn")
 
         produce(producer, oppfolgingstilfelle, fnr, organisasjonNavn)
 
+    }
+
+    private fun hoppOver(manglendeVerdi: String) {
+        log.info("Mottok oppfølgingstilfelle, men sender ikke på kø fordi $manglendeVerdi mangker")
     }
 }
 

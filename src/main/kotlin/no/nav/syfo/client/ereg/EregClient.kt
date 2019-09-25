@@ -19,14 +19,15 @@ data class EregOrganisasjonResponse
     val navn: EregOrganisasjonNavn
 )
 
-class EregClient(private val baseUrl: String, private val stsRestClient: StsRestClient) {
-
-    val hentOrganisasjonPath = "v1/organisasjon"
+class EregClient(
+        private val baseUrl: String,
+        private val stsRestClient: StsRestClient
+) {
 
     fun hentOrgByOrgnr(orgnr: String): EregOrganisasjonResponse? {
         val token = stsRestClient.token()
-        val url = "$baseUrl/v1/organisasjon/$orgnr"
-        val (request, response, result) = url
+        val url = "${baseUrl}v1/organisasjon/$orgnr"
+        val (_, response, result) = url
                 .httpGet()
                 .header(mapOf(
                         "Authorization" to "Bearer $token"
