@@ -1,5 +1,6 @@
 package no.nav.syfo.client.ereg
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.module.kotlin.*
 import com.github.kittinunf.fuel.*
 import com.github.kittinunf.result.*
@@ -7,10 +8,12 @@ import no.nav.syfo.client.sts.StsRestClient
 import no.nav.syfo.log
 
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 data class EregOrganisasjonNavn(
     val redigertnavn: String
 )
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 data class EregOrganisasjonResponse
 (
     val navn: EregOrganisasjonNavn
