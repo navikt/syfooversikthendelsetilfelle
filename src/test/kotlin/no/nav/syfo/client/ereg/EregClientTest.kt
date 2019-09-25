@@ -65,7 +65,7 @@ object EregClientTest : Spek({
         describe("EregClient hentOrgNavn successful") {
             it("Returns valid response when ok") {
                 var orgNavn = eregClient.hentOrgByOrgnr("123")
-                orgNavn.navn.redigertnavn shouldEqual "Kristians Test AS"
+                orgNavn?.navn?.redigertnavn shouldEqual "Kristians Test AS"
             }
         }
     }
