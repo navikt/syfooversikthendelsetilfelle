@@ -25,7 +25,7 @@ class OppfolgingstilfelleService(
 
         val fnr: String = aktorService.fodselsnummerForAktor(aktor, callId) ?: return
         val orgNummer = oppfolgingstilfelle.orgnummer ?: return
-        val organisasjonNavn = eregService.finnOrganisasjonsNavn(orgNummer)
+        val organisasjonNavn = eregService.finnOrganisasjonsNavn(orgNummer) ?: return
 
         produce(producer, oppfolgingstilfelle, fnr, organisasjonNavn)
 

@@ -18,11 +18,11 @@ data class EregOrganisasjonResponse
 
 class EregClient(private val baseUrl: String, private val stsRestClient: StsRestClient) {
 
-    val hentOrganisasjonPath = "v1/organisasjon/{orgNr}"
+    val hentOrganisasjonPath = "v1/organisasjon"
 
-    fun hentOrgByOrgnr(orgnr: String): EregOrganisasjonResponse {
+    fun hentOrgByOrgnr(orgnr: String): EregOrganisasjonResponse? {
         val token = stsRestClient.token()
-        val url = "$baseUrl/${hentOrganisasjonPath.replace("orgNr", orgnr)}"
+        val url = "$baseUrl/v1/organisasjon/$orgnr"
         val (request, response, result) = url
                 .httpGet()
                 .header(mapOf(
@@ -33,10 +33,10 @@ class EregClient(private val baseUrl: String, private val stsRestClient: StsRest
         return when (result) {
             is Result.Success -> jacksonObjectMapper().registerKotlinModule().readValue(result.value)
             is Result.Failure -> {
-                log.info("Request med url: ${request.url} feilet med statuskode ${response.statusCode}")
+                log.info("Request med url: $url feilet med statuskode ${response.statusCode}")
                 val exception = result.getException()
                 log.error("Feil under henting av organisasjon: ${exception.message}", exception)
-                throw exception
+                null
             }
         }
     }
