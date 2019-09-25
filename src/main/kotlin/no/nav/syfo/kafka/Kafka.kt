@@ -17,6 +17,7 @@ import no.nav.syfo.oppfolgingstilfelle.domain.KOversikthendelsetilfelle
 import no.nav.syfo.util.*
 import org.apache.kafka.clients.consumer.KafkaConsumer
 import org.apache.kafka.clients.producer.KafkaProducer
+import org.apache.kafka.common.TopicPartition
 import org.apache.kafka.common.serialization.StringDeserializer
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -92,6 +93,12 @@ suspend fun CoroutineScope.launchListeners(
 ) {
 
     val kafkaconsumerOppgave = KafkaConsumer<String, String>(consumerProperties)
+
+    val kafkaPartitions = kafkaconsumerOppgave
+            .partitionsFor("aapen-syfo-oppfolgingstilfelle-v1")
+            .map { TopicPartition(it.topic(), it.partition()) }
+    kafkaconsumerOppgave.seekToBeginning(kafkaPartitions)
+
     kafkaconsumerOppgave.subscribe(
             listOf("aapen-syfo-oppfolgingstilfelle-v1")
     )
