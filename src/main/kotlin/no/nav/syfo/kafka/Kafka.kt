@@ -15,6 +15,7 @@ import no.nav.syfo.oppfolgingstilfelle.OppfolgingstilfelleService
 import no.nav.syfo.oppfolgingstilfelle.domain.KOppfolgingstilfelle
 import no.nav.syfo.oppfolgingstilfelle.domain.KOversikthendelsetilfelle
 import no.nav.syfo.util.*
+import org.apache.kafka.clients.consumer.ConsumerRebalanceListener
 import org.apache.kafka.clients.consumer.KafkaConsumer
 import org.apache.kafka.clients.producer.KafkaProducer
 import org.apache.kafka.common.TopicPartition
@@ -93,14 +94,17 @@ suspend fun CoroutineScope.launchListeners(
 ) {
 
     val kafkaconsumerOppgave = KafkaConsumer<String, String>(consumerProperties)
+    val subscriptionCallback = object : ConsumerRebalanceListener {
+        override fun onPartitionsAssigned(partitions: MutableCollection<TopicPartition>?) {
+            kafkaconsumerOppgave.seekToBeginning(partitions)
+        }
 
-    val kafkaPartitions = kafkaconsumerOppgave
-            .partitionsFor("aapen-syfo-oppfolgingstilfelle-v1")
-            .map { TopicPartition(it.topic(), it.partition()) }
-    kafkaconsumerOppgave.seekToBeginning(kafkaPartitions)
+        override fun onPartitionsRevoked(partitions: MutableCollection<TopicPartition>?) {}
+    }
 
     kafkaconsumerOppgave.subscribe(
-            listOf("aapen-syfo-oppfolgingstilfelle-v1")
+            listOf("aapen-syfo-oppfolgingstilfelle-v1"),
+            subscriptionCallback
     )
 
     createListener(applicationState) {
