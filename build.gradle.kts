@@ -17,6 +17,7 @@ val logstashEncoderVersion = "5.1"
 val jacksonVersion = "2.9.8"
 val mockkVersion = "1.9.3"
 val orgJsonVersion = "20180813"
+val gsonVersion = "2.8.0"
 val kafkaVersion = "2.0.0"
 val kafkaEmbeddedVersion = "2.0.2"
 val smCommonVersion = "2019.09.03-11-07-64032e3b6381665e9f9c0914cef626331399e66d"
@@ -72,6 +73,7 @@ dependencies {
 
     implementation("io.arrow-kt:arrow-core-data:$arrowVersion")
     implementation("org.json:json:$orgJsonVersion")
+    implementation("com.google.code.gson:gson:$gsonVersion")
     implementation("com.github.kittinunf.fuel:fuel:$fuelVersion")
 
     implementation("org.apache.kafka:kafka_2.12:$kafkaVersion")

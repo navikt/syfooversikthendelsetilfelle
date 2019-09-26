@@ -3,6 +3,7 @@ package no.nav.syfo.oppfolgingstilfelle
 import no.nav.syfo.client.aktor.AktorService
 import no.nav.syfo.client.aktor.domain.AktorId
 import no.nav.syfo.client.ereg.EregService
+import no.nav.syfo.client.enhet.BehandlendeEnhetClient
 import no.nav.syfo.env
 import no.nav.syfo.log
 import no.nav.syfo.metric.COUNT_OPPFOLGINGSTILFELLE_GRADERT_RECEIVED
@@ -16,10 +17,10 @@ const val GRADERT_AKTIVITET = "GRADERT_AKTIVITET"
 
 class OppfolgingstilfelleService(
         private val aktorService: AktorService,
-        private val producer: KafkaProducer<String, KOversikthendelsetilfelle>,
-        private val eregService: EregService
+        private val eregService: EregService,
+        private val behandlendeEnhetClient: BehandlendeEnhetClient,
+        private val producer: KafkaProducer<String, KOversikthendelsetilfelle>
 ) {
-
     fun receiveOppfolgingstilfeller(oppfolgingstilfelle: KOppfolgingstilfelle, callId: String = "") {
         val aktor = AktorId(oppfolgingstilfelle.aktorId)
 
@@ -30,49 +31,51 @@ class OppfolgingstilfelleService(
         val organisasjonNavn = eregService.finnOrganisasjonsNavn(orgNummer, callId)
                 ?: return hoppOver("organisasjonsnavn")
 
-        produce(producer, oppfolgingstilfelle, fnr, organisasjonNavn)
+        produce(producer, oppfolgingstilfelle, fnr, organisasjonNavn, callId)
 
     }
 
     private fun hoppOver(manglendeVerdi: String) {
         log.info("Mottok oppfølgingstilfelle, men sender ikke på kø fordi $manglendeVerdi mangler")
     }
-}
+
 
 private fun produce(
         producer: KafkaProducer<String, KOversikthendelsetilfelle>,
         oppfolgingstilfelle: KOppfolgingstilfelle,
         fnr: String,
-        organisasjonNavn: String
+        organisasjonNavn: String,
+        callId: String
 ) {
     if (oppfolgingstilfelle.orgnummer != null) {
         val isGradertToday: Boolean = isGradertToday(oppfolgingstilfelle.tidslinje)
 
-        if (isGradertToday) {
-            log.info("COUNT_OPPFOLGINGSTILFELLE_GRADERT_RECEIVED")
-            COUNT_OPPFOLGINGSTILFELLE_GRADERT_RECEIVED.inc()
-        } else {
-            log.info("COUNT_OPPFOLGINGSTILFELLE_RECEIVED")
-            COUNT_OPPFOLGINGSTILFELLE_RECEIVED.inc()
-        }
-        // TODO: GET enhet from syfobehandlendeenhet
-        val enhetId = tilfelleEnhet()
 
-        val hendelse = mapKOversikthendelsetilfelle(
-                fnr,
-                enhetId,
-                oppfolgingstilfelle.orgnummer,
-                organisasjonNavn,
-                oppfolgingstilfelle.tidslinje.sortedBy { it.dag },
-                isGradertToday
-        )
-        if (env.toggleOversikthendelsetilfelle) {
-            log.info("Legger oversikthendelsetilfelle på kø, {}", hendelse)
-            producer.send(producerRecord(hendelse))
-        } else {
-            log.info("TOGGLE: Oversikthendelse er togglet av, sender ikke hendelse")
-        }
-    } else log.info("Fant ikke virksomhetsnummer for sykmeldt")
+            if (isGradertToday) {
+                log.info("COUNT_OPPFOLGINGSTILFELLE_GRADERT_RECEIVED")
+                COUNT_OPPFOLGINGSTILFELLE_GRADERT_RECEIVED.inc()
+            } else {
+                log.info("COUNT_OPPFOLGINGSTILFELLE_RECEIVED")
+                COUNT_OPPFOLGINGSTILFELLE_RECEIVED.inc()
+            }
+            val enhetId = behandlendeEnhetClient.getEnhet(fnr, callId).enhetId
+
+            val hendelse = mapKOversikthendelsetilfelle(
+                    fnr,
+                    enhetId,
+                    oppfolgingstilfelle.orgnummer,
+                    organisasjonNavn,
+                    oppfolgingstilfelle.tidslinje.sortedBy { it.dag },
+                    isGradertToday
+            )
+            if (env.toggleOversikthendelsetilfelle) {
+                log.info("Legger oversikthendelsetilfelle på kø")
+                producer.send(producerRecord(hendelse))
+            } else {
+                log.info("TOGGLE: Oversikthendelse er togglet av, sender ikke hendelse")
+            }
+        } else log.info("Fant ikke virksomhetsnummer for sykmeldt")
+    }
 }
 
 var isGradertToday = { tidslinje: List<KSyketilfelledag> ->
@@ -87,5 +90,3 @@ private fun producerRecord(hendelse: KOversikthendelsetilfelle) =
                 key = randomUUID().toString(),
                 value = hendelse
         )
-
-private fun tilfelleEnhet(): String = "0314"
