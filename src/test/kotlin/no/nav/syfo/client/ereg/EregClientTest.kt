@@ -62,7 +62,7 @@ object EregClientTest : Spek({
             mockServer.stop(1L, 10L, TimeUnit.SECONDS)
         }
 
-        describe("EregClient hentOrgNavn successful") {
+        describe("hentOrgByOrgnr()") {
             it("Returns valid response when ok") {
                 var orgNavn = eregClient.hentOrgByOrgnr("123")
                 orgNavn?.navn?.redigertnavn shouldEqual "Kristians Test AS"
