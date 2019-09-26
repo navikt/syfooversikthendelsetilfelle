@@ -31,7 +31,7 @@ class OppfolgingstilfelleService(
         val organisasjonNavn = eregService.finnOrganisasjonsNavn(orgNummer, callId)
                 ?: return hoppOver("organisasjonsnavn")
 
-        produce(producer, oppfolgingstilfelle, fnr, organisasjonNavn, callId)
+        produce(oppfolgingstilfelle, fnr, organisasjonNavn, callId)
 
     }
 
@@ -40,15 +40,14 @@ class OppfolgingstilfelleService(
     }
 
 
-private fun produce(
-        producer: KafkaProducer<String, KOversikthendelsetilfelle>,
-        oppfolgingstilfelle: KOppfolgingstilfelle,
-        fnr: String,
-        organisasjonNavn: String,
-        callId: String
-) {
-    if (oppfolgingstilfelle.orgnummer != null) {
-        val isGradertToday: Boolean = isGradertToday(oppfolgingstilfelle.tidslinje)
+    private fun produce(
+            oppfolgingstilfelle: KOppfolgingstilfelle,
+            fnr: String,
+            organisasjonNavn: String,
+            callId: String
+    ) {
+        if (oppfolgingstilfelle.orgnummer != null) {
+            val isGradertToday: Boolean = isGradertToday(oppfolgingstilfelle.tidslinje)
 
 
             if (isGradertToday) {
