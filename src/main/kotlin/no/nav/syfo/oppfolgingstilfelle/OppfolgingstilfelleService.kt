@@ -35,7 +35,7 @@ class OppfolgingstilfelleService(
     }
 
     private fun hoppOver(manglendeVerdi: String) {
-        log.info("Mottok oppfølgingstilfelle, men sender ikke på kø fordi $manglendeVerdi mangker")
+        log.info("Mottok oppfølgingstilfelle, men sender ikke på kø fordi $manglendeVerdi mangler")
     }
 }
 

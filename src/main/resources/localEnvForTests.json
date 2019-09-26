@@ -8,6 +8,7 @@
     "kafkaBootstrapServers": "kafkaurl",
     "oppfolgingstilfelleTopic": "topic",
     "oversikthendelseOppfolgingstilfelleTopic": "topic-oversikthendelse-oppfolgingstilfelle",
+    "oversikthendelseOppfolgingstilfelleTopicSeekToBeginning": "false",
     "clientid": "999999",
     "stsRestUrl": "http://localhost:8080",
     "aktoerregisterV1Url": "http://localhost:8080",

@@ -58,6 +58,7 @@ object KafkaITSpek : Spek({
             aadDiscoveryUrl = "",
             clientid = "",
             toggleOversikthendelsetilfelle = true,
+            oversikthendelseOppfolgingstilfelleTopicSeekToBeginning = false,
             aktoerregisterV1Url = "aktorurl",
             stsRestUrl = "stsurl",
             eregApiBaseUrl = ""
