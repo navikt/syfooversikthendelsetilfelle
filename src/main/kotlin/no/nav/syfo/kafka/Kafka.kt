@@ -36,11 +36,13 @@ private val objectMapper: ObjectMapper = ObjectMapper().apply {
 private val LOG: Logger = LoggerFactory.getLogger("no.nav.syfo.Kafka")
 
 
-suspend fun CoroutineScope.setupKafka(vaultSecrets: KafkaCredentials, aktorService: AktorService, eregService: EregService, behandlendeEnhetClient: BehandlendeEnhetClient) {
-
+suspend fun CoroutineScope.setupKafka(
+        vaultSecrets: KafkaCredentials,
+        aktorService: AktorService,
+        eregService: EregService,
+        behandlendeEnhetClient: BehandlendeEnhetClient)
+{
     LOG.info("Setting up kafka consumer")
-
-    // Kafka
     val kafkaBaseConfig = loadBaseConfig(env, vaultSecrets)
             .envOverrides()
     val consumerProperties = kafkaBaseConfig.toConsumerConfig(
