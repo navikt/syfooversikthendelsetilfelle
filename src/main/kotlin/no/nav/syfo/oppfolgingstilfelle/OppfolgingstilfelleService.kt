@@ -2,6 +2,7 @@ package no.nav.syfo.oppfolgingstilfelle
 
 import no.nav.syfo.client.aktor.AktorService
 import no.nav.syfo.client.aktor.domain.AktorId
+import no.nav.syfo.client.ereg.EregService
 import no.nav.syfo.client.enhet.BehandlendeEnhetClient
 import no.nav.syfo.env
 import no.nav.syfo.log
@@ -16,24 +17,38 @@ const val GRADERT_AKTIVITET = "GRADERT_AKTIVITET"
 
 class OppfolgingstilfelleService(
         private val aktorService: AktorService,
+        private val eregService: EregService,
         private val behandlendeEnhetClient: BehandlendeEnhetClient,
         private val producer: KafkaProducer<String, KOversikthendelsetilfelle>
 ) {
     fun receiveOppfolgingstilfeller(oppfolgingstilfelle: KOppfolgingstilfelle, callId: String = "") {
         val aktor = AktorId(oppfolgingstilfelle.aktorId)
-        val fnr: String? = aktorService.fodselsnummerForAktor(aktor, callId)
-        fnr?.let {
-            produce(oppfolgingstilfelle, it, callId)
-        }
+
+        val fnr: String = aktorService.fodselsnummerForAktor(aktor, callId)
+                ?: return hoppOver("fødselsnummer")
+        val orgNummer = oppfolgingstilfelle.orgnummer
+                ?: return hoppOver("organiasasjonsnummer")
+        val organisasjonNavn = eregService.finnOrganisasjonsNavn(orgNummer, callId)
+                ?: return hoppOver("organisasjonsnavn")
+
+        produce(oppfolgingstilfelle, fnr, organisasjonNavn, callId)
+
     }
+
+    private fun hoppOver(manglendeVerdi: String) {
+        log.info("Mottok oppfølgingstilfelle, men sender ikke på kø fordi $manglendeVerdi mangler")
+    }
+
 
     private fun produce(
             oppfolgingstilfelle: KOppfolgingstilfelle,
             fnr: String,
+            organisasjonNavn: String,
             callId: String
     ) {
         if (oppfolgingstilfelle.orgnummer != null) {
             val isGradertToday: Boolean = isGradertToday(oppfolgingstilfelle.tidslinje)
+
 
             if (isGradertToday) {
                 log.info("COUNT_OPPFOLGINGSTILFELLE_GRADERT_RECEIVED")
@@ -48,6 +63,7 @@ class OppfolgingstilfelleService(
                     fnr,
                     enhetId,
                     oppfolgingstilfelle.orgnummer,
+                    organisasjonNavn,
                     oppfolgingstilfelle.tidslinje.sortedBy { it.dag },
                     isGradertToday
             )

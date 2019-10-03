@@ -59,8 +59,10 @@ object KafkaITSpek : Spek({
             clientid = "",
             behandlendeenhetUrl = "behandlendeenhet",
             toggleOversikthendelsetilfelle = true,
+            oversikthendelseOppfolgingstilfelleTopicSeekToBeginning = false,
             aktoerregisterV1Url = "aktorurl",
-            stsRestUrl = "stsurl"
+            stsRestUrl = "stsurl",
+            eregApiBaseUrl = ""
     )
 
     fun Properties.overrideForTest(): Properties = apply {
@@ -77,7 +79,6 @@ object KafkaITSpek : Spek({
             .toConsumerConfig("spek.integration-consumer1", valueDeserializer = StringDeserializer::class)
     val consumerTilfelle = KafkaConsumer<String, String>(consumerPropertiesTilfelle)
     consumerTilfelle.subscribe(listOf(env.oppfolgingstilfelleTopic))
-
 
     val producerPropertiesOversikthendelse = baseConfig
             .toProducerConfig("spek.integration-producer2", valueSerializer = JacksonKafkaSerializer::class)
