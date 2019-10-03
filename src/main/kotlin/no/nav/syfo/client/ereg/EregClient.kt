@@ -10,7 +10,8 @@ import no.nav.syfo.log
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class EregOrganisasjonNavn(
-    val redigertnavn: String
+        val navnelinje1: String,
+        val redigertnavn: String
 )
 
 @JsonIgnoreProperties(ignoreUnknown = true)
