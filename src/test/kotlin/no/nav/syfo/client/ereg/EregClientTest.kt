@@ -46,7 +46,7 @@ object EregClientTest : Spek({
             }
             routing {
                 get("/ereg/api/v1/organisasjon/{orgNr}") {
-                    call.respond(EregOrganisasjonResponse(navn = EregOrganisasjonNavn("Kristians Test AS")))
+                    call.respond(EregOrganisasjonResponse(navn = EregOrganisasjonNavn("Kristians Test AS", "Kristians Test AS, Oslo")))
                 }
             }
         }.start()
@@ -65,7 +65,8 @@ object EregClientTest : Spek({
         describe("hentOrgByOrgnr()") {
             it("Returns valid response when ok") {
                 var orgNavn = eregClient.hentOrgByOrgnr("123")
-                orgNavn?.navn?.redigertnavn shouldEqual "Kristians Test AS"
+                orgNavn?.navn?.navnelinje1 shouldEqual "Kristians Test AS"
+                orgNavn?.navn?.redigertnavn shouldEqual "Kristians Test AS, Oslo"
             }
         }
     }
