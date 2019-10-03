@@ -107,6 +107,7 @@ suspend fun CoroutineScope.launchListeners(
     val subscriptionCallback = object : ConsumerRebalanceListener {
         override fun onPartitionsAssigned(partitions: MutableCollection<TopicPartition>?) {
             if (env.oversikthendelseOppfolgingstilfelleTopicSeekToBeginning) {
+                log.info("onPartitionsAssigned called for ${partitions?.size ?: 0} partitions. Seeking to beginning.")
                 kafkaconsumerOppgave.seekToBeginning(partitions)
             }
         }
