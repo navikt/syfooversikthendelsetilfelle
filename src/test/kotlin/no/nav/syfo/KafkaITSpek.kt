@@ -7,7 +7,7 @@ import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import no.nav.common.KafkaEnvironment
 import no.nav.syfo.kafka.*
 import no.nav.syfo.oppfolgingstilfelle.domain.*
-import no.nav.syfo.testutil.generator.generateOppfolgingstilfelle
+import no.nav.syfo.testutil.generator.generateOppfolgingstilfellePeker
 import no.nav.syfo.testutil.generator.generateOversikthendelsetilfelle
 import org.amshove.kluent.shouldEqual
 import org.apache.kafka.clients.consumer.KafkaConsumer
@@ -58,6 +58,7 @@ object KafkaITSpek : Spek({
             aadDiscoveryUrl = "",
             clientid = "",
             behandlendeenhetUrl = "behandlendeenhet",
+            syketilfelleUrl = "syketilfelle",
             toggleOversikthendelsetilfelle = true,
             oversikthendelseOppfolgingstilfelleTopicSeekToBeginning = false,
             aktoerregisterV1Url = "aktorurl",
@@ -74,7 +75,7 @@ object KafkaITSpek : Spek({
 
     val producerPropertiesTilfelle = baseConfig
             .toProducerConfig("spek.integration-producer1", valueSerializer = JacksonKafkaSerializer::class)
-    val producerTilfelle = KafkaProducer<String, KOppfolgingstilfelle>(producerPropertiesTilfelle)
+    val producerTilfelle = KafkaProducer<String, KOppfolgingstilfellePeker>(producerPropertiesTilfelle)
     val consumerPropertiesTilfelle = baseConfig
             .toConsumerConfig("spek.integration-consumer1", valueDeserializer = StringDeserializer::class)
     val consumerTilfelle = KafkaConsumer<String, String>(consumerPropertiesTilfelle)
@@ -98,17 +99,17 @@ object KafkaITSpek : Spek({
 
     describe("Produce and consume messages from topic") {
         it("Topic ${env.oppfolgingstilfelleTopic}") {
-            val oppfolgingstilfelle = generateOppfolgingstilfelle.copy()
-            producerTilfelle.send(SyfoProducerRecord(env.oppfolgingstilfelleTopic, UUID.randomUUID().toString(), oppfolgingstilfelle))
+            val kOppfolgingstilfellePeker = generateOppfolgingstilfellePeker.copy()
+            producerTilfelle.send(SyfoProducerRecord(env.oppfolgingstilfelleTopic, UUID.randomUUID().toString(), kOppfolgingstilfellePeker))
 
-            val messages: ArrayList<KOppfolgingstilfelle> = arrayListOf()
+            val messages: ArrayList<KOppfolgingstilfellePeker> = arrayListOf()
             consumerTilfelle.poll(Duration.ofMillis(5000)).forEach {
-                val tilfelle: KOppfolgingstilfelle = objectMapper.readValue(it.value())
-                messages.add(tilfelle)
+                val tilfellePeker: KOppfolgingstilfellePeker = objectMapper.readValue(it.value())
+                messages.add(tilfellePeker)
 
             }
             messages.size shouldEqual 1
-            messages.first() shouldEqual oppfolgingstilfelle
+            messages.first() shouldEqual kOppfolgingstilfellePeker
         }
 
         it("Topic ${env.oversikthendelseOppfolgingstilfelleTopic}") {

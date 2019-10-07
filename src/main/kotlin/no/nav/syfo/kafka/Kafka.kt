@@ -10,12 +10,14 @@ import kotlinx.coroutines.delay
 import net.logstash.logback.argument.StructuredArguments
 import no.nav.syfo.*
 import no.nav.syfo.client.aktor.AktorService
-import no.nav.syfo.client.ereg.EregService
 import no.nav.syfo.client.enhet.BehandlendeEnhetClient
+import no.nav.syfo.client.ereg.EregService
+import no.nav.syfo.client.syketilfelle.SyketilfelleClient
 import no.nav.syfo.oppfolgingstilfelle.OppfolgingstilfelleService
-import no.nav.syfo.oppfolgingstilfelle.domain.KOppfolgingstilfelle
+import no.nav.syfo.oppfolgingstilfelle.domain.KOppfolgingstilfellePeker
 import no.nav.syfo.oppfolgingstilfelle.domain.KOversikthendelsetilfelle
-import no.nav.syfo.util.*
+import no.nav.syfo.util.CallIdArgument
+import no.nav.syfo.util.kafkaCallId
 import org.apache.kafka.clients.consumer.ConsumerRebalanceListener
 import org.apache.kafka.clients.consumer.KafkaConsumer
 import org.apache.kafka.clients.producer.KafkaProducer
@@ -40,8 +42,9 @@ suspend fun CoroutineScope.setupKafka(
         vaultSecrets: KafkaCredentials,
         aktorService: AktorService,
         eregService: EregService,
-        behandlendeEnhetClient: BehandlendeEnhetClient)
-{
+        behandlendeEnhetClient: BehandlendeEnhetClient,
+        syketilfelleClient: SyketilfelleClient
+) {
     LOG.info("Setting up kafka consumer")
     val kafkaBaseConfig = loadBaseConfig(env, vaultSecrets)
             .envOverrides()
@@ -57,6 +60,7 @@ suspend fun CoroutineScope.setupKafka(
             aktorService,
             eregService,
             behandlendeEnhetClient,
+            syketilfelleClient,
             oversikthendelseTilfelleProducer
     )
     launchListeners(consumerProperties, state, oppfolgingstilfelleService)
@@ -77,21 +81,22 @@ suspend fun blockingApplicationLogic(
         val logKeys = logValues.joinToString(prefix = "(", postfix = ")", separator = ",") {
             "{}"
         }
+        if (env.toggleOversikthendelsetilfelle) {
+            kafkaConsumer.poll(Duration.ofMillis(0)).forEach {
+                val callId = kafkaCallId()
+                val oppfolgingstilfellePeker: KOppfolgingstilfellePeker =
+                        objectMapper.readValue(it.value())
+                logValues = arrayOf(
+                        StructuredArguments.keyValue("oppfolgingstilfelleId", it.key())
+                )
+                LOG.info("Mottatt oppfolgingstilfellePeker, klar for behandling, $logKeys, {}", *logValues, CallIdArgument(callId))
 
-        kafkaConsumer.poll(Duration.ofMillis(0)).forEach {
-            val callId = kafkaCallId()
-            val oppfolgingstilfeller: KOppfolgingstilfelle =
-                    objectMapper.readValue(it.value())
-            logValues = arrayOf(
-                    StructuredArguments.keyValue("oppfolgingstilfelleId", it.key())
-            )
-            LOG.info("Mottatt oppfolgingstilfelle, klar for behandling, $logKeys, {}", *logValues, CallIdArgument(callId))
-
-            if (isPreProd()) {
-                oppfolgingstilfelleService.receiveOppfolgingstilfeller(oppfolgingstilfeller, callId)
+                oppfolgingstilfelleService.receiveOppfolgingstilfeller(oppfolgingstilfellePeker, callId)
             }
+            delay(100)
+        } else {
+            log.info("TOGGLE: Oversikthendelse er togglet av, mottar ikke hendelse")
         }
-        delay(100)
     }
 }
 
