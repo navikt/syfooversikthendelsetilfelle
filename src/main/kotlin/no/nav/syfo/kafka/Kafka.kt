@@ -81,8 +81,8 @@ suspend fun blockingApplicationLogic(
         val logKeys = logValues.joinToString(prefix = "(", postfix = ")", separator = ",") {
             "{}"
         }
-        if (env.toggleOversikthendelsetilfelle) {
-            kafkaConsumer.poll(Duration.ofMillis(0)).forEach {
+        kafkaConsumer.poll(Duration.ofMillis(0)).forEach {
+            if (env.toggleOversikthendelsetilfelle) {
                 val callId = kafkaCallId()
                 val oppfolgingstilfellePeker: KOppfolgingstilfellePeker =
                         objectMapper.readValue(it.value())
@@ -93,10 +93,8 @@ suspend fun blockingApplicationLogic(
 
                 oppfolgingstilfelleService.receiveOppfolgingstilfeller(oppfolgingstilfellePeker, callId)
             }
-            delay(100)
-        } else {
-            log.info("TOGGLE: Oversikthendelse er togglet av, mottar ikke hendelse")
         }
+        delay(100)
     }
 }
 
