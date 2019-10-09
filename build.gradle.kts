@@ -20,7 +20,7 @@ val orgJsonVersion = "20180813"
 val gsonVersion = "2.8.0"
 val kafkaVersion = "2.0.0"
 val kafkaEmbeddedVersion = "2.0.2"
-val smCommonVersion = "2019.09.03-11-07-64032e3b6381665e9f9c0914cef626331399e66d"
+val smCommonVersion = "2019.08.08-03-52-c78281e2409af36f3ef07df4369fa29b0ea81a46"
 
 tasks.withType<Jar> {
     manifest.attributes["Main-Class"] = "no.nav.syfo.MainApplicationKt"

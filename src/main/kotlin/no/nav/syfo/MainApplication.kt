@@ -22,11 +22,12 @@ import kotlinx.coroutines.slf4j.MDCContext
 import no.nav.syfo.api.registerNaisApi
 import no.nav.syfo.client.aktor.AktorService
 import no.nav.syfo.client.aktor.AktorregisterClient
+import no.nav.syfo.client.enhet.BehandlendeEnhetClient
 import no.nav.syfo.client.ereg.EregClient
 import no.nav.syfo.client.ereg.EregService
-import no.nav.syfo.client.enhet.BehandlendeEnhetClient
-import no.nav.syfo.kafka.setupKafka
 import no.nav.syfo.client.sts.StsRestClient
+import no.nav.syfo.client.syketilfelle.SyketilfelleClient
+import no.nav.syfo.kafka.setupKafka
 import no.nav.syfo.util.NAV_CALL_ID_HEADER
 import no.nav.syfo.util.getCallId
 import org.slf4j.LoggerFactory
@@ -68,10 +69,17 @@ fun main() {
         val aktorregisterClient = AktorregisterClient(env.aktoerregisterV1Url, stsClientRest)
         val aktorService = AktorService(aktorregisterClient)
         val behandlendeEnhetClient = BehandlendeEnhetClient(env.behandlendeenhetUrl, stsClientRest)
+        val syketilfelleClient = SyketilfelleClient(env.syketilfelleUrl, stsClientRest)
 
         module {
             init()
-            kafkaModule(vaultSecrets, aktorService, eregService, behandlendeEnhetClient)
+            kafkaModule(
+                    vaultSecrets,
+                    aktorService,
+                    eregService,
+                    behandlendeEnhetClient,
+                    syketilfelleClient
+            )
             serverModule()
         }
     })
@@ -100,7 +108,8 @@ fun Application.kafkaModule(
         vaultSecrets: VaultSecrets,
         aktorService: AktorService,
         eregService: EregService,
-        behandlendeEnhetClient: BehandlendeEnhetClient
+        behandlendeEnhetClient: BehandlendeEnhetClient,
+        syketilfelleClient: SyketilfelleClient
 ) {
 
     isDev {
@@ -108,7 +117,13 @@ fun Application.kafkaModule(
 
     isProd {
         launch(backgroundTasksContext) {
-            setupKafka(vaultSecrets, aktorService, eregService, behandlendeEnhetClient)
+            setupKafka(
+                    vaultSecrets,
+                    aktorService,
+                    eregService,
+                    behandlendeEnhetClient,
+                    syketilfelleClient
+            )
         }
     }
 }

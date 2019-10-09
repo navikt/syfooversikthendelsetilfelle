@@ -2,8 +2,9 @@ package no.nav.syfo.oppfolgingstilfelle
 
 import no.nav.syfo.client.aktor.AktorService
 import no.nav.syfo.client.aktor.domain.AktorId
-import no.nav.syfo.client.ereg.EregService
 import no.nav.syfo.client.enhet.BehandlendeEnhetClient
+import no.nav.syfo.client.ereg.EregService
+import no.nav.syfo.client.syketilfelle.SyketilfelleClient
 import no.nav.syfo.env
 import no.nav.syfo.log
 import no.nav.syfo.metric.COUNT_OPPFOLGINGSTILFELLE_GRADERT_RECEIVED
@@ -19,19 +20,18 @@ class OppfolgingstilfelleService(
         private val aktorService: AktorService,
         private val eregService: EregService,
         private val behandlendeEnhetClient: BehandlendeEnhetClient,
+        private val syketilfelleClient: SyketilfelleClient,
         private val producer: KafkaProducer<String, KOversikthendelsetilfelle>
 ) {
-    fun receiveOppfolgingstilfeller(oppfolgingstilfelle: KOppfolgingstilfelle, callId: String = "") {
-        val aktor = AktorId(oppfolgingstilfelle.aktorId)
+    fun receiveOppfolgingstilfeller(oppfolgingstilfellePeker: KOppfolgingstilfellePeker, callId: String = "") {
+        val aktor = AktorId(oppfolgingstilfellePeker.aktorId)
 
         val fnr: String = aktorService.fodselsnummerForAktor(aktor, callId)
                 ?: return hoppOver("fødselsnummer")
-        val orgNummer = oppfolgingstilfelle.orgnummer
-                ?: return hoppOver("organiasasjonsnummer")
+        val orgNummer = oppfolgingstilfellePeker.orgnummer
         val organisasjonNavn = eregService.finnOrganisasjonsNavn(orgNummer, callId)
-                ?: return hoppOver("organisasjonsnavn")
 
-        produce(oppfolgingstilfelle, fnr, organisasjonNavn, callId)
+        produce(oppfolgingstilfellePeker, fnr, organisasjonNavn, callId)
 
     }
 
@@ -41,14 +41,19 @@ class OppfolgingstilfelleService(
 
 
     private fun produce(
-            oppfolgingstilfelle: KOppfolgingstilfelle,
+            oppfolgingstilfellePeker: KOppfolgingstilfellePeker,
             fnr: String,
             organisasjonNavn: String,
             callId: String
     ) {
-        if (oppfolgingstilfelle.orgnummer != null) {
-            val isGradertToday: Boolean = isGradertToday(oppfolgingstilfelle.tidslinje)
+        val oppfolgingstilfelle = syketilfelleClient.getOppfolgingstilfelle(
+                oppfolgingstilfellePeker.aktorId,
+                oppfolgingstilfellePeker.orgnummer,
+                callId
+        )
 
+        if (oppfolgingstilfelle != null) {
+            val isGradertToday: Boolean = isGradertToday(oppfolgingstilfelle.tidslinje)
 
             if (isGradertToday) {
                 log.info("COUNT_OPPFOLGINGSTILFELLE_GRADERT_RECEIVED")
@@ -73,7 +78,9 @@ class OppfolgingstilfelleService(
             } else {
                 log.info("TOGGLE: Oversikthendelse er togglet av, sender ikke hendelse")
             }
-        } else log.info("Fant ikke virksomhetsnummer for sykmeldt")
+        } else {
+            log.info("Fant ikke Opppfolgingstilfelle for sykmeldt")
+        }
     }
 }
 
