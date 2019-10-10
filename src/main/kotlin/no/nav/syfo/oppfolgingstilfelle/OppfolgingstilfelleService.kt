@@ -12,9 +12,12 @@ import no.nav.syfo.metric.COUNT_OPPFOLGINGSTILFELLE_RECEIVED
 import no.nav.syfo.oppfolgingstilfelle.domain.*
 import org.apache.kafka.clients.producer.KafkaProducer
 import java.time.LocalDate
+import java.time.temporal.ChronoUnit
 import java.util.UUID.randomUUID
 
+const val SYKEPENGESOKNAD = "SYKEPENGESOKNAD"
 const val GRADERT_AKTIVITET = "GRADERT_AKTIVITET"
+const val SYKMELDING = "SYKMELDING"
 
 class OppfolgingstilfelleService(
         private val aktorService: AktorService,
@@ -53,7 +56,7 @@ class OppfolgingstilfelleService(
         )
 
         if (oppfolgingstilfelle != null) {
-            val isGradertToday: Boolean = isGradertToday(oppfolgingstilfelle.tidslinje)
+            val isGradertToday: Boolean = isLatestSykmeldingGradert(oppfolgingstilfelle.tidslinje)
 
             if (isGradertToday) {
                 log.info("COUNT_OPPFOLGINGSTILFELLE_GRADERT_RECEIVED")
@@ -84,9 +87,16 @@ class OppfolgingstilfelleService(
     }
 }
 
-var isGradertToday = { tidslinje: List<KSyketilfelledag> ->
-    tidslinje.any {
-        it.dag.isEqual(LocalDate.now()) && it.prioritertSyketilfellebit!!.tags.contains(GRADERT_AKTIVITET)
+fun isLatestSykmeldingGradert(tidslinje: List<KSyketilfelledag>): Boolean {
+    val sykeldingerDager = tidslinje
+            .filter { it.prioritertSyketilfellebit?.tags?.contains(SYKMELDING) ?: false }
+
+    return if (sykeldingerDager.isNullOrEmpty()) {
+        false
+    } else {
+        sykeldingerDager.minBy { ChronoUnit.DAYS.between(it.dag, LocalDate.now()) }!!
+                .prioritertSyketilfellebit!!.tags.contains(GRADERT_AKTIVITET)
+                .or(false)
     }
 }
 
