@@ -24,12 +24,15 @@ fun getEnvironment(): Environment {
                 getEnvVar("JWT_ISSUER"),
                 getEnvVar("OPPFOLGINGSTILFELLE_TOPIC"),
                 getEnvVar("OVERSIKTHENDELSE_OPPFOLGINGSTILFELLE_TOPIC", "aapen-syfo-oversikthendelse-tilfelle-v1"),
+                getEnvVar("OVERSIKTHENDELSE_OPPFOLGINGSTILFELLE_TOPIC_SEEK_TO_START", "false").toBoolean(),
                 getEnvVar("KAFKA_BOOTSTRAP_SERVERS_URL"),
                 getEnvVar("CLIENT_ID"),
                 getEnvVar("SYFOBEHANDLENDEENHET_URL", "http://syfobehandlendeenhet"),
+                getEnvVar("SYFOSYKETILFELLE_URL", "http://syfosyketilfelle"),
                 getEnvVar("TOOGLE_OVERSIKTHENDELSETILFELLE", "false").toBoolean(),
                 getEnvVar("AKTORREGISTER_V1_URL"),
-                getEnvVar("SECURITY_TOKEN_SERVICE_REST_URL")
+                getEnvVar("SECURITY_TOKEN_SERVICE_REST_URL"),
+                getEnvVar("EREG_API_BASE_URL", "https://modapp-q1.adeo.no/")
         )
     }
 }
@@ -45,12 +48,15 @@ data class Environment(
         val jwtIssuer: String,
         val oppfolgingstilfelleTopic: String,
         val oversikthendelseOppfolgingstilfelleTopic: String,
+        val oversikthendelseOppfolgingstilfelleTopicSeekToBeginning: Boolean,
         override val kafkaBootstrapServers: String,
         val clientid: String,
         val behandlendeenhetUrl: String,
+        val syketilfelleUrl: String,
         val toggleOversikthendelsetilfelle: Boolean,
         val aktoerregisterV1Url: String,
-        val stsRestUrl: String
+        val stsRestUrl: String,
+        val eregApiBaseUrl: String
 ) : KafkaConfig
 
 data class VaultSecrets(

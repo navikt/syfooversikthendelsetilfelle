@@ -11,12 +11,17 @@ import net.logstash.logback.argument.StructuredArguments
 import no.nav.syfo.*
 import no.nav.syfo.client.aktor.AktorService
 import no.nav.syfo.client.enhet.BehandlendeEnhetClient
+import no.nav.syfo.client.ereg.EregService
+import no.nav.syfo.client.syketilfelle.SyketilfelleClient
 import no.nav.syfo.oppfolgingstilfelle.OppfolgingstilfelleService
-import no.nav.syfo.oppfolgingstilfelle.domain.KOppfolgingstilfelle
+import no.nav.syfo.oppfolgingstilfelle.domain.KOppfolgingstilfellePeker
 import no.nav.syfo.oppfolgingstilfelle.domain.KOversikthendelsetilfelle
-import no.nav.syfo.util.*
+import no.nav.syfo.util.CallIdArgument
+import no.nav.syfo.util.kafkaCallId
+import org.apache.kafka.clients.consumer.ConsumerRebalanceListener
 import org.apache.kafka.clients.consumer.KafkaConsumer
 import org.apache.kafka.clients.producer.KafkaProducer
+import org.apache.kafka.common.TopicPartition
 import org.apache.kafka.common.serialization.StringDeserializer
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -32,14 +37,15 @@ private val objectMapper: ObjectMapper = ObjectMapper().apply {
 
 private val LOG: Logger = LoggerFactory.getLogger("no.nav.syfo.Kafka")
 
+
 suspend fun CoroutineScope.setupKafka(
         vaultSecrets: KafkaCredentials,
         aktorService: AktorService,
-        behandlendeEnhetClient: BehandlendeEnhetClient
+        eregService: EregService,
+        behandlendeEnhetClient: BehandlendeEnhetClient,
+        syketilfelleClient: SyketilfelleClient
 ) {
     LOG.info("Setting up kafka consumer")
-
-    // Kafka
     val kafkaBaseConfig = loadBaseConfig(env, vaultSecrets)
             .envOverrides()
     val consumerProperties = kafkaBaseConfig.toConsumerConfig(
@@ -52,10 +58,11 @@ suspend fun CoroutineScope.setupKafka(
 
     val oppfolgingstilfelleService = OppfolgingstilfelleService(
             aktorService,
+            eregService,
             behandlendeEnhetClient,
+            syketilfelleClient,
             oversikthendelseTilfelleProducer
     )
-
     launchListeners(consumerProperties, state, oppfolgingstilfelleService)
 }
 
@@ -74,18 +81,17 @@ suspend fun blockingApplicationLogic(
         val logKeys = logValues.joinToString(prefix = "(", postfix = ")", separator = ",") {
             "{}"
         }
-
         kafkaConsumer.poll(Duration.ofMillis(0)).forEach {
-            val callId = kafkaCallId()
-            val oppfolgingstilfeller: KOppfolgingstilfelle =
-                    objectMapper.readValue(it.value())
-            logValues = arrayOf(
-                    StructuredArguments.keyValue("oppfolgingstilfelleId", it.key())
-            )
-            LOG.info("Mottatt oppfolgingstilfelle, klar for behandling, $logKeys, {}", *logValues, CallIdArgument(callId))
+            if (env.toggleOversikthendelsetilfelle) {
+                val callId = kafkaCallId()
+                val oppfolgingstilfellePeker: KOppfolgingstilfellePeker =
+                        objectMapper.readValue(it.value())
+                logValues = arrayOf(
+                        StructuredArguments.keyValue("oppfolgingstilfelleId", it.key())
+                )
+                LOG.info("Mottatt oppfolgingstilfellePeker, klar for behandling, $logKeys, {}", *logValues, CallIdArgument(callId))
 
-            if (isPreProd()) {
-                oppfolgingstilfelleService.receiveOppfolgingstilfeller(oppfolgingstilfeller, callId)
+                oppfolgingstilfelleService.receiveOppfolgingstilfeller(oppfolgingstilfellePeker, callId)
             }
         }
         delay(100)
@@ -100,8 +106,21 @@ suspend fun CoroutineScope.launchListeners(
 ) {
 
     val kafkaconsumerOppgave = KafkaConsumer<String, String>(consumerProperties)
+
+    val subscriptionCallback = object : ConsumerRebalanceListener {
+        override fun onPartitionsAssigned(partitions: MutableCollection<TopicPartition>?) {
+            if (env.oversikthendelseOppfolgingstilfelleTopicSeekToBeginning) {
+                log.info("onPartitionsAssigned called for ${partitions?.size ?: 0} partitions. Seeking to beginning.")
+                kafkaconsumerOppgave.seekToBeginning(partitions)
+            }
+        }
+
+        override fun onPartitionsRevoked(partitions: MutableCollection<TopicPartition>?) {}
+    }
+
     kafkaconsumerOppgave.subscribe(
-            listOf("aapen-syfo-oppfolgingstilfelle-v1")
+            listOf("aapen-syfo-oppfolgingstilfelle-v1"),
+            subscriptionCallback
     )
 
     createListener(applicationState) {
