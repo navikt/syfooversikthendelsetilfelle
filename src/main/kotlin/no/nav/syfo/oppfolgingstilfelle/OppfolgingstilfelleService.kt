@@ -4,6 +4,8 @@ import no.nav.syfo.client.aktor.AktorService
 import no.nav.syfo.client.aktor.domain.AktorId
 import no.nav.syfo.client.enhet.BehandlendeEnhetClient
 import no.nav.syfo.client.ereg.EregService
+import no.nav.syfo.client.pdl.PdlClient
+import no.nav.syfo.client.pdl.fullName
 import no.nav.syfo.client.syketilfelle.SyketilfelleClient
 import no.nav.syfo.env
 import no.nav.syfo.log
@@ -23,6 +25,7 @@ class OppfolgingstilfelleService(
         private val aktorService: AktorService,
         private val eregService: EregService,
         private val behandlendeEnhetClient: BehandlendeEnhetClient,
+        private val pdlClient: PdlClient,
         private val syketilfelleClient: SyketilfelleClient,
         private val producer: KafkaProducer<String, KOversikthendelsetilfelle>
 ) {
@@ -65,10 +68,13 @@ class OppfolgingstilfelleService(
                 log.info("COUNT_OPPFOLGINGSTILFELLE_RECEIVED")
                 COUNT_OPPFOLGINGSTILFELLE_RECEIVED.inc()
             }
+            val fnrFullName = pdlClient.person(fnr, callId)?.fullName() ?: ""
+
             val enhetId = behandlendeEnhetClient.getEnhet(fnr, callId).enhetId
 
             val hendelse = mapKOversikthendelsetilfelle(
                     fnr,
+                    fnrFullName,
                     enhetId,
                     oppfolgingstilfelle.orgnummer,
                     organisasjonNavn,

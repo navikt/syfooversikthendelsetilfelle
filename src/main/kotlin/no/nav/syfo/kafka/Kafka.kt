@@ -12,6 +12,7 @@ import no.nav.syfo.*
 import no.nav.syfo.client.aktor.AktorService
 import no.nav.syfo.client.enhet.BehandlendeEnhetClient
 import no.nav.syfo.client.ereg.EregService
+import no.nav.syfo.client.pdl.PdlClient
 import no.nav.syfo.client.syketilfelle.SyketilfelleClient
 import no.nav.syfo.oppfolgingstilfelle.OppfolgingstilfelleService
 import no.nav.syfo.oppfolgingstilfelle.domain.KOppfolgingstilfellePeker
@@ -43,6 +44,7 @@ suspend fun CoroutineScope.setupKafka(
         aktorService: AktorService,
         eregService: EregService,
         behandlendeEnhetClient: BehandlendeEnhetClient,
+        pdlClient: PdlClient,
         syketilfelleClient: SyketilfelleClient
 ) {
     LOG.info("Setting up kafka consumer")
@@ -60,6 +62,7 @@ suspend fun CoroutineScope.setupKafka(
             aktorService,
             eregService,
             behandlendeEnhetClient,
+            pdlClient,
             syketilfelleClient,
             oversikthendelseTilfelleProducer
     )
