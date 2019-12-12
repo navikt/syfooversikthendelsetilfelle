@@ -9,13 +9,17 @@ import no.nav.syfo.client.pdl.fullName
 import no.nav.syfo.client.syketilfelle.SyketilfelleClient
 import no.nav.syfo.env
 import no.nav.syfo.log
-import no.nav.syfo.metric.COUNT_OPPFOLGINGSTILFELLE_GRADERT_RECEIVED
-import no.nav.syfo.metric.COUNT_OPPFOLGINGSTILFELLE_RECEIVED
+import no.nav.syfo.metric.*
 import no.nav.syfo.oppfolgingstilfelle.domain.*
 import org.apache.kafka.clients.producer.KafkaProducer
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 import java.util.UUID.randomUUID
+
+enum class MissingValue {
+    BEHANDLENDEENHET,
+    FODSELSNUMMER
+}
 
 const val SYKEPENGESOKNAD = "SYKEPENGESOKNAD"
 const val GRADERT_AKTIVITET = "GRADERT_AKTIVITET"
@@ -33,7 +37,7 @@ class OppfolgingstilfelleService(
         val aktor = AktorId(oppfolgingstilfellePeker.aktorId)
 
         val fnr: String = aktorService.fodselsnummerForAktor(aktor, callId)
-                ?: return hoppOver("fødselsnummer")
+                ?: return skipOppfolgingstilfelleWithMissingValue(MissingValue.FODSELSNUMMER)
         val orgNummer = oppfolgingstilfellePeker.orgnummer
         val organisasjonNavn = eregService.finnOrganisasjonsNavn(orgNummer, callId)
 
@@ -41,8 +45,12 @@ class OppfolgingstilfelleService(
 
     }
 
-    private fun hoppOver(manglendeVerdi: String) {
-        log.info("Mottok oppfølgingstilfelle, men sender ikke på kø fordi $manglendeVerdi mangler")
+    private fun skipOppfolgingstilfelleWithMissingValue(missingValue: MissingValue) {
+        when(missingValue) {
+            MissingValue.BEHANDLENDEENHET -> COUNT_OPPFOLGINGSTILFELLE_SKIPPED_BEHANDLENDEENHET.inc()
+            MissingValue.FODSELSNUMMER -> COUNT_OPPFOLGINGSTILFELLE_SKIPPED_FODSELSNUMMER.inc()
+        }
+        log.info("Mottok oppfølgingstilfelle, men sender ikke på kø fordi $missingValue mangler")
     }
 
 
@@ -70,12 +78,13 @@ class OppfolgingstilfelleService(
             }
             val fnrFullName = pdlClient.person(fnr, callId)?.fullName() ?: ""
 
-            val enhetId = behandlendeEnhetClient.getEnhet(fnr, callId).enhetId
+            val enhet = behandlendeEnhetClient.getEnhet(fnr, callId)
+                    ?: return skipOppfolgingstilfelleWithMissingValue(MissingValue.BEHANDLENDEENHET)
 
             val hendelse = mapKOversikthendelsetilfelle(
                     fnr,
                     fnrFullName,
-                    enhetId,
+                    enhet.enhetId,
                     oppfolgingstilfelle.orgnummer,
                     organisasjonNavn,
                     oppfolgingstilfelle.tidslinje.sortedBy { it.dag },
