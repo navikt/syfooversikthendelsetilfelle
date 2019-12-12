@@ -25,6 +25,7 @@ import no.nav.syfo.client.aktor.AktorregisterClient
 import no.nav.syfo.client.enhet.BehandlendeEnhetClient
 import no.nav.syfo.client.ereg.EregClient
 import no.nav.syfo.client.ereg.EregService
+import no.nav.syfo.client.pdl.PdlClient
 import no.nav.syfo.client.sts.StsRestClient
 import no.nav.syfo.client.syketilfelle.SyketilfelleClient
 import no.nav.syfo.kafka.setupKafka
@@ -69,6 +70,7 @@ fun main() {
         val aktorregisterClient = AktorregisterClient(env.aktoerregisterV1Url, stsClientRest)
         val aktorService = AktorService(aktorregisterClient)
         val behandlendeEnhetClient = BehandlendeEnhetClient(env.behandlendeenhetUrl, stsClientRest)
+        val pdlClient = PdlClient(env.pdlUrl, stsClientRest)
         val syketilfelleClient = SyketilfelleClient(env.syketilfelleUrl, stsClientRest)
 
         module {
@@ -78,6 +80,7 @@ fun main() {
                     aktorService,
                     eregService,
                     behandlendeEnhetClient,
+                    pdlClient,
                     syketilfelleClient
             )
             serverModule()
@@ -109,6 +112,7 @@ fun Application.kafkaModule(
         aktorService: AktorService,
         eregService: EregService,
         behandlendeEnhetClient: BehandlendeEnhetClient,
+        pdlClient: PdlClient,
         syketilfelleClient: SyketilfelleClient
 ) {
 
@@ -122,6 +126,7 @@ fun Application.kafkaModule(
                     aktorService,
                     eregService,
                     behandlendeEnhetClient,
+                    pdlClient,
                     syketilfelleClient
             )
         }

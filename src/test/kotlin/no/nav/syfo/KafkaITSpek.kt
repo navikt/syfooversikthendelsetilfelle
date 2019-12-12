@@ -58,6 +58,7 @@ object KafkaITSpek : Spek({
             aadDiscoveryUrl = "",
             clientid = "",
             behandlendeenhetUrl = "behandlendeenhet",
+            pdlUrl = "pdlurl",
             syketilfelleUrl = "syketilfelle",
             toggleOversikthendelsetilfelle = true,
             oversikthendelseOppfolgingstilfelleTopicSeekToBeginning = false,
