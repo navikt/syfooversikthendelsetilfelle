@@ -19,6 +19,25 @@ val COUNT_OPPFOLGINGSTILFELLE_GRADERT_RECEIVED: Counter = Counter.build()
         .help("Counts the number of  graderte oppfolgingstilfeller received")
         .register()
 
+const val CALL_BEHANDLENDEENHET = "call_behandlendeenhet_count"
+const val CALL_BEHANDLENDEENHET_SUCCESS = "call_behandlendeenhet_success_count"
+const val CALL_BEHANDLENDEENHET_FAIL = "call_behandlendeenhet_fail_count"
+val COUNT_CALL_BEHANDLENDEENHET: Counter = Counter.build()
+        .namespace(METRICS_NS)
+        .name(CALL_BEHANDLENDEENHET)
+        .help("Counts the number of calls to syfobehandlendeenhet")
+        .register()
+val COUNT_CALL_BEHANDLENDEENHET_SUCCESS: Counter = Counter.build()
+        .namespace(METRICS_NS)
+        .name(CALL_BEHANDLENDEENHET_SUCCESS)
+        .help("Counts the number of successful calls to syfobehandlendeenhet")
+        .register()
+val COUNT_CALL_BEHANDLENDEENHET_FAIL: Counter = Counter.build()
+        .namespace(METRICS_NS)
+        .name(CALL_BEHANDLENDEENHET_FAIL)
+        .help("Counts the number of failed calls to syfobehandlendeenhet")
+        .register()
+
 
 const val CALL_PDL = "call_pdl_count"
 const val CALL_PDL_SUCCESS = "call_pdl_success_count"
@@ -37,4 +56,17 @@ val COUNT_CALL_PDL_FAIL: Counter = Counter.build()
         .namespace(METRICS_NS)
         .name(CALL_PDL_FAIL)
         .help("Counts the number of failed calls to persondatalosningen")
+        .register()
+
+const val OPPFOLGINGSTILFELLE_SKIPPED_BEHANDLENDEENHET = "oppfolgingstilfelle_skipped_behandlendeenhet_count"
+val COUNT_OPPFOLGINGSTILFELLE_SKIPPED_BEHANDLENDEENHET: Counter = Counter.build()
+        .namespace(METRICS_NS)
+        .name(OPPFOLGINGSTILFELLE_SKIPPED_BEHANDLENDEENHET)
+        .help("Counts the number of Oppfolgingstilfeller skipped because BehandlendeEnhet was not found")
+        .register()
+const val OPPFOLGINGSTILFELLE_SKIPPED_FODSELSNUMMER = "oppfolgingstilfelle_skipped_fodselsnummer_count"
+val COUNT_OPPFOLGINGSTILFELLE_SKIPPED_FODSELSNUMMER: Counter = Counter.build()
+        .namespace(METRICS_NS)
+        .name(OPPFOLGINGSTILFELLE_SKIPPED_FODSELSNUMMER)
+        .help("Counts the number of Oppfolgingstilfeller skipped because Fodselsnummer was not found")
         .register()
