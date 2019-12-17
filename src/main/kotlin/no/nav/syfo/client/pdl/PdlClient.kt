@@ -58,6 +58,8 @@ class PdlClient(
 
         val json = Gson().toJson(request)
 
+        LOG.info("JTRACE request from henterIdenter PDL $json")
+
         val (_, response, result) = callPdl(json, callId)
 
         LOG.info("JTRACE reponse from henterIdenter PDL $response")
