@@ -51,7 +51,10 @@ class PdlClient(
                 .readText()
                 .replace("[\n\r]", "")
 
-        val request = PdlRequest(query, Variables(ident))
+        val request = PdlHentIdenterRequest(
+                query,
+                PdlHentIdenterRequestVariables(ident, false, listOf(IdentType.FOLKEREGISTERIDENT.name))
+        )
 
         val json = Gson().toJson(request)
 
