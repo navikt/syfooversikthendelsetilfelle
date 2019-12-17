@@ -36,7 +36,7 @@ class OppfolgingstilfelleService(
     fun receiveOppfolgingstilfeller(oppfolgingstilfellePeker: KOppfolgingstilfellePeker, callId: String = "") {
         val aktor = AktorId(oppfolgingstilfellePeker.aktorId)
 
-        val fnr: String = aktorService.fodselsnummerForAktor(aktor, callId)
+        val fnr: String = aktorService.getFnrForAktorId(aktor, callId)
                 ?: return skipOppfolgingstilfelleWithMissingValue(MissingValue.FODSELSNUMMER)
         val orgNummer = oppfolgingstilfellePeker.orgnummer
         val organisasjonNavn = eregService.finnOrganisasjonsNavn(orgNummer, callId)

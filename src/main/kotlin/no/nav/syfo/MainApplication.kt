@@ -68,9 +68,9 @@ fun main() {
         val eregService = EregService(eregClient)
 
         val aktorregisterClient = AktorregisterClient(env.aktoerregisterV1Url, stsClientRest)
-        val aktorService = AktorService(aktorregisterClient)
-        val behandlendeEnhetClient = BehandlendeEnhetClient(env.behandlendeenhetUrl, stsClientRest)
         val pdlClient = PdlClient(env.pdlUrl, stsClientRest)
+        val aktorService = AktorService(aktorregisterClient, pdlClient)
+        val behandlendeEnhetClient = BehandlendeEnhetClient(env.behandlendeenhetUrl, stsClientRest)
         val syketilfelleClient = SyketilfelleClient(env.syketilfelleUrl, stsClientRest)
 
         module {
