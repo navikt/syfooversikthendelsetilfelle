@@ -57,6 +57,8 @@ class PdlClient(
 
         val (_, response, result) = callPdl(json, callId)
 
+        LOG.info("JTRACE reponse from henterIdenter PDL $response")
+
         result.fold(success = {
             COUNT_CALL_PDL_SUCCESS.inc()
             return objectMapper.readValue<PdlIdenterResponse>(result.get()).data
