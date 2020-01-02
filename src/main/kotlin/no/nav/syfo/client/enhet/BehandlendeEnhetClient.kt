@@ -31,7 +31,14 @@ class BehandlendeEnhetClient(
 
         result.fold(success = {
             COUNT_CALL_BEHANDLENDEENHET_SUCCESS.inc()
-            return objectMapper.readValue<BehandlendeEnhet>(result.get())
+            val behandlendeEnhet = objectMapper.readValue<BehandlendeEnhet>(result.get())
+            return if(isValid(behandlendeEnhet)) {
+                behandlendeEnhet
+            } else {
+                COUNT_CALL_BEHANDLENDEENHET_FAIL.inc()
+                LOG.error("Error while requesting person from syfobehandlendeenhet: Received invalid EnhetId with more than 4 chars for EnhetId {}", behandlendeEnhet.enhetId)
+                null
+            }
         }, failure = {
             COUNT_CALL_BEHANDLENDEENHET_FAIL.inc()
             LOG.info("Request with url: $baseUrl failed with reponse code ${response.statusCode}")
@@ -43,6 +50,10 @@ class BehandlendeEnhetClient(
 
     private fun getBehandlendeEnhetUrl(bruker: String): String {
         return "$baseUrl/api/$bruker"
+    }
+
+    private fun isValid(behandlendeEnhet: BehandlendeEnhet): Boolean {
+        return behandlendeEnhet.enhetId.length <= 4
     }
 
     private val objectMapper: ObjectMapper = ObjectMapper().apply {
