@@ -1,2 +1,19 @@
 # syfotilfelleoversikthendelse
-Mottar oppfolgingstilfeller som hendelse fra syfosyketilfelle, og genererer oversikthendelser for oppfolgingstilfeller til syfooversiktsrv 
+Receives Oppfolgingstilfeller as Kafka-events from Syfosyketilfelle
+and generate a Oversikthendelse for each change in a persons Oppfolgingstilfelle.
+Each Oversikthendelse it published to a Kafka-topic that is consumed by Syfooversiktsrv.
+
+## Technologies used
+* Kafka
+* Kotlin
+* Ktor
+* Gradle
+* Mockk
+* Spek
+* Vault
+
+#### Build
+Run `./gradlew clean shadowJar`
+
+#### Test
+Run `./gradlew test -i`
