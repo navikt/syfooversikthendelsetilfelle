@@ -103,13 +103,13 @@ class OppfolgingstilfelleService(
 }
 
 fun isLatestSykmeldingGradert(tidslinje: List<KSyketilfelledag>): Boolean {
-    val sykeldingerDager = tidslinje
+    val sykmeldingerDager = tidslinje
             .filter { it.prioritertSyketilfellebit?.tags?.contains(SYKMELDING) ?: false }
 
-    return if (sykeldingerDager.isNullOrEmpty()) {
+    return if (sykmeldingerDager.isNullOrEmpty()) {
         false
     } else {
-        sykeldingerDager.minBy { ChronoUnit.DAYS.between(it.dag, LocalDate.now()) }!!
+        sykmeldingerDager.minBy { ChronoUnit.DAYS.between(it.dag, LocalDate.now()) }!!
                 .prioritertSyketilfellebit!!.tags.contains(GRADERT_AKTIVITET)
                 .or(false)
     }
