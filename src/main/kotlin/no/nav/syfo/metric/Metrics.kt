@@ -4,6 +4,13 @@ import io.prometheus.client.Counter
 
 const val METRICS_NS = "syfooversikthendelsetilfelle"
 
+const val OPPFOLGINGSTILFELLE_EMPTY = "oppfolgingstilfelle_empty_count"
+val COUNT_OPPFOLGINGSTILFELLE_EMPTY: Counter = Counter.build()
+        .namespace(METRICS_NS)
+        .name(OPPFOLGINGSTILFELLE_EMPTY)
+        .help("Counts the number of responses from syfosyketillfelle with status 203 received")
+        .register()
+
 const val OPPFOLGINGSTILFELLE_RECEIVED = "oppfolgingstilfelle_received_count"
 const val OPPFOLGINGSTILFELLE_GRADERT_RECEIVED = "oppfolgingstilfelle_gradert_received_count"
 

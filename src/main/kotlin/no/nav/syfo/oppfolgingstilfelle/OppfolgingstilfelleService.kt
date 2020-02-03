@@ -52,8 +52,7 @@ class OppfolgingstilfelleService(
         }
         log.info("Mottok oppfølgingstilfelle, men sender ikke på kø fordi $missingValue mangler")
     }
-
-
+    
     private fun produce(
             oppfolgingstilfellePeker: KOppfolgingstilfellePeker,
             fnr: String,
@@ -70,10 +69,8 @@ class OppfolgingstilfelleService(
             val isGradertToday: Boolean = isLatestSykmeldingGradert(oppfolgingstilfelle.tidslinje)
 
             if (isGradertToday) {
-                log.info("COUNT_OPPFOLGINGSTILFELLE_GRADERT_RECEIVED")
                 COUNT_OPPFOLGINGSTILFELLE_GRADERT_RECEIVED.inc()
             } else {
-                log.info("COUNT_OPPFOLGINGSTILFELLE_RECEIVED")
                 COUNT_OPPFOLGINGSTILFELLE_RECEIVED.inc()
             }
             val fnrFullName = pdlClient.person(fnr, callId)?.fullName() ?: ""
@@ -96,8 +93,6 @@ class OppfolgingstilfelleService(
             } else {
                 log.info("TOGGLE: Oversikthendelse er togglet av, sender ikke hendelse")
             }
-        } else {
-            log.info("Fant ikke Opppfolgingstilfelle for sykmeldt")
         }
     }
 }

@@ -7,7 +7,7 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import com.github.kittinunf.fuel.httpGet
 import no.nav.syfo.client.sts.StsRestClient
-import no.nav.syfo.log
+import no.nav.syfo.metric.COUNT_OPPFOLGINGSTILFELLE_EMPTY
 
 class SyketilfelleClient(
         private val baseUrl: String,
@@ -30,7 +30,7 @@ class SyketilfelleClient(
                 .responseString()
 
         return if (response.statusCode == 204) {
-            log.info("Received no content when attempting to retrieve oppfolgingstilfelle from syfosyketilfelle")
+            COUNT_OPPFOLGINGSTILFELLE_EMPTY.inc()
             null
         } else {
             objectMapper.readValue<KOppfolgingstilfelle>(result.get())
