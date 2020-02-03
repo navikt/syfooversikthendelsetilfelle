@@ -10,6 +10,94 @@ import java.time.LocalDateTime
 
 object OppfolgingstilfelleServiceTest : Spek({
 
+    describe("containsSykmeldingAndSykepengesoknad") {
+        val kSyketilfellebit = KSyketilfellebit(
+                id = "id",
+                aktorId = "aktorId",
+                orgnummer = "orgnummer",
+                opprettet = LocalDateTime.now(),
+                inntruffet = LocalDateTime.now(),
+                tags = emptyList(),
+                ressursId = "ressursId",
+                fom = LocalDateTime.now().minusDays(70),
+                tom = LocalDateTime.now().plusDays(70)
+        )
+
+        it("should return false, if only $SYKMELDING is present, but no $SYKEPENGESOKNAD") {
+            val tidslinje = listOf(
+                    KSyketilfelledag(
+                            dag = LocalDate.now(),
+                            prioritertSyketilfellebit = kSyketilfellebit.copy(
+                                    tags = listOf(SYKMELDING)
+                            )
+                    )
+            )
+            val res = containsSykmeldingAndSykepengesoknad(tidslinje)
+
+            res shouldEqual false
+        }
+
+        it("should return false, if multiple $SYKMELDING is present, but no $SYKEPENGESOKNAD") {
+            val tidslinje = listOf(
+                    KSyketilfelledag(
+                            dag = LocalDate.now().minusDays(1),
+                            prioritertSyketilfellebit = kSyketilfellebit.copy(
+                                    tags = listOf(SYKMELDING)
+                            )
+                    ),
+                    KSyketilfelledag(
+                            dag = LocalDate.now(),
+                            prioritertSyketilfellebit = kSyketilfellebit.copy(
+                                    tags = listOf(SYKMELDING)
+                            )
+                    )
+            )
+            val res = containsSykmeldingAndSykepengesoknad(tidslinje)
+
+            res shouldEqual false
+        }
+
+        it("should return false, if only $SYKEPENGESOKNAD is present, but no $SYKMELDING") {
+            val tidslinje = listOf(
+                    KSyketilfelledag(
+                            dag = LocalDate.now(),
+                            prioritertSyketilfellebit = kSyketilfellebit.copy(
+                                    tags = listOf(SYKEPENGESOKNAD)
+                            )
+                    )
+            )
+            val res = containsSykmeldingAndSykepengesoknad(tidslinje)
+
+            res shouldEqual false
+        }
+
+        it("should return true, if $SYKMELDING and $SYKEPENGESOKNAD is present") {
+            val tidslinje = listOf(
+                    KSyketilfelledag(
+                            dag = LocalDate.now().minusDays(2),
+                            prioritertSyketilfellebit = kSyketilfellebit.copy(
+                                    tags = listOf(SYKEPENGESOKNAD)
+                            )
+                    ),
+                    KSyketilfelledag(
+                            dag = LocalDate.now().minusDays(1),
+                            prioritertSyketilfellebit = kSyketilfellebit.copy(
+                                    tags = listOf(SYKEPENGESOKNAD)
+                            )
+                    ),
+                    KSyketilfelledag(
+                            dag = LocalDate.now(),
+                            prioritertSyketilfellebit = kSyketilfellebit.copy(
+                                    tags = listOf(SYKMELDING)
+                            )
+                    )
+            )
+            val res = containsSykmeldingAndSykepengesoknad(tidslinje)
+
+            res shouldEqual true
+        }
+    }
+
     describe("isLatestSykmeldingGradert") {
         val kSyketilfellebit = KSyketilfellebit(
                 id = "id",
