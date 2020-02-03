@@ -46,13 +46,13 @@ class OppfolgingstilfelleService(
     }
 
     private fun skipOppfolgingstilfelleWithMissingValue(missingValue: MissingValue) {
-        when(missingValue) {
+        when (missingValue) {
             MissingValue.BEHANDLENDEENHET -> COUNT_OPPFOLGINGSTILFELLE_SKIPPED_BEHANDLENDEENHET.inc()
             MissingValue.FODSELSNUMMER -> COUNT_OPPFOLGINGSTILFELLE_SKIPPED_FODSELSNUMMER.inc()
         }
         log.info("Mottok oppfølgingstilfelle, men sender ikke på kø fordi $missingValue mangler")
     }
-    
+
     private fun produce(
             oppfolgingstilfellePeker: KOppfolgingstilfellePeker,
             fnr: String,
@@ -65,7 +65,7 @@ class OppfolgingstilfelleService(
                 callId
         )
 
-        if (oppfolgingstilfelle != null) {
+        if (oppfolgingstilfelle != null && containsSykmeldingAndSykepengesoknad(oppfolgingstilfelle.tidslinje)) {
             val isGradertToday: Boolean = isLatestSykmeldingGradert(oppfolgingstilfelle.tidslinje)
 
             if (isGradertToday) {
@@ -95,6 +95,20 @@ class OppfolgingstilfelleService(
             }
         }
     }
+}
+
+fun containsSykmeldingAndSykepengesoknad(tidslinje: List<KSyketilfelledag>): Boolean {
+    return containsSykmelding(tidslinje) && containsSykepengesoknad(tidslinje)
+}
+
+fun containsSykmelding(tidslinje: List<KSyketilfelledag>): Boolean {
+    return tidslinje
+            .any { it.prioritertSyketilfellebit?.tags?.contains(SYKMELDING) ?: false }
+}
+
+fun containsSykepengesoknad(tidslinje: List<KSyketilfelledag>): Boolean {
+    return tidslinje
+            .any { it.prioritertSyketilfellebit?.tags?.contains(SYKEPENGESOKNAD) ?: false }
 }
 
 fun isLatestSykmeldingGradert(tidslinje: List<KSyketilfelledag>): Boolean {
