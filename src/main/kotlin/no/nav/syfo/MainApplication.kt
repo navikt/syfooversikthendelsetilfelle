@@ -19,7 +19,7 @@ import io.ktor.server.netty.Netty
 import io.ktor.util.KtorExperimentalAPI
 import kotlinx.coroutines.*
 import kotlinx.coroutines.slf4j.MDCContext
-import no.nav.syfo.api.registerNaisApi
+import no.nav.syfo.api.registerPodApi
 import no.nav.syfo.api.registerPrometheusApi
 import no.nav.syfo.client.aktor.AktorService
 import no.nav.syfo.client.aktor.AktorregisterClient
@@ -170,7 +170,7 @@ fun Application.serverModule() {
     }
 
     routing {
-        registerNaisApi(state)
+        registerPodApi(state)
         registerPrometheusApi()
     }
 

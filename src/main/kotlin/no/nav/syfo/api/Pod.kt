@@ -8,7 +8,7 @@ import io.ktor.routing.get
 import io.prometheus.client.hotspot.DefaultExports
 import no.nav.syfo.ApplicationState
 
-fun Routing.registerNaisApi(
+fun Routing.registerPodApi(
         applicationState: ApplicationState
 ) {
     DefaultExports.initialize()
