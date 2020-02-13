@@ -6,13 +6,13 @@ group = "no.nav.syfo"
 version = "1.0-SNAPSHOT"
 
 val arrowVersion = "0.9.0"
-val coroutinesVersion = "1.3.1"
+val coroutinesVersion = "1.3.3"
 val fuelVersion = "1.15.1"
 val kluentVersion = "1.39"
 val ktorVersion = "1.3.1"
 val logbackVersion = "1.2.3"
 val prometheusVersion = "0.8.1"
-val spekVersion = "2.0.7"
+val spekVersion = "2.0.9"
 val logstashEncoderVersion = "5.1"
 val jacksonVersion = "2.9.8"
 val mockkVersion = "1.9.3"
@@ -27,7 +27,7 @@ tasks.withType<Jar> {
 }
 
 plugins {
-    kotlin("jvm") version "1.3.50"
+    kotlin("jvm") version "1.3.61"
     id("com.diffplug.gradle.spotless") version "3.18.0"
     id("com.github.johnrengelman.shadow") version "4.0.4"
 }
@@ -82,13 +82,13 @@ dependencies {
     implementation("no.nav.syfo.sm:syfosm-common-models:$smCommonVersion")
     implementation("no.nav.syfo.sm:syfosm-common-kafka:$smCommonVersion")
 
-    compile("org.jetbrains.kotlinx:kotlinx-serialization-runtime:0.9.0")
-    compile("org.jetbrains.kotlinx:kotlinx-serialization-runtime-common:0.9.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime:0.9.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime-common:0.9.0")
 
-    compile("io.ktor:ktor-jackson:$ktorVersion")
-    compile("io.ktor:ktor-client-jackson:$ktorVersion")
-    compile("io.ktor:ktor-auth:$ktorVersion")
-    compile("io.ktor:ktor-auth-jwt:$ktorVersion")
+    implementation("io.ktor:ktor-jackson:$ktorVersion")
+    implementation("io.ktor:ktor-client-jackson:$ktorVersion")
+    implementation("io.ktor:ktor-auth:$ktorVersion")
+    implementation("io.ktor:ktor-auth-jwt:$ktorVersion")
 
     testImplementation("no.nav:kafka-embedded-env:$kafkaEmbeddedVersion")
     testImplementation("org.amshove.kluent:kluent:$kluentVersion")
