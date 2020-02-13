@@ -81,7 +81,7 @@ object SyketilfelleClientTest : Spek({
         }
 
         afterGroup {
-            mockServer.stop(1L, 10L, TimeUnit.SECONDS)
+            mockServer.stop(1L, 10L)
         }
 
         describe("SyketilfelleClient successful") {
