@@ -20,6 +20,7 @@ import io.ktor.util.KtorExperimentalAPI
 import kotlinx.coroutines.*
 import kotlinx.coroutines.slf4j.MDCContext
 import no.nav.syfo.api.registerNaisApi
+import no.nav.syfo.api.registerPrometheusApi
 import no.nav.syfo.client.aktor.AktorService
 import no.nav.syfo.client.aktor.AktorregisterClient
 import no.nav.syfo.client.enhet.BehandlendeEnhetClient
@@ -170,6 +171,7 @@ fun Application.serverModule() {
 
     routing {
         registerNaisApi(state)
+        registerPrometheusApi()
     }
 
     state.initialized = true
