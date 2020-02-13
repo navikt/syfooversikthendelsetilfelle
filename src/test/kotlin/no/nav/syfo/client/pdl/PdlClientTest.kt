@@ -68,7 +68,7 @@ object PdlClientTest : Spek({
         }
 
         afterGroup {
-            mockServer.stop(1L, 10L, TimeUnit.SECONDS)
+            mockServer.stop(1L, 10L)
         }
 
         describe("Get Person successful") {

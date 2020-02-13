@@ -66,7 +66,7 @@ object BehandlendeEnhetClientTest : Spek({
         }
 
         afterGroup {
-            mockServer.stop(1L, 10L, TimeUnit.SECONDS)
+            mockServer.stop(1L, 10L)
         }
 
         describe("BehandlendeEnhetClient successful") {
