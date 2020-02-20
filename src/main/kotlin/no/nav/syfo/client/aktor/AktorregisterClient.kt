@@ -3,7 +3,9 @@ package no.nav.syfo.client.aktor
 import arrow.core.Either
 import arrow.core.flatMap
 import com.github.kittinunf.fuel.httpGet
+import io.ktor.http.HttpHeaders
 import no.nav.syfo.client.sts.StsRestClient
+import no.nav.syfo.util.*
 import org.json.JSONObject
 import org.slf4j.LoggerFactory
 
@@ -16,11 +18,11 @@ class AktorregisterClient(val baseUrl: String, val stsRestClient: StsRestClient)
 
         val (_, _, result) = "$baseUrl/identer?gjeldende=true".httpGet()
                 .header(mapOf(
-                        "Authorization" to "Bearer $bearer",
-                        "Accept" to "application/json",
-                        "Nav-Call-Id" to callId,
-                        "Nav-Consumer-Id" to "syfooversikthendelsetilfelle",
-                        "Nav-Personidenter" to ident
+                        HttpHeaders.Authorization to bearerHeader(bearer),
+                        HttpHeaders.Accept to "application/json",
+                        NAV_CALL_ID to callId,
+                        NAV_CONSUMER_ID to APP_CONSUMER_ID,
+                        NAV_PERSONIDENTER to ident
                 ))
                 .responseString()
 

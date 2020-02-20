@@ -4,10 +4,12 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.module.kotlin.*
 import com.github.kittinunf.fuel.*
 import com.github.kittinunf.result.*
+import io.ktor.http.HttpHeaders
 import no.nav.syfo.client.sts.StsRestClient
 import no.nav.syfo.log
 import no.nav.syfo.metric.COUNT_CALL_EREG_FAIL
 import no.nav.syfo.metric.COUNT_CALL_EREG_SUCCESS
+import no.nav.syfo.util.bearerHeader
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class EregOrganisasjonNavn(
@@ -32,7 +34,7 @@ class EregClient(
         val (_, response, result) = url
                 .httpGet()
                 .header(mapOf(
-                        "Authorization" to "Bearer $token"
+                        HttpHeaders.Authorization to bearerHeader(token)
                 ))
                 .responseString()
 

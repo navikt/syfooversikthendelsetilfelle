@@ -21,6 +21,7 @@ import kotlinx.coroutines.runBlocking
 import no.nav.syfo.client.sts.StsRestClient
 import no.nav.syfo.helper.UserConstants.BRUKER_AKTORID
 import no.nav.syfo.helper.UserConstants.BRUKER_FNR
+import no.nav.syfo.util.NAV_PERSONIDENTER
 import org.amshove.kluent.shouldEqual
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.specification.describe
@@ -61,7 +62,7 @@ object AktorregisterClientTest : Spek({
             }
             routing {
                 get("/identer") {
-                    when (call.request.headers["Nav-Personidenter"]) {
+                    when (call.request.headers[NAV_PERSONIDENTER]) {
                         BRUKER_FNR -> {
                             call.respond(mapOf(BRUKER_FNR to RSAktor(
                                     listOf(RSIdent(

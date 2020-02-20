@@ -6,8 +6,10 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import com.github.kittinunf.fuel.httpGet
+import io.ktor.http.HttpHeaders
 import no.nav.syfo.client.sts.StsRestClient
 import no.nav.syfo.metric.*
+import no.nav.syfo.util.*
 import org.slf4j.LoggerFactory
 
 class BehandlendeEnhetClient(
@@ -22,10 +24,10 @@ class BehandlendeEnhetClient(
 
         val (_, response, result) = getBehandlendeEnhetUrl(fnr).httpGet()
                 .header(mapOf(
-                        "Authorization" to "Bearer $bearer",
-                        "Accept" to "application/json",
-                        "Nav-Call-Id" to callId,
-                        "Nav-Consumer-Id" to "syfooversikthendelsetilfelle"
+                        HttpHeaders.Authorization to bearerHeader(bearer),
+                        HttpHeaders.Accept to "application/json",
+                        NAV_CALL_ID to callId,
+                        NAV_CONSUMER_ID to APP_CONSUMER_ID
                 ))
                 .responseString()
 

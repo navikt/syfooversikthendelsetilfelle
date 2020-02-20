@@ -1,6 +1,7 @@
 package no.nav.syfo.client.sts
 
 import com.github.kittinunf.fuel.httpGet
+import io.ktor.http.HttpHeaders
 import no.nav.syfo.util.responseJSON
 import org.json.JSONObject
 import java.time.LocalDateTime
@@ -12,7 +13,7 @@ class StsRestClient(val baseUrl: String, val username: String, val password: Str
         if (Token.shouldRenew(cachedOidcToken)) {
             val (_, _, result) = "$baseUrl/rest/v1/sts/token?grant_type=client_credentials&scope=openid".httpGet()
                     .authenticate(username, password)
-                    .header(mapOf("Accept" to "application/json"))
+                    .header(mapOf(HttpHeaders.Accept to "application/json"))
                     .responseJSON()
 
             cachedOidcToken = result.get().mapToToken()
