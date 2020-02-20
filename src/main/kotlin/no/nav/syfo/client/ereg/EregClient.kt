@@ -6,7 +6,8 @@ import com.github.kittinunf.fuel.*
 import com.github.kittinunf.result.*
 import no.nav.syfo.client.sts.StsRestClient
 import no.nav.syfo.log
-
+import no.nav.syfo.metric.COUNT_CALL_EREG_FAIL
+import no.nav.syfo.metric.COUNT_CALL_EREG_SUCCESS
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class EregOrganisasjonNavn(
@@ -25,7 +26,7 @@ class EregClient(
         private val stsRestClient: StsRestClient
 ) {
 
-    fun hentOrgByOrgnr(orgnr: String): EregOrganisasjonResponse? {
+    fun hentOrgByOrgnr(orgnr: String, callId: String): EregOrganisasjonResponse? {
         val token = stsRestClient.token()
         val url = "${baseUrl}v1/organisasjon/$orgnr"
         val (_, response, result) = url
@@ -36,11 +37,14 @@ class EregClient(
                 .responseString()
 
         return when (result) {
-            is Result.Success -> jacksonObjectMapper().registerKotlinModule().readValue(result.value)
+            is Result.Success -> {
+                COUNT_CALL_EREG_FAIL.inc()
+                jacksonObjectMapper().registerKotlinModule().readValue(result.value)
+            }
             is Result.Failure -> {
-                log.info("Request med url: $url feilet med statuskode ${response.statusCode}")
+                COUNT_CALL_EREG_SUCCESS.inc()
                 val exception = result.getException()
-                log.error("Feil under henting av organisasjon: ${exception.message}", exception)
+                log.error("Error with responseCode=${response.statusCode} with callId=${callId} while requesting Organisasjon from Ereg: ${exception.message}", exception)
                 null
             }
         }
