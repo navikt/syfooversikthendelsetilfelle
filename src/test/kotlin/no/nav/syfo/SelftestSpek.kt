@@ -10,13 +10,8 @@ import org.amshove.kluent.shouldEqual
 import org.amshove.kluent.shouldNotEqual
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.specification.describe
-import java.net.ServerSocket
 
 object SelftestSpek : Spek({
-    fun getRandomPort() = ServerSocket(0).use {
-        it.localPort
-    }
-
     val applicationState = ApplicationState()
 
     describe("Calling selftest with successful liveness and readyness tests") {

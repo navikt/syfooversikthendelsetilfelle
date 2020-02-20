@@ -3,7 +3,6 @@ package no.nav.syfo.client.pdl
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
-
 import io.ktor.application.call
 import io.ktor.application.install
 import io.ktor.features.ContentNegotiation
@@ -25,7 +24,6 @@ import org.amshove.kluent.shouldEqual
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.specification.describe
 import java.net.ServerSocket
-import java.util.concurrent.TimeUnit
 
 @InternalAPI
 object PdlClientTest : Spek({
