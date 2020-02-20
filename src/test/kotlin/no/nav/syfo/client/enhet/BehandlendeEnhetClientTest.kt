@@ -24,7 +24,6 @@ import org.amshove.kluent.shouldEqual
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.specification.describe
 import java.net.ServerSocket
-import java.util.concurrent.TimeUnit
 
 @InternalAPI
 object BehandlendeEnhetClientTest : Spek({
