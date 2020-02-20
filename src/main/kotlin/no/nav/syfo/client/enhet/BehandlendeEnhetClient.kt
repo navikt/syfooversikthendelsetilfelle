@@ -36,14 +36,13 @@ class BehandlendeEnhetClient(
                 behandlendeEnhet
             } else {
                 COUNT_CALL_BEHANDLENDEENHET_FAIL.inc()
-                LOG.error("Error while requesting person from syfobehandlendeenhet: Received invalid EnhetId with more than 4 chars for EnhetId {}", behandlendeEnhet.enhetId)
+                LOG.error("Error while requesting behandlendeenhet from syfobehandlendeenhet: Received invalid EnhetId with more than 4 chars for EnhetId {}", behandlendeEnhet.enhetId)
                 null
             }
         }, failure = {
             COUNT_CALL_BEHANDLENDEENHET_FAIL.inc()
-            LOG.info("Request with url: $baseUrl failed with reponse code ${response.statusCode}")
             val exception = it.exception
-            LOG.error("Error while requesting person from syfobehandlendeenhet: ${exception.message}", exception)
+            LOG.error("Error with response ${response.statusCode} code while requesting behandlendeenhet from syfobehandlendeenhet: ${exception.message}", exception)
             return null
         })
     }
