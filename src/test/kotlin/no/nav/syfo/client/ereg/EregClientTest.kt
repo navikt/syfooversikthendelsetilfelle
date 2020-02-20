@@ -1,6 +1,5 @@
 package no.nav.syfo.client.ereg
 
-import arrow.core.Either
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
@@ -22,7 +21,6 @@ import org.amshove.kluent.shouldEqual
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.specification.describe
 import java.net.ServerSocket
-import java.util.concurrent.*
 
 @InternalAPI
 object EregClientTest : Spek({
@@ -53,7 +51,7 @@ object EregClientTest : Spek({
         val stsOidcClientMock = mockk<StsRestClient>()
         val eregClient = EregClient("$mockHttpServerUrl/ereg/api/", stsOidcClientMock)
 
-        coEvery { stsOidcClientMock.token() } returns  "oidctoken"
+        coEvery { stsOidcClientMock.token() } returns "oidctoken"
 
         afterEachTest {
         }
@@ -64,7 +62,7 @@ object EregClientTest : Spek({
 
         describe("hentOrgByOrgnr()") {
             it("Returns valid response when ok") {
-                var orgNavn = eregClient.hentOrgByOrgnr("123")
+                val orgNavn = eregClient.hentOrgByOrgnr("123", "callId")
                 orgNavn?.navn?.navnelinje1 shouldEqual "Kristians Test AS"
                 orgNavn?.navn?.redigertnavn shouldEqual "Kristians Test AS, Oslo"
             }

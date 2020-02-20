@@ -5,9 +5,6 @@ import no.nav.syfo.util.responseJSON
 import org.json.JSONObject
 import java.time.LocalDateTime
 
-/**
- * Henter jwt token fra STS
- */
 class StsRestClient(val baseUrl: String, val username: String, val password: String) {
     private var cachedOidcToken: Token? = null
 
@@ -31,7 +28,6 @@ class StsRestClient(val baseUrl: String, val username: String, val password: Str
     }
 
     data class Token(val accessToken: String, val type: String, val expiresIn: Int) {
-        // expire 10 seconds before actual expiry. for great margins.
         val expirationTime: LocalDateTime = LocalDateTime.now().plusSeconds(expiresIn - 10L)
 
         companion object {
