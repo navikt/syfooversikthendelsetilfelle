@@ -18,17 +18,13 @@ import io.ktor.util.InternalAPI
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
-import no.nav.syfo.client.ereg.EregOrganisasjonNavn
-import no.nav.syfo.client.ereg.EregOrganisasjonResponse
-import no.nav.syfo.env
+import no.nav.syfo.client.sts.StsRestClient
 import no.nav.syfo.helper.UserConstants.BRUKER_AKTORID
 import no.nav.syfo.helper.UserConstants.BRUKER_FNR
-import no.nav.syfo.client.sts.StsRestClient
 import org.amshove.kluent.shouldEqual
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.specification.describe
 import java.net.ServerSocket
-import java.util.concurrent.TimeUnit
 import kotlin.test.assertTrue
 
 data class RSIdent(
@@ -64,7 +60,7 @@ object AktorregisterClientTest : Spek({
                 jackson {}
             }
             routing {
-                get("/${env.aktoerregisterV1Url}/identer") {
+                get("/identer") {
                     when (call.request.headers["Nav-Personidenter"]) {
                         BRUKER_FNR -> {
                             call.respond(mapOf(BRUKER_FNR to RSAktor(
@@ -92,7 +88,7 @@ object AktorregisterClientTest : Spek({
             }
         }.start()
 
-        val aktoerIdClient = AktorregisterClient("$mockHttpServerUrl/${env.aktoerregisterV1Url}", stsOidcClientMock)
+        val aktoerIdClient = AktorregisterClient(mockHttpServerUrl, stsOidcClientMock)
 
         beforeEachTest {
             coEvery { stsOidcClientMock.token() } returns "oidctoken"
