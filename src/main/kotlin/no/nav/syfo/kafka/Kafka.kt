@@ -78,7 +78,8 @@ suspend fun blockingApplicationLogic(
 ) {
     while (applicationState.running) {
         var logValues = arrayOf(
-                StructuredArguments.keyValue("oppfolgingstilfelleId", "missing")
+                StructuredArguments.keyValue("oppfolgingstilfelleId", "missing"),
+                StructuredArguments.keyValue("timestamp", "missing")
         )
 
         val logKeys = logValues.joinToString(prefix = "(", postfix = ")", separator = ",") {
@@ -90,7 +91,8 @@ suspend fun blockingApplicationLogic(
                 val oppfolgingstilfellePeker: KOppfolgingstilfellePeker =
                         objectMapper.readValue(it.value())
                 logValues = arrayOf(
-                        StructuredArguments.keyValue("oppfolgingstilfelleId", it.key())
+                        StructuredArguments.keyValue("oppfolgingstilfelleId", it.key()),
+                        StructuredArguments.keyValue("timestamp", it.timestamp())
                 )
                 LOG.info("Mottatt oppfolgingstilfellePeker, klar for behandling, $logKeys, {}", *logValues, CallIdArgument(callId))
 
