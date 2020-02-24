@@ -44,7 +44,6 @@ class OppfolgingstilfelleService(
             MissingValue.BEHANDLENDEENHET -> COUNT_OPPFOLGINGSTILFELLE_SKIPPED_BEHANDLENDEENHET.inc()
             MissingValue.FODSELSNUMMER -> COUNT_OPPFOLGINGSTILFELLE_SKIPPED_FODSELSNUMMER.inc()
         }
-        log.info("Mottok oppfølgingstilfelle, men sender ikke på kø fordi $missingValue mangler")
     }
 
     private fun produce(
