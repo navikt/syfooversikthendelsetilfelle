@@ -12,18 +12,12 @@ import no.nav.syfo.log
 import no.nav.syfo.metric.*
 import no.nav.syfo.oppfolgingstilfelle.domain.*
 import org.apache.kafka.clients.producer.KafkaProducer
-import java.time.LocalDate
-import java.time.temporal.ChronoUnit
 import java.util.UUID.randomUUID
 
 enum class MissingValue {
     BEHANDLENDEENHET,
     FODSELSNUMMER
 }
-
-const val SYKEPENGESOKNAD = "SYKEPENGESOKNAD"
-const val GRADERT_AKTIVITET = "GRADERT_AKTIVITET"
-const val SYKMELDING = "SYKMELDING"
 
 class OppfolgingstilfelleService(
         private val aktorService: AktorService,
@@ -65,8 +59,8 @@ class OppfolgingstilfelleService(
                 callId
         )
 
-        if (oppfolgingstilfelle != null && containsSykmeldingAndSykepengesoknad(oppfolgingstilfelle.tidslinje)) {
-            val isGradertToday: Boolean = isLatestSykmeldingGradert(oppfolgingstilfelle.tidslinje)
+        if (oppfolgingstilfelle != null && oppfolgingstilfelle.tidslinje.containsSykmeldingAndSykepengesoknad()) {
+            val isGradertToday: Boolean = oppfolgingstilfelle.tidslinje.isLatestSykmeldingGradert()
 
             if (isGradertToday) {
                 COUNT_OPPFOLGINGSTILFELLE_GRADERT_RECEIVED.inc()
@@ -94,33 +88,6 @@ class OppfolgingstilfelleService(
                 log.info("TOGGLE: Oversikthendelse er togglet av, sender ikke hendelse")
             }
         }
-    }
-}
-
-fun containsSykmeldingAndSykepengesoknad(tidslinje: List<KSyketilfelledag>): Boolean {
-    return containsSykmelding(tidslinje) && containsSykepengesoknad(tidslinje)
-}
-
-fun containsSykmelding(tidslinje: List<KSyketilfelledag>): Boolean {
-    return tidslinje
-            .any { it.prioritertSyketilfellebit?.tags?.contains(SYKMELDING) ?: false }
-}
-
-fun containsSykepengesoknad(tidslinje: List<KSyketilfelledag>): Boolean {
-    return tidslinje
-            .any { it.prioritertSyketilfellebit?.tags?.contains(SYKEPENGESOKNAD) ?: false }
-}
-
-fun isLatestSykmeldingGradert(tidslinje: List<KSyketilfelledag>): Boolean {
-    val sykmeldingerDager = tidslinje
-            .filter { it.prioritertSyketilfellebit?.tags?.contains(SYKMELDING) ?: false }
-
-    return if (sykmeldingerDager.isNullOrEmpty()) {
-        false
-    } else {
-        sykmeldingerDager.minBy { ChronoUnit.DAYS.between(it.dag, LocalDate.now()) }!!
-                .prioritertSyketilfellebit!!.tags.contains(GRADERT_AKTIVITET)
-                .or(false)
     }
 }
 
