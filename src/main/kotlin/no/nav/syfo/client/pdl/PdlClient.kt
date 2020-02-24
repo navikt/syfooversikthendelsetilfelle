@@ -43,8 +43,17 @@ class PdlClient(
                 .responseString()
 
         result.fold(success = {
-            COUNT_CALL_PDL_SUCCESS.inc()
-            return objectMapper.readValue<PdlPersonResponse>(result.get()).data
+            val pdlPersonReponse = objectMapper.readValue<PdlPersonResponse>(result.get())
+            return if (pdlPersonReponse.errors != null && pdlPersonReponse.errors.isNotEmpty()) {
+                COUNT_CALL_PDL_FAIL.inc()
+                pdlPersonReponse.errors.forEach {
+                    LOG.error("Error while requesting person from PersonDataLosningen: ${it.errorMessage()}")
+                }
+                null
+            } else {
+                COUNT_CALL_PDL_SUCCESS.inc()
+                pdlPersonReponse.data
+            }
         }, failure = {
             COUNT_CALL_PDL_FAIL.inc()
             LOG.info("Request with url: $baseUrl failed with reponse code ${response.statusCode}")
