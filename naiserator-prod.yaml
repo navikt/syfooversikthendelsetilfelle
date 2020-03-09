@@ -1,0 +1,74 @@
+apiVersion: "nais.io/v1alpha1"
+kind: "Application"
+metadata:
+  name: syfooversikthendelsetilfelle
+  namespace: default
+  labels:
+    team: teamsykefravr
+spec:
+  image: {{ image }}
+  port: 8080
+  team: teamsykefravr
+  liveness:
+    path: /is_alive
+    initialDelay: 10
+    timeout: 5
+    periodSeconds: 5
+    failureThreshold: 30
+  readiness:
+    path: /is_ready
+    initialDelay: 10
+    periodSeconds: 5
+    timeout: 5
+  resources:
+    limits:
+      cpu: 1000m
+      memory: 512Mi
+    requests:
+      cpu: 200m
+      memory: 256Mi
+  replicas:
+    min: 1
+    max: 2
+    cpuThresholdPercentage: 90
+  prometheus:
+    enabled: true
+    path: /prometheus
+  ingresses:
+    - "https://syfooversikthendelsetilfelle.nais.adeo.no"
+  vault:
+    enabled: true
+  webproxy: true
+  env:
+    - name: APP_NAME
+      value: "syfooversikthendelsetilfelle"
+    - name: APPDYNAMICS_CONTROLLER_HOST_NAME
+      value: appdynamics.adeo.no
+    - name: APPDYNAMICS_CONTROLLER_PORT
+      value: "443"
+    - name: APPDYNAMICS_CONTROLLER_SSL_ENABLED
+      value: "true"
+    - name: APPDYNAMICS_AGENT_ACCOUNT_NAME
+      value: PROD
+    - name: CLIENT_ID
+      value: 9b4e07a3-4f4c-4bab-b866-87f62dff480d
+    - name: AADDISCOVERY_URL
+      value: https://login.microsoftonline.com/navno.onmicrosoft.com/.well-known/openid-configuration
+    - name: JWT_ISSUER
+      value: https://sts.windows.net/62366534-1ec3-4962-8869-9b5535279d0b/
+    - name: KTOR_ENV
+      value: production
+    - name: KAFKA_BOOTSTRAP_SERVERS_URL
+      value: SASL_SSL://a01apvl00145.adeo.no:8443,SASL_SSL://a01apvl00146.adeo.no:8443,SASL_SSL://a01apvl00147.adeo.no:8443,SASL_SSL://a01apvl00149.adeo.no:8443
+    - name: SECURITY_TOKEN_SERVICE_REST_URL
+      value: https://security-token-service.nais.adeo.no
+    - name: AKTORREGISTER_V1_URL
+      value: https://app.adeo.no/aktoerregister/api/v1
+    - name: OPPFOLGINGSTILFELLE_TOPIC
+      value: aapen-syfo-oppfolgingstilfelle-v1
+    - name: PDL_URL
+      value: https://pdl-api.nais.adeo.no/graphql
+    - name: SYFOBEHANDLENDEENHET_URL
+      value: https://syfobehandlendeenhet.nais.adeo.no
+    - name: SYFOSYKETILFELLE_URL
+      value: https://syfosyketilfelle.nais.adeo.no

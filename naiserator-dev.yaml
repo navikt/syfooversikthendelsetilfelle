@@ -1,0 +1,74 @@
+apiVersion: "nais.io/v1alpha1"
+kind: "Application"
+metadata:
+  name: syfooversikthendelsetilfelle
+  namespace: default
+  labels:
+    team: teamsykefravr
+spec:
+  image: {{ image }}
+  port: 8080
+  team: teamsykefravr
+  liveness:
+    path: /is_alive
+    initialDelay: 10
+    timeout: 5
+    periodSeconds: 5
+    failureThreshold: 30
+  readiness:
+    path: /is_ready
+    initialDelay: 10
+    periodSeconds: 5
+    timeout: 5
+  resources:
+    limits:
+      cpu: 1000m
+      memory: 512Mi
+    requests:
+      cpu: 200m
+      memory: 256Mi
+  replicas:
+    min: 1
+    max: 2
+    cpuThresholdPercentage: 90
+  prometheus:
+    enabled: true
+    path: /prometheus
+  ingresses:
+    - "https://syfooversikthendelsetilfelle.nais.preprod.local"
+  vault:
+    enabled: true
+  webproxy: true
+  env:
+    - name: APP_NAME
+      value: "syfooversikthendelsetilfelle"
+    - name: APPDYNAMICS_CONTROLLER_HOST_NAME
+      value: appdynamics.adeo.no
+    - name: APPDYNAMICS_CONTROLLER_PORT
+      value: "443"
+    - name: APPDYNAMICS_CONTROLLER_SSL_ENABLED
+      value: "true"
+    - name: APPDYNAMICS_AGENT_ACCOUNT_NAME
+      value: NON-PROD
+    - name: CLIENT_ID
+      value: e8160444-4fd6-4082-87b8-58d6d4cb677e
+    - name: AADDISCOVERY_URL
+      value: https://login.microsoftonline.com/966ac572-f5b7-4bbe-aa88-c76419c0f851/.well-known/openid-configuration
+    - name: JWT_ISSUER
+      value: https://sts.windows.net/966ac572-f5b7-4bbe-aa88-c76419c0f851/
+    - name: KTOR_ENV
+      value: production
+    - name: KAFKA_BOOTSTRAP_SERVERS_URL
+      value: SSL://b27apvl00045.preprod.local:8443,SSL://b27apvl00046.preprod.local:8443,SSL://b27apvl00047.preprod.local:8443
+    - name: SECURITY_TOKEN_SERVICE_REST_URL
+      value: https://security-token-service.nais.preprod.local
+    - name: AKTORREGISTER_V1_URL
+      value: https://app-q1.adeo.no/aktoerregister/api/v1
+    - name: OPPFOLGINGSTILFELLE_TOPIC
+      value: aapen-syfo-oppfolgingstilfelle-v1
+    - name: PDL_URL
+      value: https://pdl-api.nais.preprod.local/graphql
+    - name: SYFOBEHANDLENDEENHET_URL
+      value: https://syfobehandlendeenhet.nais.preprod.local
+    - name: SYFOSYKETILFELLE_URL
+      value: https://syfosyketilfelle.nais.preprod.local
