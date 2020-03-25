@@ -33,7 +33,7 @@ fun getEnvironment(): Environment {
                 getEnvVar("TOOGLE_OVERSIKTHENDELSETILFELLE", "false").toBoolean(),
                 getEnvVar("AKTORREGISTER_V1_URL"),
                 getEnvVar("SECURITY_TOKEN_SERVICE_REST_URL"),
-                getEnvVar("EREG_API_BASE_URL", "https://modapp-q1.adeo.no/")
+                getEnvVar("EREG_API_BASE_URL", "https://ereg/")
         )
     }
 }
