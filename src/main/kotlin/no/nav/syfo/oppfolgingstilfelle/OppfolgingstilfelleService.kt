@@ -81,7 +81,7 @@ class OppfolgingstilfelleService(
                     isGradertToday
             )
             if (env.toggleOversikthendelsetilfelle) {
-                log.info("Legger oversikthendelsetilfelle på kø")
+                COUNT_OVERSIKTHENDELSE_TILFELLE_PRODUCED.inc()
                 producer.send(producerRecord(hendelse))
             } else {
                 log.info("TOGGLE: Oversikthendelse er togglet av, sender ikke hendelse")

@@ -96,3 +96,10 @@ val COUNT_OPPFOLGINGSTILFELLE_SKIPPED_FODSELSNUMMER: Counter = Counter.build()
         .name(OPPFOLGINGSTILFELLE_SKIPPED_FODSELSNUMMER)
         .help("Counts the number of Oppfolgingstilfeller skipped because Fodselsnummer was not found")
         .register()
+
+const val OVERSIKTHENDELSE_TILFELLE_PRODUCED = "oversikthendelse_tilfelle_produced_count"
+val COUNT_OVERSIKTHENDELSE_TILFELLE_PRODUCED: Counter = Counter.build()
+        .namespace(METRICS_NS)
+        .name(OVERSIKTHENDELSE_TILFELLE_PRODUCED)
+        .help("Counts the number of oversikthendelse-tilfeller produced")
+        .register()
