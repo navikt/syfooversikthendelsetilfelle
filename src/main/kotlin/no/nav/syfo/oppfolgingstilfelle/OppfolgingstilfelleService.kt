@@ -58,7 +58,7 @@ class OppfolgingstilfelleService(
                 callId
         )
 
-        if (oppfolgingstilfelle != null && oppfolgingstilfelle.tidslinje.containsSykmeldingAndSykepengesoknad()) {
+        if (oppfolgingstilfelle != null) {
             val isGradertToday: Boolean = oppfolgingstilfelle.tidslinje.isLatestSykmeldingGradert()
 
             if (isGradertToday) {
