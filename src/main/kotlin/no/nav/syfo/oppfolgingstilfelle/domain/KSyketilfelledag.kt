@@ -12,20 +12,6 @@ const val SYKEPENGESOKNAD = "SYKEPENGESOKNAD"
 const val GRADERT_AKTIVITET = "GRADERT_AKTIVITET"
 const val SYKMELDING = "SYKMELDING"
 
-fun List<KSyketilfelledag>.containsSykmeldingAndSykepengesoknad(): Boolean {
-    return this.containsSykmelding() && this.containsSykepengesoknad()
-}
-
-fun List<KSyketilfelledag>.containsSykmelding(): Boolean {
-    return this
-            .any { it.prioritertSyketilfellebit?.tags?.contains(SYKMELDING) ?: false }
-}
-
-fun List<KSyketilfelledag>.containsSykepengesoknad(): Boolean {
-    return this
-            .any { it.prioritertSyketilfellebit?.tags?.contains(SYKEPENGESOKNAD) ?: false }
-}
-
 fun List<KSyketilfelledag>.isLatestSykmeldingGradert(): Boolean {
     val sykmeldingerDager = this
             .filter { it.prioritertSyketilfellebit?.tags?.contains(SYKMELDING) ?: false }
