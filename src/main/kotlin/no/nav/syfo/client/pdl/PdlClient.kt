@@ -14,8 +14,8 @@ import org.slf4j.LoggerFactory
 import io.ktor.http.HttpHeaders
 
 class PdlClient(
-        private val baseUrl: String,
-        private val stsRestClient: StsRestClient
+    private val baseUrl: String,
+    private val stsRestClient: StsRestClient
 ) {
     fun person(fnr: String, callId: String): PdlHentPerson? {
         COUNT_CALL_PDL.inc()
@@ -23,24 +23,24 @@ class PdlClient(
         val bearer = stsRestClient.token()
 
         val query = this::class.java.getResource("/pdl/hentPerson.graphql")
-                .readText()
-                .replace("[\n\r]", "")
+            .readText()
+            .replace("[\n\r]", "")
 
         val request = PdlRequest(query, Variables(fnr))
 
         val json = Gson().toJson(request)
 
         val (_, response, result) = baseUrl
-                .httpPost()
-                .header(mapOf(
-                        HttpHeaders.ContentType to "application/json",
-                        HttpHeaders.Authorization to bearerHeader(bearer),
-                        NAV_CONSUMER_TOKEN to bearerHeader(bearer),
-                        TEMA to ALLE_TEMA_HEADERVERDI,
-                        NAV_CALL_ID to callId
-                ))
-                .body(json)
-                .responseString()
+            .httpPost()
+            .header(mapOf(
+                HttpHeaders.ContentType to "application/json",
+                HttpHeaders.Authorization to bearerHeader(bearer),
+                NAV_CONSUMER_TOKEN to bearerHeader(bearer),
+                TEMA to ALLE_TEMA_HEADERVERDI,
+                NAV_CALL_ID to callId
+            ))
+            .body(json)
+            .responseString()
 
         result.fold(success = {
             val pdlPersonReponse = objectMapper.readValue<PdlPersonResponse>(result.get())

@@ -5,25 +5,25 @@ import no.nav.syfo.testutil.UserConstants
 
 fun generatePdlPersonNavn(): PdlPersonNavn {
     return PdlPersonNavn(
-            fornavn = UserConstants.ARBEIDSTAKER_NAME_FIRST,
-            mellomnavn = UserConstants.ARBEIDSTAKER_NAME_MIDDLE,
-            etternavn = UserConstants.ARBEIDSTAKER_NAME_LAST
+        fornavn = UserConstants.ARBEIDSTAKER_NAME_FIRST,
+        mellomnavn = UserConstants.ARBEIDSTAKER_NAME_MIDDLE,
+        etternavn = UserConstants.ARBEIDSTAKER_NAME_LAST
     )
 }
 
 fun generatePdlHentPerson(
-        pdlPersonNavn: PdlPersonNavn?
+    pdlPersonNavn: PdlPersonNavn?
 ): PdlHentPerson {
     return PdlHentPerson(
-            hentPerson = PdlPerson(
-                    navn = listOf(
-                            pdlPersonNavn ?: generatePdlPersonNavn()
-                    )
+        hentPerson = PdlPerson(
+            navn = listOf(
+                pdlPersonNavn ?: generatePdlPersonNavn()
             )
+        )
     )
 }
 
 val genereatePdlPersonResponse = PdlPersonResponse(
-        errors = null,
-        data = generatePdlHentPerson(generatePdlPersonNavn())
+    errors = null,
+    data = generatePdlHentPerson(generatePdlPersonNavn())
 )

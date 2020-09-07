@@ -36,35 +36,35 @@ object KafkaITSpek : Spek({
     val oversikthendelseOppfolgingstilfelleTopic = "oversikthendelse-oppfolgingstilfelle-topic"
 
     val embeddedEnvironment = KafkaEnvironment(
-            autoStart = false,
-            topics = listOf(
-                    oversikthendelseOppfolgingstilfelleTopic
-            )
+        autoStart = false,
+        topics = listOf(
+            oversikthendelseOppfolgingstilfelleTopic
+        )
     )
 
     val credentials = VaultSecrets(
-            "",
-            ""
+        "",
+        ""
     )
     val env = Environment(
-            applicationPort = getRandomPort(),
-            applicationThreads = 1,
-            oppfolgingstilfelleTopic = oppfolgingstilfelleTopic,
-            oversikthendelseOppfolgingstilfelleTopic = oversikthendelseOppfolgingstilfelleTopic,
-            kafkaBootstrapServers = embeddedEnvironment.brokersURL,
-            applicationName = "syfooversikthendelsetilfelle",
-            jwkKeysUrl = "",
-            jwtIssuer = "",
-            aadDiscoveryUrl = "",
-            clientid = "",
-            behandlendeenhetUrl = "behandlendeenhet",
-            pdlUrl = "pdlurl",
-            syketilfelleUrl = "syketilfelle",
-            toggleOversikthendelsetilfelle = true,
-            oversikthendelseOppfolgingstilfelleTopicSeekToBeginning = false,
-            aktoerregisterV1Url = "aktorurl",
-            stsRestUrl = "stsurl",
-            eregApiBaseUrl = ""
+        applicationPort = getRandomPort(),
+        applicationThreads = 1,
+        oppfolgingstilfelleTopic = oppfolgingstilfelleTopic,
+        oversikthendelseOppfolgingstilfelleTopic = oversikthendelseOppfolgingstilfelleTopic,
+        kafkaBootstrapServers = embeddedEnvironment.brokersURL,
+        applicationName = "syfooversikthendelsetilfelle",
+        jwkKeysUrl = "",
+        jwtIssuer = "",
+        aadDiscoveryUrl = "",
+        clientid = "",
+        behandlendeenhetUrl = "behandlendeenhet",
+        pdlUrl = "pdlurl",
+        syketilfelleUrl = "syketilfelle",
+        toggleOversikthendelsetilfelle = true,
+        oversikthendelseOppfolgingstilfelleTopicSeekToBeginning = false,
+        aktoerregisterV1Url = "aktorurl",
+        stsRestUrl = "stsurl",
+        eregApiBaseUrl = ""
     )
 
     fun Properties.overrideForTest(): Properties = apply {
@@ -75,18 +75,18 @@ object KafkaITSpek : Spek({
     val baseConfig = loadBaseConfig(env, credentials).overrideForTest()
 
     val producerPropertiesTilfelle = baseConfig
-            .toProducerConfig("spek.integration-producer1", valueSerializer = JacksonKafkaSerializer::class)
+        .toProducerConfig("spek.integration-producer1", valueSerializer = JacksonKafkaSerializer::class)
     val producerTilfelle = KafkaProducer<String, KOppfolgingstilfellePeker>(producerPropertiesTilfelle)
     val consumerPropertiesTilfelle = baseConfig
-            .toConsumerConfig("spek.integration-consumer1", valueDeserializer = StringDeserializer::class)
+        .toConsumerConfig("spek.integration-consumer1", valueDeserializer = StringDeserializer::class)
     val consumerTilfelle = KafkaConsumer<String, String>(consumerPropertiesTilfelle)
     consumerTilfelle.subscribe(listOf(env.oppfolgingstilfelleTopic))
 
     val producerPropertiesOversikthendelse = baseConfig
-            .toProducerConfig("spek.integration-producer2", valueSerializer = JacksonKafkaSerializer::class)
+        .toProducerConfig("spek.integration-producer2", valueSerializer = JacksonKafkaSerializer::class)
     val producerOversikthendelse = KafkaProducer<String, KOversikthendelsetilfelle>(producerPropertiesOversikthendelse)
     val consumerPropertiesOversikthendelse = baseConfig
-            .toConsumerConfig("spek.integration-consumer2", valueDeserializer = StringDeserializer::class)
+        .toConsumerConfig("spek.integration-consumer2", valueDeserializer = StringDeserializer::class)
     val consumerTilfelleOversikthendelse = KafkaConsumer<String, String>(consumerPropertiesOversikthendelse)
     consumerTilfelleOversikthendelse.subscribe(listOf(env.oversikthendelseOppfolgingstilfelleTopic))
 
@@ -107,7 +107,6 @@ object KafkaITSpek : Spek({
             consumerTilfelle.poll(Duration.ofMillis(5000)).forEach {
                 val tilfellePeker: KOppfolgingstilfellePeker = objectMapper.readValue(it.value())
                 messages.add(tilfellePeker)
-
             }
             messages.size shouldEqual 1
             messages.first() shouldEqual kOppfolgingstilfellePeker
@@ -121,7 +120,6 @@ object KafkaITSpek : Spek({
             consumerTilfelleOversikthendelse.poll(Duration.ofMillis(5000)).forEach {
                 val hendelse: KOversikthendelsetilfelle = objectMapper.readValue(it.value())
                 messages.add(hendelse)
-
             }
             messages.size shouldEqual 1
             messages.first() shouldEqual oversikthendelsetilfelle

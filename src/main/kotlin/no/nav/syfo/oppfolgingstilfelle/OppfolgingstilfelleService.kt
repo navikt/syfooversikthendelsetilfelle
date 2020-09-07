@@ -20,23 +20,22 @@ enum class MissingValue {
 }
 
 class OppfolgingstilfelleService(
-        private val aktorService: AktorService,
-        private val eregService: EregService,
-        private val behandlendeEnhetClient: BehandlendeEnhetClient,
-        private val pdlClient: PdlClient,
-        private val syketilfelleClient: SyketilfelleClient,
-        private val producer: KafkaProducer<String, KOversikthendelsetilfelle>
+    private val aktorService: AktorService,
+    private val eregService: EregService,
+    private val behandlendeEnhetClient: BehandlendeEnhetClient,
+    private val pdlClient: PdlClient,
+    private val syketilfelleClient: SyketilfelleClient,
+    private val producer: KafkaProducer<String, KOversikthendelsetilfelle>
 ) {
     fun receiveOppfolgingstilfeller(oppfolgingstilfellePeker: KOppfolgingstilfellePeker, callId: String = "") {
         val aktor = AktorId(oppfolgingstilfellePeker.aktorId)
 
         val fnr: String = aktorService.fodselsnummerForAktor(aktor, callId)
-                ?: return skipOppfolgingstilfelleWithMissingValue(MissingValue.FODSELSNUMMER)
+            ?: return skipOppfolgingstilfelleWithMissingValue(MissingValue.FODSELSNUMMER)
         val orgNummer = oppfolgingstilfellePeker.orgnummer
         val organisasjonNavn = eregService.finnOrganisasjonsNavn(orgNummer, callId)
 
         produce(oppfolgingstilfellePeker, fnr, organisasjonNavn, callId)
-
     }
 
     private fun skipOppfolgingstilfelleWithMissingValue(missingValue: MissingValue) {
@@ -47,15 +46,15 @@ class OppfolgingstilfelleService(
     }
 
     private fun produce(
-            oppfolgingstilfellePeker: KOppfolgingstilfellePeker,
-            fnr: String,
-            organisasjonNavn: String,
-            callId: String
+        oppfolgingstilfellePeker: KOppfolgingstilfellePeker,
+        fnr: String,
+        organisasjonNavn: String,
+        callId: String
     ) {
         val oppfolgingstilfelle = syketilfelleClient.getOppfolgingstilfelle(
-                oppfolgingstilfellePeker.aktorId,
-                oppfolgingstilfellePeker.orgnummer,
-                callId
+            oppfolgingstilfellePeker.aktorId,
+            oppfolgingstilfellePeker.orgnummer,
+            callId
         )
 
         if (oppfolgingstilfelle != null) {
@@ -69,16 +68,16 @@ class OppfolgingstilfelleService(
             val fnrFullName = pdlClient.person(fnr, callId)?.fullName() ?: ""
 
             val enhet = behandlendeEnhetClient.getEnhet(fnr, callId)
-                    ?: return skipOppfolgingstilfelleWithMissingValue(MissingValue.BEHANDLENDEENHET)
+                ?: return skipOppfolgingstilfelleWithMissingValue(MissingValue.BEHANDLENDEENHET)
 
             val hendelse = mapKOversikthendelsetilfelle(
-                    fnr,
-                    fnrFullName,
-                    enhet.enhetId,
-                    oppfolgingstilfelle.orgnummer,
-                    organisasjonNavn,
-                    oppfolgingstilfelle.tidslinje.sortedBy { it.dag },
-                    isGradertToday
+                fnr,
+                fnrFullName,
+                enhet.enhetId,
+                oppfolgingstilfelle.orgnummer,
+                organisasjonNavn,
+                oppfolgingstilfelle.tidslinje.sortedBy { it.dag },
+                isGradertToday
             )
             if (env.toggleOversikthendelsetilfelle) {
                 COUNT_OVERSIKTHENDELSE_TILFELLE_PRODUCED.inc()
@@ -91,8 +90,8 @@ class OppfolgingstilfelleService(
 }
 
 private fun producerRecord(hendelse: KOversikthendelsetilfelle) =
-        SyfoProducerRecord(
-                topic = env.oversikthendelseOppfolgingstilfelleTopic,
-                key = randomUUID().toString(),
-                value = hendelse
-        )
+    SyfoProducerRecord(
+        topic = env.oversikthendelseOppfolgingstilfelleTopic,
+        key = randomUUID().toString(),
+        value = hendelse
+    )

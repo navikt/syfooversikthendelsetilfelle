@@ -38,7 +38,6 @@ import java.util.*
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 
-
 data class ApplicationState(var running: Boolean = true, var initialized: Boolean = false)
 
 val log: org.slf4j.Logger = LoggerFactory.getLogger("no.nav.syfo.MainApplicationKt")
@@ -54,7 +53,7 @@ val backgroundTasksContext = Executors.newFixedThreadPool(4).asCoroutineDispatch
 
 fun main() {
     val vaultSecrets =
-            objectMapper.readValue<VaultSecrets>(Paths.get("/var/run/secrets/nais.io/vault/credentials.json").toFile())
+        objectMapper.readValue<VaultSecrets>(Paths.get("/var/run/secrets/nais.io/vault/credentials.json").toFile())
     val server = embeddedServer(Netty, applicationEngineEnvironment {
         log = LoggerFactory.getLogger("ktor.application")
         config = HoconApplicationConfig(ConfigFactory.load())
@@ -77,12 +76,12 @@ fun main() {
         module {
             init()
             kafkaModule(
-                    vaultSecrets,
-                    aktorService,
-                    eregService,
-                    behandlendeEnhetClient,
-                    pdlClient,
-                    syketilfelleClient
+                vaultSecrets,
+                aktorService,
+                eregService,
+                behandlendeEnhetClient,
+                pdlClient,
+                syketilfelleClient
             )
             serverModule()
         }
@@ -93,7 +92,6 @@ fun main() {
 
     server.start(wait = false)
 }
-
 
 val state: ApplicationState = ApplicationState(running = false, initialized = false)
 val env: Environment = getEnvironment()
@@ -109,26 +107,25 @@ fun Application.init() {
 }
 
 fun Application.kafkaModule(
-        vaultSecrets: VaultSecrets,
-        aktorService: AktorService,
-        eregService: EregService,
-        behandlendeEnhetClient: BehandlendeEnhetClient,
-        pdlClient: PdlClient,
-        syketilfelleClient: SyketilfelleClient
+    vaultSecrets: VaultSecrets,
+    aktorService: AktorService,
+    eregService: EregService,
+    behandlendeEnhetClient: BehandlendeEnhetClient,
+    pdlClient: PdlClient,
+    syketilfelleClient: SyketilfelleClient
 ) {
-
     isDev {
     }
 
     isProd {
         launch(backgroundTasksContext) {
             setupKafka(
-                    vaultSecrets,
-                    aktorService,
-                    eregService,
-                    behandlendeEnhetClient,
-                    pdlClient,
-                    syketilfelleClient
+                vaultSecrets,
+                aktorService,
+                eregService,
+                behandlendeEnhetClient,
+                pdlClient,
+                syketilfelleClient
             )
         }
     }
@@ -177,15 +174,14 @@ fun Application.serverModule() {
     state.initialized = true
 }
 
-
 fun CoroutineScope.createListener(applicationState: ApplicationState, action: suspend CoroutineScope.() -> Unit): Job =
-        launch {
-            try {
-                action()
-            } finally {
-                applicationState.running = false
-            }
+    launch {
+        try {
+            action()
+        } finally {
+            applicationState.running = false
         }
+    }
 
 val Application.envKind get() = environment.config.property("ktor.environment").getString()
 

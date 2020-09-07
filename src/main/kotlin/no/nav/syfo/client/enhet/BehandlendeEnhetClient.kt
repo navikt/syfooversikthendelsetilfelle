@@ -13,23 +13,22 @@ import no.nav.syfo.util.*
 import org.slf4j.LoggerFactory
 
 class BehandlendeEnhetClient(
-        private val baseUrl: String,
-        private val stsRestClient: StsRestClient
+    private val baseUrl: String,
+    private val stsRestClient: StsRestClient
 ) {
-
     fun getEnhet(fnr: String, callId: String): BehandlendeEnhet? {
         val bearer = stsRestClient.token()
 
         COUNT_CALL_BEHANDLENDEENHET.inc()
 
         val (_, response, result) = getBehandlendeEnhetUrl(fnr).httpGet()
-                .header(mapOf(
-                        HttpHeaders.Authorization to bearerHeader(bearer),
-                        HttpHeaders.Accept to "application/json",
-                        NAV_CALL_ID to callId,
-                        NAV_CONSUMER_ID to APP_CONSUMER_ID
-                ))
-                .responseString()
+            .header(mapOf(
+                HttpHeaders.Authorization to bearerHeader(bearer),
+                HttpHeaders.Accept to "application/json",
+                NAV_CALL_ID to callId,
+                NAV_CONSUMER_ID to APP_CONSUMER_ID
+            ))
+            .responseString()
 
         result.fold(success = {
             return if (response.statusCode == 204) {
@@ -37,7 +36,7 @@ class BehandlendeEnhetClient(
                 null
             } else {
                 val behandlendeEnhet = objectMapper.readValue<BehandlendeEnhet>(result.get())
-                if(isValid(behandlendeEnhet)) {
+                if (isValid(behandlendeEnhet)) {
                     COUNT_CALL_BEHANDLENDEENHET_SUCCESS.inc()
                     behandlendeEnhet
                 } else {
@@ -49,7 +48,7 @@ class BehandlendeEnhetClient(
         }, failure = {
             COUNT_CALL_BEHANDLENDEENHET_FAIL.inc()
             val exception = it.exception
-            LOG.error("Error with responseCode=${response.statusCode} with callId=${callId} while requesting behandlendeenhet from syfobehandlendeenhet: ${exception.message}", exception)
+            LOG.error("Error with responseCode=${response.statusCode} with callId=$callId while requesting behandlendeenhet from syfobehandlendeenhet: ${exception.message}", exception)
             return null
         })
     }

@@ -13,30 +13,29 @@ import no.nav.syfo.util.bearerHeader
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class EregOrganisasjonNavn(
-        val navnelinje1: String,
-        val redigertnavn: String?
+    val navnelinje1: String,
+    val redigertnavn: String?
 )
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-data class EregOrganisasjonResponse
-(
+data class EregOrganisasjonResponse(
     val navn: EregOrganisasjonNavn
 )
 
 class EregClient(
-        private val baseUrl: String,
-        private val stsRestClient: StsRestClient
+    private val baseUrl: String,
+    private val stsRestClient: StsRestClient
 ) {
 
     fun hentOrgByOrgnr(orgnr: String, callId: String): EregOrganisasjonResponse? {
         val token = stsRestClient.token()
         val url = "${baseUrl}v1/organisasjon/$orgnr"
         val (_, response, result) = url
-                .httpGet()
-                .header(mapOf(
-                        HttpHeaders.Authorization to bearerHeader(token)
-                ))
-                .responseString()
+            .httpGet()
+            .header(mapOf(
+                HttpHeaders.Authorization to bearerHeader(token)
+            ))
+            .responseString()
 
         return when (result) {
             is Result.Success -> {
@@ -46,7 +45,7 @@ class EregClient(
             is Result.Failure -> {
                 COUNT_CALL_EREG_SUCCESS.inc()
                 val exception = result.getException()
-                log.error("Error with responseCode=${response.statusCode} with callId=${callId} while requesting Organisasjon from Ereg: ${exception.message}", exception)
+                log.error("Error with responseCode=${response.statusCode} with callId=$callId while requesting Organisasjon from Ereg: ${exception.message}", exception)
                 null
             }
         }

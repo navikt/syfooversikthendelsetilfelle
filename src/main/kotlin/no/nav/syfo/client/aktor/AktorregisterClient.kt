@@ -17,14 +17,14 @@ class AktorregisterClient(val baseUrl: String, val stsRestClient: StsRestClient)
         val bearer = stsRestClient.token()
 
         val (_, _, result) = "$baseUrl/identer?gjeldende=true".httpGet()
-                .header(mapOf(
-                        HttpHeaders.Authorization to bearerHeader(bearer),
-                        HttpHeaders.Accept to "application/json",
-                        NAV_CALL_ID to callId,
-                        NAV_CONSUMER_ID to APP_CONSUMER_ID,
-                        NAV_PERSONIDENTER to ident
-                ))
-                .responseString()
+            .header(mapOf(
+                HttpHeaders.Authorization to bearerHeader(bearer),
+                HttpHeaders.Accept to "application/json",
+                NAV_CALL_ID to callId,
+                NAV_CONSUMER_ID to APP_CONSUMER_ID,
+                NAV_PERSONIDENTER to ident
+            ))
+            .responseString()
 
         val response = JSONObject(result.get())
 
@@ -67,6 +67,6 @@ enum class IdentType {
 }
 
 data class Ident(
-        val ident: String,
-        val type: IdentType
+    val ident: String,
+    val type: IdentType
 )

@@ -10,14 +10,14 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 
 val generateOversikthendelsetilfelle =
-        KOversikthendelsetilfelle(
-                fnr = ARBEIDSTAKER_FNR,
-                navn = generatePdlHentPerson(null).fullName()!!,
-                enhetId = NAV_ENHET,
-                virksomhetsnummer = VIRKSOMHETSNUMMER,
-                gradert = false,
-                fom = LocalDate.now().minusDays(56),
-                tom = LocalDate.now().plusDays(16),
-                tidspunkt = LocalDateTime.now(),
-                virksomhetsnavn = VIRKSOMHETSNAVN
-        )
+    KOversikthendelsetilfelle(
+        fnr = ARBEIDSTAKER_FNR,
+        navn = generatePdlHentPerson(null).fullName()!!,
+        enhetId = NAV_ENHET,
+        virksomhetsnummer = VIRKSOMHETSNUMMER,
+        gradert = false,
+        fom = LocalDate.now().minusDays(56),
+        tom = LocalDate.now().plusDays(16),
+        tidspunkt = LocalDateTime.now(),
+        virksomhetsnavn = VIRKSOMHETSNAVN
+    )

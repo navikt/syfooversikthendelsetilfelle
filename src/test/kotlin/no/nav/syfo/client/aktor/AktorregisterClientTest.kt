@@ -29,14 +29,14 @@ import java.net.ServerSocket
 import kotlin.test.assertTrue
 
 data class RSIdent(
-        val ident: String,
-        val identgruppe: String,
-        val gjeldende: Boolean
+    val ident: String,
+    val identgruppe: String,
+    val gjeldende: Boolean
 )
 
 data class RSAktor(
-        val identer: List<RSIdent>? = null,
-        val feilmelding: String? = null
+    val identer: List<RSIdent>? = null,
+    val feilmelding: String? = null
 )
 
 @InternalAPI
@@ -65,22 +65,22 @@ object AktorregisterClientTest : Spek({
                     when (call.request.headers[NAV_PERSONIDENTER]) {
                         BRUKER_FNR -> {
                             call.respond(mapOf(BRUKER_FNR to RSAktor(
-                                    listOf(RSIdent(
-                                            ident = BRUKER_FNR,
-                                            identgruppe = IdentType.NorskIdent.name,
-                                            gjeldende = true
-                                    )),
-                                    feilmelding = null
+                                listOf(RSIdent(
+                                    ident = BRUKER_FNR,
+                                    identgruppe = IdentType.NorskIdent.name,
+                                    gjeldende = true
+                                )),
+                                feilmelding = null
                             )))
                         }
                         BRUKER_AKTORID -> {
                             call.respond(mapOf(BRUKER_AKTORID to RSAktor(
-                                    listOf(RSIdent(
-                                            ident = BRUKER_AKTORID,
-                                            identgruppe = IdentType.AktoerId.name,
-                                            gjeldende = true
-                                    )),
-                                    feilmelding = null
+                                listOf(RSIdent(
+                                    ident = BRUKER_AKTORID,
+                                    identgruppe = IdentType.AktoerId.name,
+                                    gjeldende = true
+                                )),
+                                feilmelding = null
                             )))
                         }
                         else -> error("Something went wrong")

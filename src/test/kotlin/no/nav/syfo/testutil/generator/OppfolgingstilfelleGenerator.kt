@@ -9,21 +9,21 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 
 val generateOppfolgingstilfelle =
-        KOppfolgingstilfelle(
-                ARBEIDSTAKER_AKTORID,
-                VIRKSOMHETSNUMMER,
-                emptyList(),
-                KSyketilfelledag(
-                        LocalDate.now().minusDays(1),
-                        null
-                ),
-                0,
-                false,
-                LocalDateTime.now()
-        )
+    KOppfolgingstilfelle(
+        ARBEIDSTAKER_AKTORID,
+        VIRKSOMHETSNUMMER,
+        emptyList(),
+        KSyketilfelledag(
+            LocalDate.now().minusDays(1),
+            null
+        ),
+        0,
+        false,
+        LocalDateTime.now()
+    )
 
 val generateOppfolgingstilfellePeker =
-        KOppfolgingstilfellePeker(
-                ARBEIDSTAKER_AKTORID,
-                VIRKSOMHETSNUMMER
-        )
+    KOppfolgingstilfellePeker(
+        ARBEIDSTAKER_AKTORID,
+        VIRKSOMHETSNUMMER
+    )

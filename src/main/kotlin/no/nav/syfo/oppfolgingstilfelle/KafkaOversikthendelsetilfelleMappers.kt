@@ -6,14 +6,14 @@ import java.time.LocalDateTime
 
 var mapKOversikthendelsetilfelle = { fnr: String, navn: String, enhetId: String, virksomhetsnummer: String, virksomhetsnavn: String, tidslinje: List<KSyketilfelledag>, gradert: Boolean ->
     KOversikthendelsetilfelle(
-            fnr = fnr,
-            navn = navn,
-            enhetId = enhetId,
-            virksomhetsnummer = virksomhetsnummer,
-            virksomhetsnavn = virksomhetsnavn,
-            gradert = gradert,
-            fom = tidslinje.first().dag,
-            tom = tidslinje.last().dag,
-            tidspunkt = LocalDateTime.now()
+        fnr = fnr,
+        navn = navn,
+        enhetId = enhetId,
+        virksomhetsnummer = virksomhetsnummer,
+        virksomhetsnavn = virksomhetsnavn,
+        gradert = gradert,
+        fom = tidslinje.first().dag,
+        tom = tidslinje.last().dag,
+        tidspunkt = LocalDateTime.now()
     )
 }

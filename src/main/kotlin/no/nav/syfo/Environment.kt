@@ -16,24 +16,24 @@ fun getEnvironment(): Environment {
         objectMapper.readValue(firstExistingFile(localEnvironmentPropertiesPath, defaultlocalEnvironmentPropertiesPath), Environment::class.java)
     } else {
         Environment(
-                getEnvVar("APPLICATION_PORT", "8080").toInt(),
-                getEnvVar("APPLICATION_THREADS", "1").toInt(),
-                getEnvVar("APPLICATION_NAME", "syfooversikthendelsetilfelle"),
-                getEnvVar("AADDISCOVERY_URL"),
-                getEnvVar("JWKKEYS_URL", "https://login.microsoftonline.com/common/discovery/keys"),
-                getEnvVar("JWT_ISSUER"),
-                getEnvVar("OPPFOLGINGSTILFELLE_TOPIC"),
-                getEnvVar("OVERSIKTHENDELSE_OPPFOLGINGSTILFELLE_TOPIC", "aapen-syfo-oversikthendelse-tilfelle-v1"),
-                getEnvVar("OVERSIKTHENDELSE_OPPFOLGINGSTILFELLE_TOPIC_SEEK_TO_START", "false").toBoolean(),
-                getEnvVar("KAFKA_BOOTSTRAP_SERVERS_URL"),
-                getEnvVar("CLIENT_ID"),
-                getEnvVar("PDL_URL", "http://pdl-api.default/graphql"),
-                getEnvVar("SYFOBEHANDLENDEENHET_URL", "http://syfobehandlendeenhet"),
-                getEnvVar("SYFOSYKETILFELLE_URL", "http://syfosyketilfelle"),
-                getEnvVar("TOOGLE_OVERSIKTHENDELSETILFELLE", "false").toBoolean(),
-                getEnvVar("AKTORREGISTER_V1_URL"),
-                getEnvVar("SECURITY_TOKEN_SERVICE_REST_URL"),
-                getEnvVar("EREG_API_BASE_URL", "https://ereg/")
+            getEnvVar("APPLICATION_PORT", "8080").toInt(),
+            getEnvVar("APPLICATION_THREADS", "1").toInt(),
+            getEnvVar("APPLICATION_NAME", "syfooversikthendelsetilfelle"),
+            getEnvVar("AADDISCOVERY_URL"),
+            getEnvVar("JWKKEYS_URL", "https://login.microsoftonline.com/common/discovery/keys"),
+            getEnvVar("JWT_ISSUER"),
+            getEnvVar("OPPFOLGINGSTILFELLE_TOPIC"),
+            getEnvVar("OVERSIKTHENDELSE_OPPFOLGINGSTILFELLE_TOPIC", "aapen-syfo-oversikthendelse-tilfelle-v1"),
+            getEnvVar("OVERSIKTHENDELSE_OPPFOLGINGSTILFELLE_TOPIC_SEEK_TO_START", "false").toBoolean(),
+            getEnvVar("KAFKA_BOOTSTRAP_SERVERS_URL"),
+            getEnvVar("CLIENT_ID"),
+            getEnvVar("PDL_URL", "http://pdl-api.default/graphql"),
+            getEnvVar("SYFOBEHANDLENDEENHET_URL", "http://syfobehandlendeenhet"),
+            getEnvVar("SYFOSYKETILFELLE_URL", "http://syfosyketilfelle"),
+            getEnvVar("TOOGLE_OVERSIKTHENDELSETILFELLE", "false").toBoolean(),
+            getEnvVar("AKTORREGISTER_V1_URL"),
+            getEnvVar("SECURITY_TOKEN_SERVICE_REST_URL"),
+            getEnvVar("EREG_API_BASE_URL", "https://ereg/")
         )
     }
 }
@@ -41,37 +41,37 @@ fun getEnvironment(): Environment {
 val appIsRunningLocally: Boolean = System.getenv("NAIS_CLUSTER_NAME").isNullOrEmpty()
 
 data class Environment(
-        val applicationPort: Int,
-        val applicationThreads: Int,
-        val applicationName: String,
-        val aadDiscoveryUrl: String,
-        val jwkKeysUrl: String,
-        val jwtIssuer: String,
-        val oppfolgingstilfelleTopic: String,
-        val oversikthendelseOppfolgingstilfelleTopic: String,
-        val oversikthendelseOppfolgingstilfelleTopicSeekToBeginning: Boolean,
-        override val kafkaBootstrapServers: String,
-        val clientid: String,
-        val pdlUrl: String,
-        val behandlendeenhetUrl: String,
-        val syketilfelleUrl: String,
-        val toggleOversikthendelsetilfelle: Boolean,
-        val aktoerregisterV1Url: String,
-        val stsRestUrl: String,
-        val eregApiBaseUrl: String
+    val applicationPort: Int,
+    val applicationThreads: Int,
+    val applicationName: String,
+    val aadDiscoveryUrl: String,
+    val jwkKeysUrl: String,
+    val jwtIssuer: String,
+    val oppfolgingstilfelleTopic: String,
+    val oversikthendelseOppfolgingstilfelleTopic: String,
+    val oversikthendelseOppfolgingstilfelleTopicSeekToBeginning: Boolean,
+    override val kafkaBootstrapServers: String,
+    val clientid: String,
+    val pdlUrl: String,
+    val behandlendeenhetUrl: String,
+    val syketilfelleUrl: String,
+    val toggleOversikthendelsetilfelle: Boolean,
+    val aktoerregisterV1Url: String,
+    val stsRestUrl: String,
+    val eregApiBaseUrl: String
 ) : KafkaConfig
 
 data class VaultSecrets(
-        val serviceuserUsername: String,
-        val serviceuserPassword: String
+    val serviceuserUsername: String,
+    val serviceuserPassword: String
 ) : KafkaCredentials {
     override val kafkaUsername: String = serviceuserUsername
     override val kafkaPassword: String = serviceuserPassword
 }
 
 fun getEnvVar(varName: String, defaultValue: String? = null) =
-        System.getenv(varName) ?: defaultValue ?: throw RuntimeException("Missing required variable \"$varName\"")
+    System.getenv(varName) ?: defaultValue ?: throw RuntimeException("Missing required variable \"$varName\"")
 
 private fun firstExistingFile(vararg paths: String) = paths
-        .map(::File)
-        .first(File::exists)
+    .map(::File)
+    .first(File::exists)

@@ -20,9 +20,9 @@ import org.spekframework.spek2.style.specification.describe
 import java.net.ServerSocket
 
 data class OidcToken(
-        val access_token: String,
-        val expires_in: Long,
-        val token_type: String
+    val access_token: String,
+    val expires_in: Long,
+    val token_type: String
 )
 
 @InternalAPI
@@ -56,9 +56,9 @@ object StsRestClientTest : Spek({
         }.start()
 
         val stsRestClient = StsRestClient(
-                baseUrl = mockHttpServerUrl,
-                username = "username",
-                password = "password"
+            baseUrl = mockHttpServerUrl,
+            username = "username",
+            password = "password"
         )
 
         afterGroup {
@@ -76,7 +76,7 @@ object StsRestClientTest : Spek({
 })
 
 private val default_token = OidcToken(
-        access_token = "default access token",
-        expires_in = 3600,
-        token_type = "Bearer"
+    access_token = "default access token",
+    expires_in = 3600,
+    token_type = "Bearer"
 )

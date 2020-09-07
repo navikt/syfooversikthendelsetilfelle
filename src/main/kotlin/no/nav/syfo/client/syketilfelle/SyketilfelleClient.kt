@@ -12,24 +12,24 @@ import no.nav.syfo.metric.COUNT_OPPFOLGINGSTILFELLE_EMPTY
 import no.nav.syfo.util.*
 
 class SyketilfelleClient(
-        private val baseUrl: String,
-        private val stsRestClient: StsRestClient
+    private val baseUrl: String,
+    private val stsRestClient: StsRestClient
 ) {
     fun getOppfolgingstilfelle(
-            aktorId: String,
-            virksomhetsnummer: String,
-            callId: String
+        aktorId: String,
+        virksomhetsnummer: String,
+        callId: String
     ): KOppfolgingstilfelle? {
         val bearer = stsRestClient.token()
 
         val (_, response, result) = getSyfosyketilfelleUrl(aktorId, virksomhetsnummer).httpGet()
-                .header(mapOf(
-                        HttpHeaders.Authorization to bearerHeader(bearer),
-                        HttpHeaders.Accept to "application/json",
-                        NAV_CALL_ID to callId,
-                        NAV_CONSUMER_ID to APP_CONSUMER_ID
-                ))
-                .responseString()
+            .header(mapOf(
+                HttpHeaders.Authorization to bearerHeader(bearer),
+                HttpHeaders.Accept to "application/json",
+                NAV_CALL_ID to callId,
+                NAV_CONSUMER_ID to APP_CONSUMER_ID
+            ))
+            .responseString()
 
         return if (response.statusCode == 204) {
             COUNT_OPPFOLGINGSTILFELLE_EMPTY.inc()

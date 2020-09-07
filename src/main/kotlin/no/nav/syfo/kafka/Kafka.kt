@@ -38,48 +38,46 @@ private val objectMapper: ObjectMapper = ObjectMapper().apply {
 
 private val LOG: Logger = LoggerFactory.getLogger("no.nav.syfo.Kafka")
 
-
 suspend fun CoroutineScope.setupKafka(
-        vaultSecrets: KafkaCredentials,
-        aktorService: AktorService,
-        eregService: EregService,
-        behandlendeEnhetClient: BehandlendeEnhetClient,
-        pdlClient: PdlClient,
-        syketilfelleClient: SyketilfelleClient
+    vaultSecrets: KafkaCredentials,
+    aktorService: AktorService,
+    eregService: EregService,
+    behandlendeEnhetClient: BehandlendeEnhetClient,
+    pdlClient: PdlClient,
+    syketilfelleClient: SyketilfelleClient
 ) {
     LOG.info("Setting up kafka consumer")
     val kafkaBaseConfig = loadBaseConfig(env, vaultSecrets)
-            .envOverrides()
+        .envOverrides()
     val consumerProperties = kafkaBaseConfig.toConsumerConfig(
-            "${env.applicationName}-consumer", valueDeserializer = StringDeserializer::class
+        "${env.applicationName}-consumer", valueDeserializer = StringDeserializer::class
     )
     val producerProperties = kafkaBaseConfig.toProducerConfig(
-            "${env.applicationName}-producer", valueSerializer = JacksonKafkaSerializer::class
+        "${env.applicationName}-producer", valueSerializer = JacksonKafkaSerializer::class
     )
     val oversikthendelseTilfelleProducer = KafkaProducer<String, KOversikthendelsetilfelle>(producerProperties)
 
     val oppfolgingstilfelleService = OppfolgingstilfelleService(
-            aktorService,
-            eregService,
-            behandlendeEnhetClient,
-            pdlClient,
-            syketilfelleClient,
-            oversikthendelseTilfelleProducer
+        aktorService,
+        eregService,
+        behandlendeEnhetClient,
+        pdlClient,
+        syketilfelleClient,
+        oversikthendelseTilfelleProducer
     )
     launchListeners(consumerProperties, state, oppfolgingstilfelleService)
 }
 
-
 @KtorExperimentalAPI
 suspend fun blockingApplicationLogic(
-        applicationState: ApplicationState,
-        kafkaConsumer: KafkaConsumer<String, String>,
-        oppfolgingstilfelleService: OppfolgingstilfelleService
+    applicationState: ApplicationState,
+    kafkaConsumer: KafkaConsumer<String, String>,
+    oppfolgingstilfelleService: OppfolgingstilfelleService
 ) {
     while (applicationState.running) {
         var logValues = arrayOf(
-                StructuredArguments.keyValue("oppfolgingstilfelleId", "missing"),
-                StructuredArguments.keyValue("timestamp", "missing")
+            StructuredArguments.keyValue("oppfolgingstilfelleId", "missing"),
+            StructuredArguments.keyValue("timestamp", "missing")
         )
 
         val logKeys = logValues.joinToString(prefix = "(", postfix = ")", separator = ",") {
@@ -89,10 +87,10 @@ suspend fun blockingApplicationLogic(
             if (env.toggleOversikthendelsetilfelle) {
                 val callId = kafkaCallId()
                 val oppfolgingstilfellePeker: KOppfolgingstilfellePeker =
-                        objectMapper.readValue(it.value())
+                    objectMapper.readValue(it.value())
                 logValues = arrayOf(
-                        StructuredArguments.keyValue("oppfolgingstilfelleId", it.key()),
-                        StructuredArguments.keyValue("timestamp", it.timestamp())
+                    StructuredArguments.keyValue("oppfolgingstilfelleId", it.key()),
+                    StructuredArguments.keyValue("timestamp", it.timestamp())
                 )
                 LOG.info("Mottatt oppfolgingstilfellePeker, klar for behandling, $logKeys, {}", *logValues, CallIdArgument(callId))
 
@@ -105,9 +103,9 @@ suspend fun blockingApplicationLogic(
 
 @KtorExperimentalAPI
 suspend fun CoroutineScope.launchListeners(
-        consumerProperties: Properties,
-        applicationState: ApplicationState,
-        oppfolgingstilfelleService: OppfolgingstilfelleService
+    consumerProperties: Properties,
+    applicationState: ApplicationState,
+    oppfolgingstilfelleService: OppfolgingstilfelleService
 ) {
 
     val kafkaconsumerOppgave = KafkaConsumer<String, String>(consumerProperties)
@@ -124,14 +122,13 @@ suspend fun CoroutineScope.launchListeners(
     }
 
     kafkaconsumerOppgave.subscribe(
-            listOf("aapen-syfo-oppfolgingstilfelle-v1"),
-            subscriptionCallback
+        listOf("aapen-syfo-oppfolgingstilfelle-v1"),
+        subscriptionCallback
     )
 
     createListener(applicationState) {
         blockingApplicationLogic(applicationState, kafkaconsumerOppgave, oppfolgingstilfelleService)
     }
-
 
     applicationState.initialized = true
 }

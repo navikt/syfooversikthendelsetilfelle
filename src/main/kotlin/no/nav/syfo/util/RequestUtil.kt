@@ -12,7 +12,7 @@ const val APP_CONSUMER_ID = "syfooversikthendelsetilfelle"
 const val NAV_CONSUMER_ID = "Nav-Consumer-Id"
 
 const val NAV_CONSUMER_TOKEN = "Nav-Consumer-Token"
-const val TEMA =  "Tema"
+const val TEMA = "Tema"
 const val ALLE_TEMA_HEADERVERDI = "GEN"
 
 const val NAV_PERSONIDENTER = "Nav-Personidenter"
@@ -29,4 +29,3 @@ fun CallIdArgument(callId: String) = StructuredArguments.keyValue("callId", call
 private val kafkaCounter = AtomicInteger(0)
 
 fun kafkaCallId(): String = "${LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MM-HHmm"))}-syfooversikthendelsetilfelle-kafka-${kafkaCounter.incrementAndGet()}"
-

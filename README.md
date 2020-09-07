@@ -15,5 +15,8 @@ Each Oversikthendelse it published to a Kafka-topic that is consumed by Syfoover
 #### Build
 Run `./gradlew clean shadowJar`
 
+#### Lint
+Run `./gradlew --continue ktlintCheck`
+
 #### Test
 Run `./gradlew test -i`

@@ -9,7 +9,7 @@ import io.prometheus.client.hotspot.DefaultExports
 import no.nav.syfo.ApplicationState
 
 fun Routing.registerPodApi(
-        applicationState: ApplicationState
+    applicationState: ApplicationState
 ) {
     DefaultExports.initialize()
 
