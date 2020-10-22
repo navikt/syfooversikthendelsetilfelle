@@ -29,7 +29,8 @@ object EregClientTest : Spek({
         val eregMock = EregMock()
         val eregClient = EregClient(
             baseUrl = eregMock.url,
-            stsRestClient = stsRestClient)
+            stsRestClient = stsRestClient
+        )
 
         beforeGroup {
             stsRestMock.server.start()
