@@ -10,7 +10,7 @@ import java.time.LocalDateTime
 
 val generateOppfolgingstilfelle =
     KOppfolgingstilfelle(
-        ARBEIDSTAKER_AKTORID,
+        ARBEIDSTAKER_AKTORID.aktor,
         VIRKSOMHETSNUMMER,
         emptyList(),
         KSyketilfelledag(
@@ -24,6 +24,6 @@ val generateOppfolgingstilfelle =
 
 val generateOppfolgingstilfellePeker =
     KOppfolgingstilfellePeker(
-        ARBEIDSTAKER_AKTORID,
+        ARBEIDSTAKER_AKTORID.aktor,
         VIRKSOMHETSNUMMER
     )

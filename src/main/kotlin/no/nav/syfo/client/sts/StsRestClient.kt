@@ -1,12 +1,16 @@
 package no.nav.syfo.client.sts
 
 import com.github.kittinunf.fuel.httpGet
-import io.ktor.http.HttpHeaders
+import io.ktor.http.*
 import no.nav.syfo.util.responseJSON
 import org.json.JSONObject
 import java.time.LocalDateTime
 
-class StsRestClient(val baseUrl: String, val username: String, val password: String) {
+class StsRestClient(
+    val baseUrl: String,
+    val username: String,
+    val password: String
+) {
     private var cachedOidcToken: Token? = null
 
     fun token(): String {
@@ -28,7 +32,11 @@ class StsRestClient(val baseUrl: String, val username: String, val password: Str
             getInt("expires_in"))
     }
 
-    data class Token(val accessToken: String, val type: String, val expiresIn: Int) {
+    data class Token(
+        val accessToken: String,
+        val type: String,
+        val expiresIn: Int
+    ) {
         val expirationTime: LocalDateTime = LocalDateTime.now().plusSeconds(expiresIn - 10L)
 
         companion object {

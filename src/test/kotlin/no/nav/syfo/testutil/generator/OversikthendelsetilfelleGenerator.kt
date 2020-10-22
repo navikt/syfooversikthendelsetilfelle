@@ -11,7 +11,7 @@ import java.time.LocalDateTime
 
 val generateOversikthendelsetilfelle =
     KOversikthendelsetilfelle(
-        fnr = ARBEIDSTAKER_FNR,
+        fnr = ARBEIDSTAKER_FNR.value,
         navn = generatePdlHentPerson(null).fullName()!!,
         enhetId = NAV_ENHET,
         virksomhetsnummer = VIRKSOMHETSNUMMER,
