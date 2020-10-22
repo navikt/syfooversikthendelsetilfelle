@@ -73,8 +73,9 @@ fun main() {
         val pdlClient = PdlClient(env.pdlUrl, stsClientRest)
         val syketilfelleClient = SyketilfelleClient(env.syketilfelleUrl, stsClientRest)
 
+        state.running = true
+
         module {
-            init()
             kafkaModule(
                 vaultSecrets,
                 aktorService,
@@ -95,16 +96,6 @@ fun main() {
 
 val state: ApplicationState = ApplicationState(running = false, initialized = false)
 val env: Environment = getEnvironment()
-
-fun Application.init() {
-    isDev {
-        state.running = true
-    }
-
-    isProd {
-        state.running = true
-    }
-}
 
 fun Application.kafkaModule(
     vaultSecrets: VaultSecrets,
