@@ -53,10 +53,6 @@ class AktorregisterClient(val baseUrl: String, val stsRestClient: StsRestClient)
         }
     }
 
-    fun getAktorId(ident: String, callId: String): Either<String, String> {
-        return getIdent(ident, IdentType.AktoerId, callId)
-    }
-
     fun getNorskIdent(ident: String, callId: String): Either<String, String> {
         return getIdent(ident, IdentType.NorskIdent, callId)
     }
