@@ -18,7 +18,7 @@ import io.mockk.coEvery
 import io.mockk.mockk
 import no.nav.syfo.client.sts.StsRestClient
 import no.nav.syfo.env
-import no.nav.syfo.helper.UserConstants
+import no.nav.syfo.testutil.UserConstants.ARBEIDSTAKER_FNR
 import no.nav.syfo.testutil.generator.genereatePdlPersonResponse
 import org.amshove.kluent.shouldEqual
 import org.spekframework.spek2.Spek
@@ -71,7 +71,7 @@ object PdlClientTest : Spek({
 
         describe("Get Person successful") {
             it("Get Person for Fodselsnummer") {
-                val result = pdlClient.person(UserConstants.BRUKER_FNR, "callId")
+                val result = pdlClient.person(ARBEIDSTAKER_FNR.value, "callId")
 
                 result shouldEqual pdlResponse.data
             }

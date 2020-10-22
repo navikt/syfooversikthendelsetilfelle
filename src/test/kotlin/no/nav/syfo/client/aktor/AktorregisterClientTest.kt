@@ -19,8 +19,8 @@ import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
 import no.nav.syfo.client.sts.StsRestClient
-import no.nav.syfo.helper.UserConstants.BRUKER_AKTORID
-import no.nav.syfo.helper.UserConstants.BRUKER_FNR
+import no.nav.syfo.testutil.UserConstants.ARBEIDSTAKER_AKTORID
+import no.nav.syfo.testutil.UserConstants.ARBEIDSTAKER_FNR
 import no.nav.syfo.util.NAV_PERSONIDENTER
 import org.amshove.kluent.shouldEqual
 import org.spekframework.spek2.Spek
@@ -63,20 +63,20 @@ object AktorregisterClientTest : Spek({
             routing {
                 get("/identer") {
                     when (call.request.headers[NAV_PERSONIDENTER]) {
-                        BRUKER_FNR -> {
-                            call.respond(mapOf(BRUKER_FNR to RSAktor(
+                        ARBEIDSTAKER_FNR.value -> {
+                            call.respond(mapOf(ARBEIDSTAKER_FNR.value to RSAktor(
                                 listOf(RSIdent(
-                                    ident = BRUKER_FNR,
+                                    ident = ARBEIDSTAKER_FNR.value,
                                     identgruppe = IdentType.NorskIdent.name,
                                     gjeldende = true
                                 )),
                                 feilmelding = null
                             )))
                         }
-                        BRUKER_AKTORID -> {
-                            call.respond(mapOf(BRUKER_AKTORID to RSAktor(
+                        ARBEIDSTAKER_AKTORID.aktor -> {
+                            call.respond(mapOf(ARBEIDSTAKER_AKTORID.aktor to RSAktor(
                                 listOf(RSIdent(
-                                    ident = BRUKER_AKTORID,
+                                    ident = ARBEIDSTAKER_AKTORID.aktor,
                                     identgruppe = IdentType.AktoerId.name,
                                     gjeldende = true
                                 )),
@@ -106,23 +106,23 @@ object AktorregisterClientTest : Spek({
             it("Get fnr for aktor that exists") {
                 var fnr: String? = null
                 runBlocking {
-                    val lookupResult = aktoerIdClient.getIdenter(BRUKER_FNR, "callId")
+                    val lookupResult = aktoerIdClient.getIdenter(ARBEIDSTAKER_FNR.value, "callId")
                     assertTrue(lookupResult is Either.Right)
                     fnr = lookupResult.b.first { it.type == IdentType.NorskIdent }.ident
                 }
 
-                fnr shouldEqual BRUKER_FNR
+                fnr shouldEqual ARBEIDSTAKER_FNR.value
             }
 
             it("Get aktør for fnr that exists") {
                 var aktorId: String? = null
                 runBlocking {
-                    val lookupResult = aktoerIdClient.getIdenter(BRUKER_AKTORID, "callId")
+                    val lookupResult = aktoerIdClient.getIdenter(ARBEIDSTAKER_AKTORID.aktor, "callId")
                     assertTrue(lookupResult is Either.Right)
                     aktorId = lookupResult.b.first { it.type == IdentType.AktoerId }.ident
                 }
 
-                aktorId shouldEqual BRUKER_AKTORID
+                aktorId shouldEqual ARBEIDSTAKER_AKTORID.aktor
             }
         }
     }

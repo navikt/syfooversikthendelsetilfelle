@@ -20,7 +20,7 @@ import io.mockk.coEvery
 import io.mockk.mockk
 import no.nav.syfo.client.sts.StsRestClient
 import no.nav.syfo.env
-import no.nav.syfo.helper.UserConstants.BRUKER_FNR
+import no.nav.syfo.testutil.UserConstants.ARBEIDSTAKER_FNR
 import no.nav.syfo.testutil.UserConstants.VIRKSOMHETSNUMMER
 import no.nav.syfo.testutil.UserConstants.VIRKSOMHETSNUMMER_ANNET
 import no.nav.syfo.testutil.generator.generateOppfolgingstilfelle
@@ -61,10 +61,10 @@ object SyketilfelleClientTest : Spek({
                 jackson {}
             }
             routing {
-                get("/${env.syketilfelleUrl}/kafka/oppfolgingstilfelle/beregn/$BRUKER_FNR/$VIRKSOMHETSNUMMER") {
+                get("/${env.syketilfelleUrl}/kafka/oppfolgingstilfelle/beregn/${ARBEIDSTAKER_FNR.value}/$VIRKSOMHETSNUMMER") {
                     call.respond(oppfolgingstilfelleJson)
                 }
-                get("/${env.syketilfelleUrl}/kafka/oppfolgingstilfelle/beregn/$BRUKER_FNR/$VIRKSOMHETSNUMMER_ANNET") {
+                get("/${env.syketilfelleUrl}/kafka/oppfolgingstilfelle/beregn/${ARBEIDSTAKER_FNR.value}/$VIRKSOMHETSNUMMER_ANNET") {
                     call.respond(HttpStatusCode.NoContent)
                 }
             }
@@ -85,13 +85,13 @@ object SyketilfelleClientTest : Spek({
 
         describe("SyketilfelleClient successful") {
             it("Get oppfolgingstilfelle for aktorId with virksomhetsnummer") {
-                val result = syketilfelleClient.getOppfolgingstilfelle(BRUKER_FNR, VIRKSOMHETSNUMMER, "callId")
+                val result = syketilfelleClient.getOppfolgingstilfelle(ARBEIDSTAKER_FNR.value, VIRKSOMHETSNUMMER, "callId")
 
                 result shouldEqual oppfolgingstilfelle
             }
 
             it("Do not find oppfolgingstilfelle for aktorId with virksomhetsnummer") {
-                val result = syketilfelleClient.getOppfolgingstilfelle(BRUKER_FNR, VIRKSOMHETSNUMMER_ANNET, "callId")
+                val result = syketilfelleClient.getOppfolgingstilfelle(ARBEIDSTAKER_FNR.value, VIRKSOMHETSNUMMER_ANNET, "callId")
 
                 result shouldEqual null
             }
