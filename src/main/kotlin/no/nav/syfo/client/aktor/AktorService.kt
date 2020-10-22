@@ -1,7 +1,7 @@
 package no.nav.syfo.client.aktor
 
-import no.nav.syfo.client.aktor.domain.AktorId
-import no.nav.syfo.client.aktor.domain.Fodselsnummer
+import no.nav.syfo.domain.AktorId
+import no.nav.syfo.domain.Fodselsnummer
 
 import no.nav.syfo.log
 

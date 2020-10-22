@@ -1,4 +1,4 @@
-package no.nav.syfo.client.aktor.domain
+package no.nav.syfo.domain
 
 data class Fodselsnummer(val value: String) {
     private val elevenDigits = Regex("\\d{11}")

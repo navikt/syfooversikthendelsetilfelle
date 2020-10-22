@@ -1,7 +1,7 @@
 package no.nav.syfo.oppfolgingstilfelle
 
 import no.nav.syfo.client.aktor.AktorService
-import no.nav.syfo.client.aktor.domain.AktorId
+import no.nav.syfo.domain.AktorId
 import no.nav.syfo.client.enhet.BehandlendeEnhetClient
 import no.nav.syfo.client.ereg.EregService
 import no.nav.syfo.client.pdl.PdlClient

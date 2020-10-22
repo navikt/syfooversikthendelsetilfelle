@@ -1,4 +1,4 @@
-package no.nav.syfo.client.aktor.domain
+package no.nav.syfo.domain
 
 data class AktorId(val aktor: String) {
 
