@@ -5,30 +5,31 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 group = "no.nav.syfo"
 version = "1.0-SNAPSHOT"
 
-val arrowVersion = "0.9.0"
-val coroutinesVersion = "1.3.3"
+val arrowVersion = "0.11.0"
+val coroutinesVersion = "1.3.9"
+val jacksonVersion = "2.10.0"
 val fuelVersion = "1.15.1"
-val kluentVersion = "1.39"
-val ktorVersion = "1.3.1"
-val logbackVersion = "1.2.3"
-val prometheusVersion = "0.8.1"
-val spekVersion = "2.0.9"
-val logstashEncoderVersion = "5.1"
-val jacksonVersion = "2.9.8"
-val mockkVersion = "1.9.3"
-val orgJsonVersion = "20180813"
 val gsonVersion = "2.8.0"
 val kafkaVersion = "2.0.0"
 val kafkaEmbeddedVersion = "2.0.2"
+val kluentVersion = "1.61"
+val kotlinSerializationVersion = "0.20.0"
+val ktorVersion = "1.3.2"
+val logbackVersion = "1.2.3"
+val logstashEncoderVersion = "6.3"
+val mockkVersion = "1.10.0"
+val orgJsonVersion = "20180813"
+val prometheusVersion = "0.9.0"
 val smCommonVersion = "2019.08.08-03-52-c78281e2409af36f3ef07df4369fa29b0ea81a46"
+val spekVersion = "2.0.12"
 
 tasks.withType<Jar> {
     manifest.attributes["Main-Class"] = "no.nav.syfo.MainApplicationKt"
 }
 
 plugins {
-    kotlin("jvm") version "1.3.61"
-    id("com.github.johnrengelman.shadow") version "4.0.4"
+    kotlin("jvm") version "1.4.10"
+    id("com.github.johnrengelman.shadow") version "6.1.0"
     id("org.jlleitschuh.gradle.ktlint") version "9.2.1"
 }
 
@@ -39,7 +40,8 @@ repositories {
 }
 
 dependencies {
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
+    implementation(kotlin("stdlib"))
+    implementation(kotlin("reflect"))
 
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-slf4j:$coroutinesVersion")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
@@ -69,8 +71,8 @@ dependencies {
     implementation("no.nav.syfo.sm:syfosm-common-models:$smCommonVersion")
     implementation("no.nav.syfo.sm:syfosm-common-kafka:$smCommonVersion")
 
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime:0.9.0")
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime-common:0.9.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime:$kotlinSerializationVersion")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime-common:$kotlinSerializationVersion")
 
     implementation("io.ktor:ktor-jackson:$ktorVersion")
     implementation("io.ktor:ktor-client-jackson:$ktorVersion")
@@ -82,7 +84,6 @@ dependencies {
     testImplementation("org.spekframework.spek2:spek-dsl-jvm:$spekVersion")
     testImplementation("io.ktor:ktor-server-test-host:$ktorVersion")
     testImplementation("io.mockk:mockk:$mockkVersion")
-    testImplementation("org.testcontainers:postgresql:1.11.3")
     testRuntimeOnly("org.spekframework.spek2:spek-runtime-jvm:$spekVersion")
     testRuntimeOnly("org.spekframework.spek2:spek-runner-junit5:$spekVersion")
 
