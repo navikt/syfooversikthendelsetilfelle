@@ -2,8 +2,6 @@ package no.nav.syfo.client.enhet
 
 import io.ktor.server.testing.TestApplicationEngine
 import io.ktor.util.InternalAPI
-import io.mockk.coEvery
-import io.mockk.mockk
 import no.nav.syfo.client.sts.StsRestClient
 import no.nav.syfo.testutil.UserConstants.ARBEIDSTAKER_FNR
 import no.nav.syfo.testutil.mock.BehandlendeEnhetMock
@@ -15,7 +13,6 @@ import org.spekframework.spek2.style.specification.describe
 
 @InternalAPI
 object BehandlendeEnhetClientTest : Spek({
-    val stsOidcClientMock = mockk<StsRestClient>()
 
     with(TestApplicationEngine()) {
         start()
@@ -36,7 +33,6 @@ object BehandlendeEnhetClientTest : Spek({
         )
 
         beforeGroup {
-            coEvery { stsOidcClientMock.token() } returns "oidctoken"
             stsRestMock.server.start()
             behandlendeEnhetMock.server.start()
         }
