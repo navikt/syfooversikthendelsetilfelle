@@ -6,6 +6,7 @@ import no.nav.syfo.testutil.UserConstants.ARBEIDSTAKER_FNR
 import no.nav.syfo.testutil.UserConstants.NAV_ENHET
 import no.nav.syfo.testutil.UserConstants.VIRKSOMHETSNAVN
 import no.nav.syfo.testutil.UserConstants.VIRKSOMHETSNUMMER
+import no.nav.syfo.testutil.mock.generatePdlHentPerson
 import java.time.LocalDate
 import java.time.LocalDateTime
 
