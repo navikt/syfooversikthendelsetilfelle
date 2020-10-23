@@ -12,9 +12,7 @@ env:
 
 jobs:
   deploy-dev:
-    if: github.ref == 'refs/heads/master'
     name: Deploy to NAIS Dev-fss
-    needs: build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
