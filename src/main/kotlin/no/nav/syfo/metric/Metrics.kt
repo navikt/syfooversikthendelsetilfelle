@@ -4,11 +4,23 @@ import io.prometheus.client.Counter
 
 const val METRICS_NS = "syfooversikthendelsetilfelle"
 
-const val OPPFOLGINGSTILFELLE_EMPTY = "oppfolgingstilfelle_empty_count"
-val COUNT_OPPFOLGINGSTILFELLE_EMPTY: Counter = Counter.build()
+const val CALL_SYKETILFELLE_OPPFOLGINGSTILFELLE_AKTOR_EMPTY = "call_syketilfelle_oppfolgingstilfelle_aktorid_empty_count"
+val COUNT_CALL_SYKETILFELLE_OPPFOLGINGSTILFELLE_AKTOR_EMPTY: Counter = Counter.build()
     .namespace(METRICS_NS)
-    .name(OPPFOLGINGSTILFELLE_EMPTY)
-    .help("Counts the number of responses from syfosyketillfelle with status 204 received")
+    .name(CALL_SYKETILFELLE_OPPFOLGINGSTILFELLE_AKTOR_EMPTY)
+    .help("Counts the number of responses from syfosyketilfelle with status 204 received")
+    .register()
+const val CALL_SYKETILFELLE_OPPFOLGINGSTILFELLE_AKTOR_SUCCESS = "call_syketilfelle_oppfolgingstilfelle_aktorid_success_count"
+val COUNT_CALL_SYKETILFELLE_OPPFOLGINGSTILFELLE_AKTOR_SUCCESS: Counter = Counter.build()
+    .namespace(METRICS_NS)
+    .name(CALL_SYKETILFELLE_OPPFOLGINGSTILFELLE_AKTOR_SUCCESS)
+    .help("Counts the number of responses from syfosyketilfelle with status 204 received")
+    .register()
+const val CALL_SYKETILFELLE_OPPFOLGINGSTILFELLE_AKTOR_FAIL = "call_syketilfelle_oppfolgingstilfelle_aktorid_fail_count"
+val COUNT_CALL_SYKETILFELLE_OPPFOLGINGSTILFELLE_AKTOR_FAIL: Counter = Counter.build()
+    .namespace(METRICS_NS)
+    .name(CALL_SYKETILFELLE_OPPFOLGINGSTILFELLE_AKTOR_FAIL)
+    .help("Counts the number of responses from syfosyketilfelle with status 204 received")
     .register()
 
 const val OPPFOLGINGSTILFELLE_RECEIVED = "oppfolgingstilfelle_received_count"
