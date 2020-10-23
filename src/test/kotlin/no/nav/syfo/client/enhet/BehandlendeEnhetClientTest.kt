@@ -7,7 +7,7 @@ import no.nav.syfo.testutil.UserConstants.ARBEIDSTAKER_FNR
 import no.nav.syfo.testutil.mock.BehandlendeEnhetMock
 import no.nav.syfo.testutil.mock.StsRestMock
 import no.nav.syfo.testutil.vaultSecrets
-import org.amshove.kluent.shouldEqual
+import org.amshove.kluent.shouldBeEqualTo
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.specification.describe
 
@@ -46,7 +46,7 @@ object BehandlendeEnhetClientTest : Spek({
             it("Get enhet for Fodselsnummer") {
                 val result = behandlendeEnhetClient.getEnhet(ARBEIDSTAKER_FNR.value, "callId")
 
-                result shouldEqual behandlendeEnhetMock.behandlendeEnhet
+                result shouldBeEqualTo behandlendeEnhetMock.behandlendeEnhet
             }
         }
     }

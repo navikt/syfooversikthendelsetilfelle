@@ -9,7 +9,7 @@ import no.nav.syfo.testutil.UserConstants.VIRKSOMHETSNUMMER_ANNET
 import no.nav.syfo.testutil.mock.StsRestMock
 import no.nav.syfo.testutil.mock.SyketilfelleMock
 import no.nav.syfo.testutil.vaultSecrets
-import org.amshove.kluent.shouldEqual
+import org.amshove.kluent.shouldBeEqualTo
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.specification.describe
 
@@ -52,7 +52,7 @@ object SyketilfelleClientTest : Spek({
                     "callId"
                 )
 
-                result shouldEqual syketilfelleMock.kOppfolgingstilfelle
+                result shouldBeEqualTo syketilfelleMock.kOppfolgingstilfelle
             }
 
             it("Do not find oppfolgingstilfelle for aktorId with virksomhetsnummer") {
@@ -62,7 +62,7 @@ object SyketilfelleClientTest : Spek({
                     "callId"
                 )
 
-                result shouldEqual null
+                result shouldBeEqualTo null
             }
         }
     }

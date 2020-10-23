@@ -7,7 +7,7 @@ import no.nav.syfo.testutil.UserConstants.VIRKSOMHETSNUMMER
 import no.nav.syfo.testutil.mock.EregMock
 import no.nav.syfo.testutil.mock.StsRestMock
 import no.nav.syfo.testutil.vaultSecrets
-import org.amshove.kluent.shouldEqual
+import org.amshove.kluent.shouldBeEqualTo
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.specification.describe
 
@@ -48,8 +48,8 @@ object EregClientTest : Spek({
                     VIRKSOMHETSNUMMER,
                     "callId"
                 )
-                orgNavn?.navn?.navnelinje1 shouldEqual eregMock.eregResponse.navn.navnelinje1
-                orgNavn?.navn?.redigertnavn shouldEqual eregMock.eregResponse.navn.redigertnavn
+                orgNavn?.navn?.navnelinje1 shouldBeEqualTo eregMock.eregResponse.navn.navnelinje1
+                orgNavn?.navn?.redigertnavn shouldBeEqualTo eregMock.eregResponse.navn.redigertnavn
             }
         }
     }

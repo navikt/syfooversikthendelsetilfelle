@@ -7,7 +7,7 @@ import no.nav.syfo.testutil.UserConstants.ARBEIDSTAKER_FNR
 import no.nav.syfo.testutil.mock.PdlMock
 import no.nav.syfo.testutil.mock.StsRestMock
 import no.nav.syfo.testutil.vaultSecrets
-import org.amshove.kluent.shouldEqual
+import org.amshove.kluent.shouldBeEqualTo
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.specification.describe
 
@@ -46,7 +46,7 @@ object PdlClientTest : Spek({
             it("Get Person for Fodselsnummer") {
                 val result = pdlClient.person(ARBEIDSTAKER_FNR.value, "callId")
 
-                result shouldEqual pdlMock.pdlPersonResponse.data
+                result shouldBeEqualTo pdlMock.pdlPersonResponse.data
             }
         }
     }

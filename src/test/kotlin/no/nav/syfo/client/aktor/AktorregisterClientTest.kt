@@ -10,7 +10,7 @@ import no.nav.syfo.testutil.UserConstants.ARBEIDSTAKER_FNR
 import no.nav.syfo.testutil.mock.AktorregisterMock
 import no.nav.syfo.testutil.mock.StsRestMock
 import no.nav.syfo.testutil.vaultSecrets
-import org.amshove.kluent.shouldEqual
+import org.amshove.kluent.shouldBeEqualTo
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.specification.describe
 import kotlin.test.assertTrue
@@ -55,7 +55,7 @@ object AktorregisterClientTest : Spek({
                     fnr = lookupResult.b.first { it.type == IdentType.NorskIdent }.ident
                 }
 
-                fnr shouldEqual ARBEIDSTAKER_FNR.value
+                fnr shouldBeEqualTo ARBEIDSTAKER_FNR.value
             }
 
             it("Get aktør for fnr that exists") {
@@ -66,7 +66,7 @@ object AktorregisterClientTest : Spek({
                     aktorId = lookupResult.b.first { it.type == IdentType.AktoerId }.ident
                 }
 
-                aktorId shouldEqual ARBEIDSTAKER_AKTORID.aktor
+                aktorId shouldBeEqualTo ARBEIDSTAKER_AKTORID.aktor
             }
         }
     }

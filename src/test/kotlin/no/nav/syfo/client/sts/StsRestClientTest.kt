@@ -4,7 +4,7 @@ import io.ktor.server.testing.TestApplicationEngine
 import io.ktor.util.InternalAPI
 import no.nav.syfo.testutil.mock.StsRestMock
 import no.nav.syfo.testutil.vaultSecrets
-import org.amshove.kluent.shouldEqual
+import org.amshove.kluent.shouldBeEqualTo
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.specification.describe
 
@@ -34,7 +34,7 @@ object StsRestClientTest : Spek({
             it("should parse a token successfully") {
                 val token: String = stsRestClient.token()
 
-                token shouldEqual stsRestMock.defaultToken.access_token
+                token shouldBeEqualTo stsRestMock.defaultToken.access_token
             }
         }
     }

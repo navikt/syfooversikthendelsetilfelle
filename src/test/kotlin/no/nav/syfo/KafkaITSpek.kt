@@ -9,7 +9,7 @@ import no.nav.syfo.kafka.*
 import no.nav.syfo.oppfolgingstilfelle.domain.*
 import no.nav.syfo.testutil.generator.generateOppfolgingstilfellePeker
 import no.nav.syfo.testutil.generator.generateOversikthendelsetilfelle
-import org.amshove.kluent.shouldEqual
+import org.amshove.kluent.shouldBeEqualTo
 import org.apache.kafka.clients.consumer.KafkaConsumer
 import org.apache.kafka.clients.producer.KafkaProducer
 import org.apache.kafka.common.serialization.StringDeserializer
@@ -108,8 +108,8 @@ object KafkaITSpek : Spek({
                 val tilfellePeker: KOppfolgingstilfellePeker = objectMapper.readValue(it.value())
                 messages.add(tilfellePeker)
             }
-            messages.size shouldEqual 1
-            messages.first() shouldEqual kOppfolgingstilfellePeker
+            messages.size shouldBeEqualTo 1
+            messages.first() shouldBeEqualTo kOppfolgingstilfellePeker
         }
 
         it("Topic ${env.oversikthendelseOppfolgingstilfelleTopic}") {
@@ -121,8 +121,8 @@ object KafkaITSpek : Spek({
                 val hendelse: KOversikthendelsetilfelle = objectMapper.readValue(it.value())
                 messages.add(hendelse)
             }
-            messages.size shouldEqual 1
-            messages.first() shouldEqual oversikthendelsetilfelle
+            messages.size shouldBeEqualTo 1
+            messages.first() shouldBeEqualTo oversikthendelsetilfelle
         }
     }
 })

@@ -1,7 +1,7 @@
 package no.nav.syfo.oppfolgingstilfelle
 
 import no.nav.syfo.oppfolgingstilfelle.domain.*
-import org.amshove.kluent.shouldEqual
+import org.amshove.kluent.shouldBeEqualTo
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.specification.describe
 import java.time.LocalDate
@@ -36,7 +36,7 @@ object KSyketilfelleTest : Spek({
             )
             val res = tidslinje.isLatestSykmeldingGradert()
 
-            res shouldEqual true
+            res shouldBeEqualTo true
         }
 
         it("should return true, if $GRADERT_AKTIVITET is present, but not today") {
@@ -53,7 +53,7 @@ object KSyketilfelleTest : Spek({
             )
             val res = tidslinje.isLatestSykmeldingGradert()
 
-            res shouldEqual true
+            res shouldBeEqualTo true
         }
 
         it("should return false, if $GRADERT_AKTIVITET is not present") {
@@ -67,7 +67,7 @@ object KSyketilfelleTest : Spek({
             )
             val res = tidslinje.isLatestSykmeldingGradert()
 
-            res shouldEqual false
+            res shouldBeEqualTo false
         }
 
         it("should return false, if $SYKEPENGESOKNAD is present and $GRADERT_AKTIVITET is not present") {
@@ -81,7 +81,7 @@ object KSyketilfelleTest : Spek({
             )
             val res = tidslinje.isLatestSykmeldingGradert()
 
-            res shouldEqual false
+            res shouldBeEqualTo false
         }
 
         it("should return false, if $GRADERT_AKTIVITET is not present") {
@@ -95,7 +95,7 @@ object KSyketilfelleTest : Spek({
             )
             val res = tidslinje.isLatestSykmeldingGradert()
 
-            res shouldEqual false
+            res shouldBeEqualTo false
         }
 
         it("should return true, if $SYKEPENGESOKNAD and $SYKMELDING with $GRADERT_AKTIVITET is present") {
@@ -118,7 +118,7 @@ object KSyketilfelleTest : Spek({
             )
 
             val res = tidslinje.isLatestSykmeldingGradert()
-            res shouldEqual true
+            res shouldBeEqualTo true
         }
 
         it("should return false, if $SYKEPENGESOKNAD and $SYKMELDING without $GRADERT_AKTIVITET is present") {
@@ -140,7 +140,7 @@ object KSyketilfelleTest : Spek({
             )
             val res = tidslinje.isLatestSykmeldingGradert()
 
-            res shouldEqual false
+            res shouldBeEqualTo false
         }
 
         it("should return true, if first $SYKMELDING without $GRADERT_AKTIVITET and then $SYKMELDING with $GRADERT_AKTIVITET") {
@@ -163,7 +163,7 @@ object KSyketilfelleTest : Spek({
             )
             val res = tidslinje.isLatestSykmeldingGradert()
 
-            res shouldEqual true
+            res shouldBeEqualTo true
         }
 
         it("should return false, if first $SYKMELDING with $GRADERT_AKTIVITET and then $SYKMELDING without $GRADERT_AKTIVITET") {
@@ -186,7 +186,7 @@ object KSyketilfelleTest : Spek({
             )
             val res = tidslinje.isLatestSykmeldingGradert()
 
-            res shouldEqual false
+            res shouldBeEqualTo false
         }
     }
 })
