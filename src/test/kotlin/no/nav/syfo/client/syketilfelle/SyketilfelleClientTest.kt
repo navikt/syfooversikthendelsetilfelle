@@ -2,6 +2,7 @@ package no.nav.syfo.client.syketilfelle
 
 import io.ktor.server.testing.TestApplicationEngine
 import io.ktor.util.InternalAPI
+import kotlinx.coroutines.runBlocking
 import no.nav.syfo.client.sts.StsRestClient
 import no.nav.syfo.testutil.UserConstants.ARBEIDSTAKER_AKTORID
 import no.nav.syfo.testutil.UserConstants.VIRKSOMHETSNUMMER
@@ -46,22 +47,24 @@ object SyketilfelleClientTest : Spek({
 
         describe("SyketilfelleClient successful") {
             it("Get oppfolgingstilfelle for aktorId with virksomhetsnummer") {
-                val result = syketilfelleClient.getOppfolgingstilfelle(
-                    ARBEIDSTAKER_AKTORID.aktor,
-                    VIRKSOMHETSNUMMER,
-                    "callId"
-                )
-
+                val result = runBlocking {
+                    syketilfelleClient.getOppfolgingstilfelle(
+                        ARBEIDSTAKER_AKTORID.aktor,
+                        VIRKSOMHETSNUMMER,
+                        "callId"
+                    )
+                }
                 result shouldBeEqualTo syketilfelleMock.kOppfolgingstilfelle
             }
 
             it("Do not find oppfolgingstilfelle for aktorId with virksomhetsnummer") {
-                val result = syketilfelleClient.getOppfolgingstilfelle(
-                    ARBEIDSTAKER_AKTORID.aktor,
-                    VIRKSOMHETSNUMMER_ANNET,
-                    "callId"
-                )
-
+                val result = runBlocking {
+                    syketilfelleClient.getOppfolgingstilfelle(
+                        ARBEIDSTAKER_AKTORID.aktor,
+                        VIRKSOMHETSNUMMER_ANNET,
+                        "callId"
+                    )
+                }
                 result shouldBeEqualTo null
             }
         }

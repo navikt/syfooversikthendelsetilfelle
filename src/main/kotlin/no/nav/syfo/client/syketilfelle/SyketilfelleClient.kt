@@ -15,7 +15,7 @@ class SyketilfelleClient(
     private val baseUrl: String,
     private val stsRestClient: StsRestClient
 ) {
-    fun getOppfolgingstilfelle(
+    suspend fun getOppfolgingstilfelle(
         aktorId: String,
         virksomhetsnummer: String,
         callId: String

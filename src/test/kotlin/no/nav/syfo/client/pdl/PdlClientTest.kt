@@ -2,6 +2,7 @@ package no.nav.syfo.client.pdl
 
 import io.ktor.server.testing.TestApplicationEngine
 import io.ktor.util.InternalAPI
+import kotlinx.coroutines.runBlocking
 import no.nav.syfo.client.sts.StsRestClient
 import no.nav.syfo.testutil.UserConstants.ARBEIDSTAKER_FNR
 import no.nav.syfo.testutil.mock.PdlMock
@@ -44,8 +45,9 @@ object PdlClientTest : Spek({
 
         describe("Get Person successful") {
             it("Get Person for Fodselsnummer") {
-                val result = pdlClient.person(ARBEIDSTAKER_FNR.value, "callId")
-
+                val result = runBlocking {
+                    pdlClient.person(ARBEIDSTAKER_FNR.value, "callId")
+                }
                 result shouldBeEqualTo pdlMock.pdlPersonResponse.data
             }
         }

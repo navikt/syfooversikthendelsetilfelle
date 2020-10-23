@@ -2,6 +2,7 @@ package no.nav.syfo.client.sts
 
 import io.ktor.server.testing.TestApplicationEngine
 import io.ktor.util.InternalAPI
+import kotlinx.coroutines.runBlocking
 import no.nav.syfo.testutil.mock.StsRestMock
 import no.nav.syfo.testutil.vaultSecrets
 import org.amshove.kluent.shouldBeEqualTo
@@ -32,8 +33,9 @@ object StsRestClientTest : Spek({
 
         describe("OIDC Token") {
             it("should parse a token successfully") {
-                val token: String = stsRestClient.token()
-
+                val token: String = runBlocking {
+                    stsRestClient.token()
+                }
                 token shouldBeEqualTo stsRestMock.defaultToken.access_token
             }
         }

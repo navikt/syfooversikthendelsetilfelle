@@ -16,7 +16,7 @@ class BehandlendeEnhetClient(
     private val baseUrl: String,
     private val stsRestClient: StsRestClient
 ) {
-    fun getEnhet(fnr: String, callId: String): BehandlendeEnhet? {
+    suspend fun getEnhet(fnr: String, callId: String): BehandlendeEnhet? {
         val bearer = stsRestClient.token()
 
         COUNT_CALL_BEHANDLENDEENHET.inc()

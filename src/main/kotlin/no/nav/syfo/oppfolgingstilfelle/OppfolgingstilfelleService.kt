@@ -45,7 +45,7 @@ class OppfolgingstilfelleService(
         }
     }
 
-    private fun produce(
+    private suspend fun produce(
         oppfolgingstilfellePeker: KOppfolgingstilfellePeker,
         fnr: String,
         organisasjonNavn: String,
