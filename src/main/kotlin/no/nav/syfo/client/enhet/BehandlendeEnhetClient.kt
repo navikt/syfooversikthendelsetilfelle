@@ -1,12 +1,15 @@
 package no.nav.syfo.client.enhet
 
 import com.fasterxml.jackson.databind.DeserializationFeature
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import com.fasterxml.jackson.module.kotlin.readValue
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
-import com.github.kittinunf.fuel.httpGet
-import io.ktor.http.HttpHeaders
+import io.ktor.client.*
+import io.ktor.client.call.*
+import io.ktor.client.engine.cio.*
+import io.ktor.client.features.json.*
+import io.ktor.client.request.*
+import io.ktor.client.statement.*
+import io.ktor.http.*
 import no.nav.syfo.client.sts.StsRestClient
 import no.nav.syfo.metric.*
 import no.nav.syfo.util.*
@@ -16,27 +19,32 @@ class BehandlendeEnhetClient(
     private val baseUrl: String,
     private val stsRestClient: StsRestClient
 ) {
+    private val client = HttpClient(CIO) {
+        install(JsonFeature) {
+            serializer = JacksonSerializer {
+                registerKotlinModule()
+                registerModule(JavaTimeModule())
+                configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+            }
+        }
+    }
+
     suspend fun getEnhet(fnr: String, callId: String): BehandlendeEnhet? {
         val bearer = stsRestClient.token()
 
         COUNT_CALL_BEHANDLENDEENHET.inc()
 
-        val (_, response, result) = getBehandlendeEnhetUrl(fnr).httpGet()
-            .header(mapOf(
-                HttpHeaders.Authorization to bearerHeader(bearer),
-                HttpHeaders.Accept to "application/json",
-                NAV_CALL_ID to callId,
-                NAV_CONSUMER_ID to APP_CONSUMER_ID
-            ))
-            .responseString()
+        val response: HttpResponse = client.get(getBehandlendeEnhetUrl(fnr)) {
+            header(HttpHeaders.Authorization, bearerHeader(bearer))
+            header(NAV_CALL_ID, callId)
+            header(NAV_CONSUMER_ID, APP_CONSUMER_ID)
+            accept(ContentType.Application.Json)
+        }
 
-        result.fold(success = {
-            return if (response.statusCode == 204) {
-                COUNT_CALL_BEHANDLENDEENHET_EMPTY.inc()
-                null
-            } else {
-                val behandlendeEnhet = objectMapper.readValue<BehandlendeEnhet>(result.get())
-                if (isValid(behandlendeEnhet)) {
+        when (response.status) {
+            HttpStatusCode.OK -> {
+                val behandlendeEnhet = response.receive<BehandlendeEnhet>()
+                return if (isValid(behandlendeEnhet)) {
                     COUNT_CALL_BEHANDLENDEENHET_SUCCESS.inc()
                     behandlendeEnhet
                 } else {
@@ -45,12 +53,17 @@ class BehandlendeEnhetClient(
                     null
                 }
             }
-        }, failure = {
-            COUNT_CALL_BEHANDLENDEENHET_FAIL.inc()
-            val exception = it.exception
-            LOG.error("Error with responseCode=${response.statusCode} with callId=$callId while requesting behandlendeenhet from syfobehandlendeenhet: ${exception.message}", exception)
-            return null
-        })
+            HttpStatusCode.NoContent -> {
+                LOG.error("BehandlendeEnhet returned HTTP-${response.status.value}: No BehandlendeEnhet was found for Fodselsnummer")
+                COUNT_CALL_BEHANDLENDEENHET_EMPTY.inc()
+                return null
+            }
+            else -> {
+                COUNT_CALL_BEHANDLENDEENHET_FAIL.inc()
+                LOG.error("Error with responseCode=${response.status.value} with callId=$callId while requesting behandlendeenhet from syfobehandlendeenhet")
+                return null
+            }
+        }
     }
 
     private fun getBehandlendeEnhetUrl(bruker: String): String {
@@ -59,12 +72,6 @@ class BehandlendeEnhetClient(
 
     private fun isValid(behandlendeEnhet: BehandlendeEnhet): Boolean {
         return behandlendeEnhet.enhetId.length <= 4
-    }
-
-    private val objectMapper: ObjectMapper = ObjectMapper().apply {
-        registerKotlinModule()
-        registerModule(JavaTimeModule())
-        configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
     }
 
     companion object {
