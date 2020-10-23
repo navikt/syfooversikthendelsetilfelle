@@ -6,7 +6,6 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import com.github.kittinunf.fuel.httpPost
-import com.google.gson.Gson
 import no.nav.syfo.client.sts.StsRestClient
 import no.nav.syfo.metric.*
 import no.nav.syfo.util.*
@@ -28,7 +27,7 @@ class PdlClient(
 
         val request = PdlRequest(query, Variables(fnr))
 
-        val json = Gson().toJson(request)
+        val json = objectMapper.writeValueAsString(request)
 
         val (_, response, result) = baseUrl
             .httpPost()
