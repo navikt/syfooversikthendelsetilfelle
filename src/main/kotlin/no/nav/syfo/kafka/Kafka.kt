@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.*
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
-import io.ktor.util.KtorExperimentalAPI
+import io.ktor.util.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import net.logstash.logback.argument.StructuredArguments
@@ -23,7 +23,6 @@ import org.apache.kafka.clients.consumer.ConsumerRebalanceListener
 import org.apache.kafka.clients.consumer.KafkaConsumer
 import org.apache.kafka.clients.producer.KafkaProducer
 import org.apache.kafka.common.TopicPartition
-import org.apache.kafka.common.serialization.StringDeserializer
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.time.Duration
@@ -39,7 +38,7 @@ private val objectMapper: ObjectMapper = ObjectMapper().apply {
 private val LOG: Logger = LoggerFactory.getLogger("no.nav.syfo.Kafka")
 
 suspend fun CoroutineScope.setupKafka(
-    vaultSecrets: KafkaCredentials,
+    vaultSecrets: VaultSecrets,
     aktorService: AktorService,
     eregService: EregService,
     behandlendeEnhetClient: BehandlendeEnhetClient,
@@ -47,14 +46,9 @@ suspend fun CoroutineScope.setupKafka(
     syketilfelleClient: SyketilfelleClient
 ) {
     LOG.info("Setting up kafka consumer")
-    val kafkaBaseConfig = loadBaseConfig(env, vaultSecrets)
-        .envOverrides()
-    val consumerProperties = kafkaBaseConfig.toConsumerConfig(
-        "${env.applicationName}-consumer", valueDeserializer = StringDeserializer::class
-    )
-    val producerProperties = kafkaBaseConfig.toProducerConfig(
-        "${env.applicationName}-producer", valueSerializer = JacksonKafkaSerializer::class
-    )
+    val consumerProperties = kafkaOppfolgingstilfelleConsumerProperties(env, vaultSecrets)
+
+    val producerProperties = kafkaOversikthendelsetilfelleProducerProperties(env, vaultSecrets)
     val oversikthendelseTilfelleProducer = KafkaProducer<String, KOversikthendelsetilfelle>(producerProperties)
 
     val oppfolgingstilfelleService = OppfolgingstilfelleService(
