@@ -27,7 +27,7 @@ class OppfolgingstilfelleService(
     private val syketilfelleClient: SyketilfelleClient,
     private val producer: KafkaProducer<String, KOversikthendelsetilfelle>
 ) {
-    fun receiveOppfolgingstilfeller(oppfolgingstilfellePeker: KOppfolgingstilfellePeker, callId: String = "") {
+    suspend fun receiveOppfolgingstilfeller(oppfolgingstilfellePeker: KOppfolgingstilfellePeker, callId: String = "") {
         val aktor = AktorId(oppfolgingstilfellePeker.aktorId)
 
         val fnr: String = aktorService.fodselsnummerForAktor(aktor, callId)

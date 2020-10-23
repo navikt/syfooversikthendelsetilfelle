@@ -7,12 +7,12 @@ import no.nav.syfo.log
 class AktorService(
     private val aktorregisterClient: AktorregisterClient
 ) {
-    fun getFodselsnummerForAktor(aktorId: AktorId, callId: String) =
+    suspend fun getFodselsnummerForAktor(aktorId: AktorId, callId: String) =
             aktorregisterClient.getNorskIdent(aktorId.aktor, callId).mapLeft {
                 throw IllegalStateException("Fant ikke aktor")
             }
 
-    fun fodselsnummerForAktor(aktorId: AktorId, callId: String): String? {
+    suspend fun fodselsnummerForAktor(aktorId: AktorId, callId: String): String? {
         var fnr: String? = null
         getFodselsnummerForAktor(aktorId, callId).mapLeft {
             log.info("Fant ikke fnr for Aktor")
