@@ -1,0 +1,25 @@
+name: main
+
+on:
+  workflow_dispatch
+  push:
+    branches:
+      - '*'
+      - '!master'
+
+env:
+  IMAGE: docker.pkg.github.com/${{ github.repository }}/syfooversikthendelsetilfelle:${{ github.sha }}
+
+jobs:
+  deploy-dev:
+    if: github.ref == 'refs/heads/master'
+    name: Deploy to NAIS Dev-fss
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - uses: nais/deploy/actions/deploy@v1
+        env:
+          APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
+          CLUSTER: dev-fss
+          RESOURCE: naiserator-dev.yaml
