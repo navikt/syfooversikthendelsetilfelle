@@ -62,7 +62,7 @@ fun main() {
             port = env.applicationPort
         }
 
-        val stsClientRest = StsRestClient(env.stsRestUrl, vaultSecrets.kafkaUsername, vaultSecrets.kafkaPassword)
+        val stsClientRest = StsRestClient(env.stsRestUrl, vaultSecrets.serviceuserUsername, vaultSecrets.serviceuserPassword)
 
         val eregClient = EregClient(env.eregApiBaseUrl, stsClientRest)
         val eregService = EregService(eregClient)

@@ -10,9 +10,9 @@ import no.nav.syfo.oppfolgingstilfelle.domain.*
 import no.nav.syfo.testutil.generator.generateOppfolgingstilfellePeker
 import no.nav.syfo.testutil.generator.generateOversikthendelsetilfelle
 import org.amshove.kluent.shouldBeEqualTo
+import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.clients.consumer.KafkaConsumer
 import org.apache.kafka.clients.producer.KafkaProducer
-import org.apache.kafka.common.serialization.StringDeserializer
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.specification.describe
 import java.net.ServerSocket
@@ -72,21 +72,30 @@ object KafkaITSpek : Spek({
         remove("sasl.mechanism")
     }
 
-    val baseConfig = loadBaseConfig(env, credentials).overrideForTest()
-
-    val producerPropertiesTilfelle = baseConfig
-        .toProducerConfig("spek.integration-producer1", valueSerializer = JacksonKafkaSerializer::class)
+    val producerPropertiesTilfelle = kafkaOversikthendelsetilfelleProducerProperties(env, credentials)
+        .overrideForTest()
+        .apply {
+            put("value.serializer", JacksonKafkaSerializer::class.java.canonicalName)
+        }
     val producerTilfelle = KafkaProducer<String, KOppfolgingstilfellePeker>(producerPropertiesTilfelle)
-    val consumerPropertiesTilfelle = baseConfig
-        .toConsumerConfig("spek.integration-consumer1", valueDeserializer = StringDeserializer::class)
+
+    val consumerPropertiesTilfelle = kafkaOppfolgingstilfelleConsumerProperties(env, credentials)
+        .overrideForTest()
+        .apply {
+            put(ConsumerConfig.GROUP_ID_CONFIG, "consumer-oppfolgingstilfelle")
+        }
     val consumerTilfelle = KafkaConsumer<String, String>(consumerPropertiesTilfelle)
     consumerTilfelle.subscribe(listOf(env.oppfolgingstilfelleTopic))
 
-    val producerPropertiesOversikthendelse = baseConfig
-        .toProducerConfig("spek.integration-producer2", valueSerializer = JacksonKafkaSerializer::class)
+    val producerPropertiesOversikthendelse = kafkaOversikthendelsetilfelleProducerProperties(env, credentials)
+        .overrideForTest()
     val producerOversikthendelse = KafkaProducer<String, KOversikthendelsetilfelle>(producerPropertiesOversikthendelse)
-    val consumerPropertiesOversikthendelse = baseConfig
-        .toConsumerConfig("spek.integration-consumer2", valueDeserializer = StringDeserializer::class)
+
+    val consumerPropertiesOversikthendelse = kafkaOppfolgingstilfelleConsumerProperties(env, credentials)
+        .overrideForTest()
+        .apply {
+            put(ConsumerConfig.GROUP_ID_CONFIG, "-consumer-oversikthendelstilfelle")
+        }
     val consumerTilfelleOversikthendelse = KafkaConsumer<String, String>(consumerPropertiesOversikthendelse)
     consumerTilfelleOversikthendelse.subscribe(listOf(env.oversikthendelseOppfolgingstilfelleTopic))
 
@@ -98,8 +107,8 @@ object KafkaITSpek : Spek({
         embeddedEnvironment.tearDown()
     }
 
-    describe("Produce and consume messages from topic") {
-        it("Topic ${env.oppfolgingstilfelleTopic}") {
+    describe("Topic ${env.oppfolgingstilfelleTopic}") {
+        it("Produce and consume messages from topic") {
             val kOppfolgingstilfellePeker = generateOppfolgingstilfellePeker.copy()
             producerTilfelle.send(SyfoProducerRecord(env.oppfolgingstilfelleTopic, UUID.randomUUID().toString(), kOppfolgingstilfellePeker))
 
@@ -111,8 +120,10 @@ object KafkaITSpek : Spek({
             messages.size shouldBeEqualTo 1
             messages.first() shouldBeEqualTo kOppfolgingstilfellePeker
         }
+    }
 
-        it("Topic ${env.oversikthendelseOppfolgingstilfelleTopic}") {
+    describe("Topic ${env.oversikthendelseOppfolgingstilfelleTopic}") {
+        it("Produce and consume messages from topic") {
             val oversikthendelsetilfelle = generateOversikthendelsetilfelle.copy()
             producerOversikthendelse.send(SyfoProducerRecord(env.oversikthendelseOppfolgingstilfelleTopic, UUID.randomUUID().toString(), oversikthendelsetilfelle))
 

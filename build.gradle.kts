@@ -19,7 +19,6 @@ val logstashEncoderVersion = "6.3"
 val mockkVersion = "1.10.0"
 val orgJsonVersion = "20180813"
 val prometheusVersion = "0.9.0"
-val smCommonVersion = "2019.08.08-03-52-c78281e2409af36f3ef07df4369fa29b0ea81a46"
 val spekVersion = "2.0.12"
 
 tasks.withType<Jar> {
@@ -64,10 +63,6 @@ dependencies {
     implementation("com.github.kittinunf.fuel:fuel:$fuelVersion")
 
     implementation("org.apache.kafka:kafka_2.12:$kafkaVersion")
-    implementation("no.nav.syfo.sm:syfosm-common-networking:$smCommonVersion")
-    implementation("no.nav.syfo.sm:syfosm-common-rest-sts:$smCommonVersion")
-    implementation("no.nav.syfo.sm:syfosm-common-models:$smCommonVersion")
-    implementation("no.nav.syfo.sm:syfosm-common-kafka:$smCommonVersion")
 
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime:$kotlinSerializationVersion")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime-common:$kotlinSerializationVersion")

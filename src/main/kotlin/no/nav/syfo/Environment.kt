@@ -2,8 +2,6 @@ package no.nav.syfo
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
-import no.nav.syfo.kafka.KafkaConfig
-import no.nav.syfo.kafka.KafkaCredentials
 import java.io.File
 
 const val localEnvironmentPropertiesPath = "./src/main/resources/localEnv.json"
@@ -50,7 +48,7 @@ data class Environment(
     val oppfolgingstilfelleTopic: String,
     val oversikthendelseOppfolgingstilfelleTopic: String,
     val oversikthendelseOppfolgingstilfelleTopicSeekToBeginning: Boolean,
-    override val kafkaBootstrapServers: String,
+    val kafkaBootstrapServers: String,
     val clientid: String,
     val pdlUrl: String,
     val behandlendeenhetUrl: String,
@@ -59,15 +57,12 @@ data class Environment(
     val aktoerregisterV1Url: String,
     val stsRestUrl: String,
     val eregApiBaseUrl: String
-) : KafkaConfig
+)
 
 data class VaultSecrets(
     val serviceuserUsername: String,
     val serviceuserPassword: String
-) : KafkaCredentials {
-    override val kafkaUsername: String = serviceuserUsername
-    override val kafkaPassword: String = serviceuserPassword
-}
+)
 
 fun getEnvVar(varName: String, defaultValue: String? = null) =
     System.getenv(varName) ?: defaultValue ?: throw RuntimeException("Missing required variable \"$varName\"")
