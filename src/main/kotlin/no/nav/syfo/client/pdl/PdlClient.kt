@@ -1,7 +1,6 @@
 package no.nav.syfo.client.pdl
 
 import com.fasterxml.jackson.databind.DeserializationFeature
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import io.ktor.client.*
@@ -40,22 +39,19 @@ class PdlClient(
 
         val request = PdlRequest(query, Variables(fnr))
 
-        val json = objectMapper.writeValueAsString(request)
-
         val response: HttpResponse = client.post(baseUrl) {
-            body = json
-            header(HttpHeaders.ContentType, ContentType.Application.Json)
+            body = request
+            header(HttpHeaders.ContentType, "application/json")
             header(HttpHeaders.Authorization, bearerHeader(bearer))
             header(NAV_CONSUMER_TOKEN, bearerHeader(bearer))
             header(TEMA, ALLE_TEMA_HEADERVERDI)
             header(NAV_CALL_ID, callId)
-            accept(ContentType.Application.Json)
         }
 
         when (response.status) {
             HttpStatusCode.OK -> {
                 val pdlPersonReponse = response.receive<PdlPersonResponse>()
-                return return if (pdlPersonReponse.errors != null && pdlPersonReponse.errors.isNotEmpty()) {
+                return if (pdlPersonReponse.errors != null && pdlPersonReponse.errors.isNotEmpty()) {
                     COUNT_CALL_PDL_FAIL.inc()
                     pdlPersonReponse.errors.forEach {
                         LOG.error("Error while requesting person from PersonDataLosningen: ${it.errorMessage()}")
@@ -72,12 +68,6 @@ class PdlClient(
                 return null
             }
         }
-    }
-
-    private val objectMapper: ObjectMapper = ObjectMapper().apply {
-        registerKotlinModule()
-        registerModule(JavaTimeModule())
-        configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
     }
 
     companion object {
