@@ -16,7 +16,6 @@ val ktorVersion = "1.3.2"
 val logbackVersion = "1.2.3"
 val logstashEncoderVersion = "6.3"
 val mockkVersion = "1.10.0"
-val orgJsonVersion = "20180813"
 val prometheusVersion = "0.9.0"
 val spekVersion = "2.0.12"
 
