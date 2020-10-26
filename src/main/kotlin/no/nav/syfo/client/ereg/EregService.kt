@@ -2,7 +2,7 @@ package no.nav.syfo.client.ereg
 
 class EregService(private val eregClient: EregClient) {
 
-    fun finnOrganisasjonsNavn(orgNr: String, callId: String): String {
+    suspend fun finnOrganisasjonsNavn(orgNr: String, callId: String): String {
         val regResponse = eregClient.hentOrgByOrgnr(orgNr, callId)
         return regResponse?.navn?.let {
             if (it.redigertnavn?.isNotEmpty() == true) {

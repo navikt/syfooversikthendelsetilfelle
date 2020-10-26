@@ -2,6 +2,7 @@ package no.nav.syfo.client.enhet
 
 import io.ktor.server.testing.TestApplicationEngine
 import io.ktor.util.InternalAPI
+import kotlinx.coroutines.runBlocking
 import no.nav.syfo.client.sts.StsRestClient
 import no.nav.syfo.testutil.UserConstants.ARBEIDSTAKER_FNR
 import no.nav.syfo.testutil.mock.BehandlendeEnhetMock
@@ -44,8 +45,9 @@ object BehandlendeEnhetClientTest : Spek({
 
         describe("BehandlendeEnhetClient successful") {
             it("Get enhet for Fodselsnummer") {
-                val result = behandlendeEnhetClient.getEnhet(ARBEIDSTAKER_FNR.value, "callId")
-
+                val result = runBlocking {
+                    behandlendeEnhetClient.getEnhet(ARBEIDSTAKER_FNR.value, "callId")
+                }
                 result shouldBeEqualTo behandlendeEnhetMock.behandlendeEnhet
             }
         }

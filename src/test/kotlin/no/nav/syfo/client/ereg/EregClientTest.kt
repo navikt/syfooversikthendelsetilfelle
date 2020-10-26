@@ -2,6 +2,7 @@ package no.nav.syfo.client.ereg
 
 import io.ktor.server.testing.TestApplicationEngine
 import io.ktor.util.InternalAPI
+import kotlinx.coroutines.runBlocking
 import no.nav.syfo.client.sts.StsRestClient
 import no.nav.syfo.testutil.UserConstants.VIRKSOMHETSNUMMER
 import no.nav.syfo.testutil.mock.EregMock
@@ -44,10 +45,12 @@ object EregClientTest : Spek({
 
         describe("hentOrgByOrgnr()") {
             it("Returns valid response when ok") {
-                val orgNavn = eregClient.hentOrgByOrgnr(
-                    VIRKSOMHETSNUMMER,
-                    "callId"
-                )
+                val orgNavn = runBlocking {
+                    eregClient.hentOrgByOrgnr(
+                        VIRKSOMHETSNUMMER,
+                        "callId"
+                    )
+                }
                 orgNavn?.navn?.navnelinje1 shouldBeEqualTo eregMock.eregResponse.navn.navnelinje1
                 orgNavn?.navn?.redigertnavn shouldBeEqualTo eregMock.eregResponse.navn.redigertnavn
             }

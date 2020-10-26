@@ -27,7 +27,7 @@ class EregClient(
     private val stsRestClient: StsRestClient
 ) {
 
-    fun hentOrgByOrgnr(orgnr: String, callId: String): EregOrganisasjonResponse? {
+    suspend fun hentOrgByOrgnr(orgnr: String, callId: String): EregOrganisasjonResponse? {
         val token = stsRestClient.token()
         val url = "${baseUrl}v1/organisasjon/$orgnr"
         val (_, response, result) = url

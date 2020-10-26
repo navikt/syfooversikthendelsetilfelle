@@ -16,7 +16,7 @@ class PdlClient(
     private val baseUrl: String,
     private val stsRestClient: StsRestClient
 ) {
-    fun person(fnr: String, callId: String): PdlHentPerson? {
+    suspend fun person(fnr: String, callId: String): PdlHentPerson? {
         COUNT_CALL_PDL.inc()
 
         val bearer = stsRestClient.token()
