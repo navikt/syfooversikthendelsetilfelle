@@ -11,9 +11,9 @@ import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import no.nav.syfo.client.sts.StsRestClient
-import no.nav.syfo.log
 import no.nav.syfo.metric.*
 import no.nav.syfo.util.*
+import org.slf4j.LoggerFactory
 
 class SyketilfelleClient(
     private val baseUrl: String,
@@ -49,7 +49,7 @@ class SyketilfelleClient(
                 return response.receive<KOppfolgingstilfelle>()
             }
             HttpStatusCode.NoContent -> {
-                log.error("Syketilfelle returned HTTP-${response.status.value}: No Oppfolgingstilfelle was found for AktorId")
+                LOG.error("Syketilfelle returned HTTP-${response.status.value}: No Oppfolgingstilfelle was found for AktorId")
                 COUNT_CALL_SYKETILFELLE_OPPFOLGINGSTILFELLE_AKTOR_EMPTY.inc()
                 return null
             }
@@ -57,7 +57,7 @@ class SyketilfelleClient(
                 COUNT_CALL_SYKETILFELLE_OPPFOLGINGSTILFELLE_AKTOR_FAIL.inc()
                 val errorMessage =
                     "Error with responseCode=${response.status.value} for callId=$callId when requesting Oppfolgingstilfelle for aktorId from syfosyketilfelle"
-                log.error(errorMessage)
+                LOG.error(errorMessage)
                 return null
             }
         }
@@ -65,5 +65,9 @@ class SyketilfelleClient(
 
     private fun getSyfosyketilfelleUrl(aktorId: String, virksomhetsnummer: String): String {
         return "$baseUrl/kafka/oppfolgingstilfelle/beregn/$aktorId/$virksomhetsnummer"
+    }
+
+    companion object {
+        private val LOG = LoggerFactory.getLogger(SyketilfelleClient::class.java)
     }
 }

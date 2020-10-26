@@ -1,17 +1,17 @@
 package no.nav.syfo.oppfolgingstilfelle
 
 import no.nav.syfo.client.aktor.AktorService
-import no.nav.syfo.domain.AktorId
 import no.nav.syfo.client.enhet.BehandlendeEnhetClient
 import no.nav.syfo.client.ereg.EregService
 import no.nav.syfo.client.pdl.PdlClient
 import no.nav.syfo.client.pdl.fullName
 import no.nav.syfo.client.syketilfelle.SyketilfelleClient
+import no.nav.syfo.domain.AktorId
 import no.nav.syfo.env
-import no.nav.syfo.log
 import no.nav.syfo.metric.*
 import no.nav.syfo.oppfolgingstilfelle.domain.*
 import org.apache.kafka.clients.producer.KafkaProducer
+import org.slf4j.LoggerFactory
 import java.util.UUID.randomUUID
 
 enum class MissingValue {
@@ -83,9 +83,13 @@ class OppfolgingstilfelleService(
                 COUNT_OVERSIKTHENDELSE_TILFELLE_PRODUCED.inc()
                 producer.send(producerRecord(hendelse))
             } else {
-                log.info("TOGGLE: Oversikthendelse er togglet av, sender ikke hendelse")
+                LOG.info("TOGGLE: Oversikthendelse er togglet av, sender ikke hendelse")
             }
         }
+    }
+
+    companion object {
+        private val LOG = LoggerFactory.getLogger(SyketilfelleClient::class.java)
     }
 }
 

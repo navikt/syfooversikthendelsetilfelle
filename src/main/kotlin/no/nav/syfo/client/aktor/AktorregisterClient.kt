@@ -17,8 +17,6 @@ import no.nav.syfo.client.sts.StsRestClient
 import no.nav.syfo.util.*
 import org.slf4j.LoggerFactory
 
-private val log = LoggerFactory.getLogger(AktorregisterClient::class.java)
-
 class AktorregisterClient(
     val baseUrl: String,
     val stsRestClient: StsRestClient
@@ -51,12 +49,12 @@ class AktorregisterClient(
         return when {
             identResponse == null -> {
                 val errorMessage = "Lookup gjeldende identer feilet"
-                log.error(errorMessage)
+                LOG.error(errorMessage)
                 Either.Left(errorMessage)
             }
             identResponse.identer.isEmpty() -> {
                 val errorMessage = "Lookup gjeldende identer feilet med feilmelding ${identResponse.feilmelding}"
-                log.error(errorMessage)
+                LOG.error(errorMessage)
                 Either.Left(errorMessage)
             }
             else -> {
@@ -87,6 +85,10 @@ class AktorregisterClient(
 
     suspend fun getNorskIdent(ident: String, callId: String): Either<String, String> {
         return getIdent(ident, IdentType.NorskIdent, callId)
+    }
+
+    companion object {
+        private val LOG = LoggerFactory.getLogger(AktorregisterClient::class.java)
     }
 }
 
