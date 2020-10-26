@@ -8,7 +8,6 @@ version = "1.0-SNAPSHOT"
 val arrowVersion = "0.11.0"
 val coroutinesVersion = "1.3.9"
 val jacksonVersion = "2.10.0"
-val fuelVersion = "1.15.1"
 val kafkaVersion = "2.4.0"
 val kafkaEmbeddedVersion = "2.4.0"
 val kluentVersion = "1.61"
@@ -59,8 +58,6 @@ dependencies {
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion")
 
     implementation("io.arrow-kt:arrow-core-data:$arrowVersion")
-    implementation("org.json:json:$orgJsonVersion")
-    implementation("com.github.kittinunf.fuel:fuel:$fuelVersion")
 
     implementation("org.apache.kafka:kafka_2.12:$kafkaVersion")
 
