@@ -79,11 +79,6 @@ val COUNT_CALL_EREG_FAIL: Counter = Counter.build()
 const val CALL_PDL = "call_pdl_count"
 const val CALL_PDL_SUCCESS = "call_pdl_success_count"
 const val CALL_PDL_FAIL = "call_pdl_fail_count"
-val COUNT_CALL_PDL: Counter = Counter.build()
-    .namespace(METRICS_NS)
-    .name(CALL_PDL)
-    .help("Counts the number of calls to persondatalosningen")
-    .register()
 val COUNT_CALL_PDL_SUCCESS: Counter = Counter.build()
     .namespace(METRICS_NS)
     .name(CALL_PDL_SUCCESS)
