@@ -37,7 +37,7 @@ object KafkaITSpek : Spek({
 
     val embeddedEnvironment = KafkaEnvironment(
         autoStart = false,
-        topics = listOf(
+        topicNames = listOf(
             oversikthendelseOppfolgingstilfelleTopic
         )
     )
