@@ -3,22 +3,35 @@ package no.nav.syfo.client.pdl
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import com.fasterxml.jackson.module.kotlin.readValue
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
-import com.github.kittinunf.fuel.httpPost
+import io.ktor.client.*
+import io.ktor.client.call.*
+import io.ktor.client.engine.cio.*
+import io.ktor.client.features.json.*
+import io.ktor.client.request.*
+import io.ktor.client.statement.*
+import io.ktor.http.*
 import no.nav.syfo.client.sts.StsRestClient
-import no.nav.syfo.metric.*
+import no.nav.syfo.metric.COUNT_CALL_PDL_FAIL
+import no.nav.syfo.metric.COUNT_CALL_PDL_SUCCESS
 import no.nav.syfo.util.*
 import org.slf4j.LoggerFactory
-import io.ktor.http.HttpHeaders
 
 class PdlClient(
     private val baseUrl: String,
     private val stsRestClient: StsRestClient
 ) {
-    suspend fun person(fnr: String, callId: String): PdlHentPerson? {
-        COUNT_CALL_PDL.inc()
+    private val client = HttpClient(CIO) {
+        install(JsonFeature) {
+            serializer = JacksonSerializer {
+                registerKotlinModule()
+                registerModule(JavaTimeModule())
+                configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+            }
+        }
+    }
 
+    suspend fun person(fnr: String, callId: String): PdlHentPerson? {
         val bearer = stsRestClient.token()
 
         val query = this::class.java.getResource("/pdl/hentPerson.graphql")
@@ -29,37 +42,36 @@ class PdlClient(
 
         val json = objectMapper.writeValueAsString(request)
 
-        val (_, response, result) = baseUrl
-            .httpPost()
-            .header(mapOf(
-                HttpHeaders.ContentType to "application/json",
-                HttpHeaders.Authorization to bearerHeader(bearer),
-                NAV_CONSUMER_TOKEN to bearerHeader(bearer),
-                TEMA to ALLE_TEMA_HEADERVERDI,
-                NAV_CALL_ID to callId
-            ))
-            .body(json)
-            .responseString()
+        val response: HttpResponse = client.post(baseUrl) {
+            body = json
+            header(HttpHeaders.ContentType, ContentType.Application.Json)
+            header(HttpHeaders.Authorization, bearerHeader(bearer))
+            header(NAV_CONSUMER_TOKEN, bearerHeader(bearer))
+            header(TEMA, ALLE_TEMA_HEADERVERDI)
+            header(NAV_CALL_ID, callId)
+            accept(ContentType.Application.Json)
+        }
 
-        result.fold(success = {
-            val pdlPersonReponse = objectMapper.readValue<PdlPersonResponse>(result.get())
-            return if (pdlPersonReponse.errors != null && pdlPersonReponse.errors.isNotEmpty()) {
-                COUNT_CALL_PDL_FAIL.inc()
-                pdlPersonReponse.errors.forEach {
-                    LOG.error("Error while requesting person from PersonDataLosningen: ${it.errorMessage()}")
+        when (response.status) {
+            HttpStatusCode.OK -> {
+                val pdlPersonReponse = response.receive<PdlPersonResponse>()
+                return return if (pdlPersonReponse.errors != null && pdlPersonReponse.errors.isNotEmpty()) {
+                    COUNT_CALL_PDL_FAIL.inc()
+                    pdlPersonReponse.errors.forEach {
+                        LOG.error("Error while requesting person from PersonDataLosningen: ${it.errorMessage()}")
+                    }
+                    null
+                } else {
+                    COUNT_CALL_PDL_SUCCESS.inc()
+                    pdlPersonReponse.data
                 }
-                null
-            } else {
-                COUNT_CALL_PDL_SUCCESS.inc()
-                pdlPersonReponse.data
             }
-        }, failure = {
-            COUNT_CALL_PDL_FAIL.inc()
-            LOG.info("Request with url: $baseUrl failed with reponse code ${response.statusCode}")
-            val exception = it.exception
-            LOG.error("Error while requesting person from PersonDataLosningen: ${exception.message}", exception)
-            return null
-        })
+            else -> {
+                COUNT_CALL_PDL_FAIL.inc()
+                LOG.error("Request with url: $baseUrl failed with reponse code ${response.status.value}")
+                return null
+            }
+        }
     }
 
     private val objectMapper: ObjectMapper = ObjectMapper().apply {
