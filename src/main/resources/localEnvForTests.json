@@ -4,7 +4,6 @@
     "applicationName": "syfooversikthendelsetilfelle",
     "kafkaBootstrapServers": "kafkaurl",
     "oppfolgingstilfelleTopic": "topic",
-    "oversikthendelseOppfolgingstilfelleTopic": "topic-oversikthendelse-oppfolgingstilfelle",
     "oversikthendelseOppfolgingstilfelleTopicSeekToBeginning": "false",
     "syketilfelleUrl": "http://localhost:8080",
     "behandlendeenhetUrl": "http://localhost:8080",

@@ -19,6 +19,8 @@ enum class MissingValue {
     FODSELSNUMMER
 }
 
+const val OVERSIKTHENDELSE_OPPFOLGINGSTILFELLE_TOPIC = "aapen-syfo-oversikthendelse-tilfelle-v1"
+
 class OppfolgingstilfelleService(
     private val aktorService: AktorService,
     private val eregService: EregService,
@@ -95,7 +97,7 @@ class OppfolgingstilfelleService(
 
 private fun producerRecord(hendelse: KOversikthendelsetilfelle) =
     SyfoProducerRecord(
-        topic = env.oversikthendelseOppfolgingstilfelleTopic,
+        topic = OVERSIKTHENDELSE_OPPFOLGINGSTILFELLE_TOPIC,
         key = randomUUID().toString(),
         value = hendelse
     )

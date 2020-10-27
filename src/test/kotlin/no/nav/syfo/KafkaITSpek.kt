@@ -6,6 +6,7 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import no.nav.common.KafkaEnvironment
 import no.nav.syfo.kafka.*
+import no.nav.syfo.oppfolgingstilfelle.OVERSIKTHENDELSE_OPPFOLGINGSTILFELLE_TOPIC
 import no.nav.syfo.oppfolgingstilfelle.domain.*
 import no.nav.syfo.testutil.generator.generateOppfolgingstilfellePeker
 import no.nav.syfo.testutil.generator.generateOversikthendelsetilfelle
@@ -33,7 +34,7 @@ object KafkaITSpek : Spek({
     }
 
     val oppfolgingstilfelleTopic = "oppfolgingstilfelle-topic"
-    val oversikthendelseOppfolgingstilfelleTopic = "oversikthendelse-oppfolgingstilfelle-topic"
+    val oversikthendelseOppfolgingstilfelleTopic = OVERSIKTHENDELSE_OPPFOLGINGSTILFELLE_TOPIC
 
     val embeddedEnvironment = KafkaEnvironment(
         autoStart = false,
@@ -50,7 +51,6 @@ object KafkaITSpek : Spek({
         applicationPort = getRandomPort(),
         applicationThreads = 1,
         oppfolgingstilfelleTopic = oppfolgingstilfelleTopic,
-        oversikthendelseOppfolgingstilfelleTopic = oversikthendelseOppfolgingstilfelleTopic,
         kafkaBootstrapServers = embeddedEnvironment.brokersURL,
         applicationName = "syfooversikthendelsetilfelle",
         behandlendeenhetUrl = "behandlendeenhet",
@@ -93,7 +93,7 @@ object KafkaITSpek : Spek({
             put(ConsumerConfig.GROUP_ID_CONFIG, "-consumer-oversikthendelstilfelle")
         }
     val consumerTilfelleOversikthendelse = KafkaConsumer<String, String>(consumerPropertiesOversikthendelse)
-    consumerTilfelleOversikthendelse.subscribe(listOf(env.oversikthendelseOppfolgingstilfelleTopic))
+    consumerTilfelleOversikthendelse.subscribe(listOf(oversikthendelseOppfolgingstilfelleTopic))
 
     beforeGroup {
         embeddedEnvironment.start()
@@ -118,10 +118,16 @@ object KafkaITSpek : Spek({
         }
     }
 
-    describe("Topic ${env.oversikthendelseOppfolgingstilfelleTopic}") {
+    describe("Topic $oversikthendelseOppfolgingstilfelleTopic") {
         it("Produce and consume messages from topic") {
             val oversikthendelsetilfelle = generateOversikthendelsetilfelle.copy()
-            producerOversikthendelse.send(SyfoProducerRecord(env.oversikthendelseOppfolgingstilfelleTopic, UUID.randomUUID().toString(), oversikthendelsetilfelle))
+            producerOversikthendelse.send(
+                SyfoProducerRecord(
+                    oversikthendelseOppfolgingstilfelleTopic,
+                    UUID.randomUUID().toString(),
+                    oversikthendelsetilfelle
+                )
+            )
 
             val messages: ArrayList<KOversikthendelsetilfelle> = arrayListOf()
             consumerTilfelleOversikthendelse.poll(Duration.ofMillis(5000)).forEach {
