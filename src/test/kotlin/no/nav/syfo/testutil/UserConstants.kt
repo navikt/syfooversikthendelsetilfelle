@@ -12,6 +12,7 @@ object UserConstants {
     val ARBEIDSTAKER_FNR = Fodselsnummer("12345678912")
     val ARBEIDSTAKER_2_FNR = Fodselsnummer(ARBEIDSTAKER_FNR.value.replace("2", "1"))
     val ARBEIDSTAKER_AKTORID = AktorId(ARBEIDSTAKER_FNR.value + "01")
+    val ARBEIDSTAKER_2_AKTORID = AktorId(ARBEIDSTAKER_2_FNR.value + "01")
     const val NAV_ENHET = "0330"
     const val NAV_ENHET_2 = "0331"
     const val VIRKSOMHETSNUMMER = "123456789"

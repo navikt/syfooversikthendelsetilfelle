@@ -11,6 +11,9 @@ import io.ktor.routing.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import no.nav.syfo.client.aktor.IdentType
+import no.nav.syfo.domain.AktorId
+import no.nav.syfo.testutil.UserConstants.ARBEIDSTAKER_2_AKTORID
+import no.nav.syfo.testutil.UserConstants.ARBEIDSTAKER_2_FNR
 import no.nav.syfo.testutil.UserConstants.ARBEIDSTAKER_AKTORID
 import no.nav.syfo.testutil.UserConstants.ARBEIDSTAKER_FNR
 import no.nav.syfo.testutil.getRandomPort
@@ -20,6 +23,8 @@ class AktorregisterMock {
     private val port = getRandomPort()
     val url = "http://localhost:$port"
     val server = mockAktorregisterServer(port)
+
+    val aktorIdMissingFnr = AktorId(ARBEIDSTAKER_AKTORID.aktor.replace("0", "9"))
 
     private fun mockAktorregisterServer(
         port: Int
@@ -76,6 +81,37 @@ class AktorregisterMock {
                                             )
                                         ),
                                         feilmelding = null
+                                    )
+                                )
+                            )
+                        }
+                        ARBEIDSTAKER_2_AKTORID.aktor -> {
+                            call.respond(
+                                mapOf(
+                                    ARBEIDSTAKER_2_AKTORID.aktor to RSAktor(
+                                        listOf(
+                                            RSIdent(
+                                                ident = ARBEIDSTAKER_2_FNR.value,
+                                                identgruppe = IdentType.NorskIdent.name,
+                                                gjeldende = true
+                                            ),
+                                            RSIdent(
+                                                ident = ARBEIDSTAKER_2_AKTORID.aktor,
+                                                identgruppe = IdentType.AktoerId.name,
+                                                gjeldende = true
+                                            )
+                                        ),
+                                        feilmelding = null
+                                    )
+                                )
+                            )
+                        }
+                        aktorIdMissingFnr.aktor -> {
+                            call.respond(
+                                mapOf(
+                                    aktorIdMissingFnr.aktor to RSAktor(
+                                        identer = null,
+                                        feilmelding = "Not found"
                                     )
                                 )
                             )

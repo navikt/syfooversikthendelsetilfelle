@@ -7,10 +7,11 @@ import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import kotlinx.coroutines.*
 import net.logstash.logback.argument.StructuredArguments
 import no.nav.syfo.*
+import no.nav.syfo.domain.AktorId
+import no.nav.syfo.domain.Virksomhetsnummer
 import no.nav.syfo.oppfolgingstilfelle.OppfolgingstilfelleService
 import no.nav.syfo.oppfolgingstilfelle.domain.KOppfolgingstilfellePeker
-import no.nav.syfo.util.CallIdArgument
-import no.nav.syfo.util.kafkaCallId
+import no.nav.syfo.util.*
 import org.apache.kafka.clients.consumer.ConsumerRebalanceListener
 import org.apache.kafka.clients.consumer.KafkaConsumer
 import org.apache.kafka.common.TopicPartition
@@ -69,18 +70,20 @@ suspend fun pollAndProcessOppfolgingstilfelle(
         "{}"
     }
     kafkaConsumer.poll(Duration.ofMillis(0)).forEach {
-        if (env.toggleOversikthendelsetilfelle) {
-            val callId = kafkaCallId()
-            val oppfolgingstilfellePeker: KOppfolgingstilfellePeker =
-                objectMapper.readValue(it.value())
-            logValues = arrayOf(
-                StructuredArguments.keyValue("oppfolgingstilfelleId", it.key()),
-                StructuredArguments.keyValue("timestamp", it.timestamp())
-            )
-            LOG.info("Mottatt oppfolgingstilfellePeker, klar for behandling, $logKeys, {}", *logValues, CallIdArgument(callId))
+        val callId = kafkaCallId()
+        val oppfolgingstilfellePeker: KOppfolgingstilfellePeker =
+            objectMapper.readValue(it.value())
+        logValues = arrayOf(
+            StructuredArguments.keyValue("oppfolgingstilfelleId", it.key()),
+            StructuredArguments.keyValue("timestamp", it.timestamp())
+        )
+        LOG.info("Mottatt oppfolgingstilfellePeker, klar for behandling, $logKeys, {}", *logValues, callIdArgument(callId))
 
-            oppfolgingstilfelleService.receiveOppfolgingstilfeller(oppfolgingstilfellePeker, callId)
-        }
+        oppfolgingstilfelleService.receiveOppfolgingstilfelle(
+            AktorId(oppfolgingstilfellePeker.aktorId),
+            Virksomhetsnummer(oppfolgingstilfellePeker.orgnummer),
+            callId
+        )
     }
 }
 

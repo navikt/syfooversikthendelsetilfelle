@@ -109,3 +109,28 @@ val COUNT_OVERSIKTHENDELSE_TILFELLE_PRODUCED: Counter = Counter.build()
     .name(OVERSIKTHENDELSE_TILFELLE_PRODUCED)
     .help("Counts the number of oversikthendelse-tilfeller produced")
     .register()
+
+const val OPPFOLGINGSTILFELLE_RETRY_FIRST = "oppfolgingstilfelle_retry_first_count"
+val COUNT_OPPFOLGINGSTILFELLE_RETRY_FIRST: Counter = Counter.build()
+    .namespace(METRICS_NS)
+    .name(OPPFOLGINGSTILFELLE_RETRY_FIRST)
+    .help("Counts the number of OppfolgingstilfelleRetry with unchanged retryCount sent")
+    .register()
+const val OPPFOLGINGSTILFELLE_RETRY_NEW = "oppfolgingstilfelle_retry_new_count"
+val COUNT_OPPFOLGINGSTILFELLE_RETRY_NEW: Counter = Counter.build()
+    .namespace(METRICS_NS)
+    .name(OPPFOLGINGSTILFELLE_RETRY_NEW)
+    .help("Counts the number of first OppfolgingstilfelleRetry sent")
+    .register()
+const val OPPFOLGINGSTILFELLE_RETRY_AGAIN = "oppfolgingstilfelle_retry_again_count"
+val COUNT_OPPFOLGINGSTILFELLE_RETRY_AGAIN: Counter = Counter.build()
+    .namespace(METRICS_NS)
+    .name(OPPFOLGINGSTILFELLE_RETRY_AGAIN)
+    .help("Counts the number of OppfolgingstilfelleRetry with increased retryCount sent")
+    .register()
+const val OPPFOLGINGSTILFELLE_RETRY_SKIPPED = "oppfolgingstilfelle_skipped_retry_count"
+val COUNT_OPPFOLGINGSTILFELLE_RETRY_SKIPPED: Counter = Counter.build()
+    .namespace(METRICS_NS)
+    .name(OPPFOLGINGSTILFELLE_RETRY_SKIPPED)
+    .help("Counts the number of KOppfolgingstilfellePeker not sent due to reached retry limit")
+    .register()

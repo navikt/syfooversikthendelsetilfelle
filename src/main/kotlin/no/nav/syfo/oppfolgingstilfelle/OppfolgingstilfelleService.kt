@@ -7,9 +7,10 @@ import no.nav.syfo.client.pdl.PdlClient
 import no.nav.syfo.client.pdl.fullName
 import no.nav.syfo.client.syketilfelle.SyketilfelleClient
 import no.nav.syfo.domain.AktorId
-import no.nav.syfo.env
+import no.nav.syfo.domain.Virksomhetsnummer
 import no.nav.syfo.metric.*
 import no.nav.syfo.oppfolgingstilfelle.domain.*
+import no.nav.syfo.oppfolgingstilfelle.retry.OppfolgingstilfelleRetryProducer
 import org.apache.kafka.clients.producer.KafkaProducer
 import org.slf4j.LoggerFactory
 import java.util.UUID.randomUUID
@@ -27,35 +28,42 @@ class OppfolgingstilfelleService(
     private val behandlendeEnhetClient: BehandlendeEnhetClient,
     private val pdlClient: PdlClient,
     private val syketilfelleClient: SyketilfelleClient,
+    private val oppfolgingstilfelleRetryProducer: OppfolgingstilfelleRetryProducer,
     private val producer: KafkaProducer<String, KOversikthendelsetilfelle>
 ) {
-    suspend fun receiveOppfolgingstilfeller(oppfolgingstilfellePeker: KOppfolgingstilfellePeker, callId: String = "") {
-        val aktor = AktorId(oppfolgingstilfellePeker.aktorId)
-
-        val fnr: String = aktorService.fodselsnummerForAktor(aktor, callId)
-            ?: return skipOppfolgingstilfelleWithMissingValue(MissingValue.FODSELSNUMMER)
-        val orgNummer = oppfolgingstilfellePeker.orgnummer
-        val organisasjonNavn = eregService.finnOrganisasjonsNavn(orgNummer, callId)
-
-        produce(oppfolgingstilfellePeker, fnr, organisasjonNavn, callId)
-    }
-
-    private fun skipOppfolgingstilfelleWithMissingValue(missingValue: MissingValue) {
-        when (missingValue) {
-            MissingValue.BEHANDLENDEENHET -> COUNT_OPPFOLGINGSTILFELLE_SKIPPED_BEHANDLENDEENHET.inc()
-            MissingValue.FODSELSNUMMER -> COUNT_OPPFOLGINGSTILFELLE_SKIPPED_FODSELSNUMMER.inc()
+    suspend fun receiveOppfolgingstilfelle(
+        aktorId: AktorId,
+        orgnummer: Virksomhetsnummer,
+        callId: String = ""
+    ) {
+        val isSuccessful = processOppfolgingstilfelle(
+            aktorId,
+            orgnummer,
+            callId
+        )
+        if (isSuccessful) {
+            LOG.info("Sent Oversikthendelsetilfelle on first attempt")
+        } else {
+            oppfolgingstilfelleRetryProducer.sendFirstOppfolgingstilfelleRetry(
+                aktorId,
+                orgnummer,
+                ""
+            )
         }
     }
 
-    private suspend fun produce(
-        oppfolgingstilfellePeker: KOppfolgingstilfellePeker,
-        fnr: String,
-        organisasjonNavn: String,
+    suspend fun processOppfolgingstilfelle(
+        aktorId: AktorId,
+        orgnummer: Virksomhetsnummer,
         callId: String
-    ) {
+    ): Boolean {
+        val fnr: String = aktorService.fodselsnummerForAktor(aktorId, callId)
+            ?: return retryOppfolgingstilfelleWithMissingValue(MissingValue.FODSELSNUMMER)
+        val organisasjonNavn = eregService.finnOrganisasjonsNavn(orgnummer.value, callId)
+
         val oppfolgingstilfelle = syketilfelleClient.getOppfolgingstilfelle(
-            oppfolgingstilfellePeker.aktorId,
-            oppfolgingstilfellePeker.orgnummer,
+            aktorId.aktor,
+            orgnummer.value,
             callId
         )
 
@@ -70,7 +78,7 @@ class OppfolgingstilfelleService(
             val fnrFullName = pdlClient.person(fnr, callId)?.fullName() ?: ""
 
             val enhet = behandlendeEnhetClient.getEnhet(fnr, callId)
-                ?: return skipOppfolgingstilfelleWithMissingValue(MissingValue.BEHANDLENDEENHET)
+                ?: return retryOppfolgingstilfelleWithMissingValue(MissingValue.BEHANDLENDEENHET)
 
             val hendelse = mapKOversikthendelsetilfelle(
                 fnr,
@@ -81,13 +89,22 @@ class OppfolgingstilfelleService(
                 oppfolgingstilfelle.tidslinje.sortedBy { it.dag },
                 isGradertToday
             )
-            if (env.toggleOversikthendelsetilfelle) {
-                COUNT_OVERSIKTHENDELSE_TILFELLE_PRODUCED.inc()
-                producer.send(producerRecord(hendelse))
-            } else {
-                LOG.info("TOGGLE: Oversikthendelse er togglet av, sender ikke hendelse")
-            }
+            producer.send(producerRecord(hendelse))
+            COUNT_OVERSIKTHENDELSE_TILFELLE_PRODUCED.inc()
+            return true
+        } else {
+            return true
         }
+    }
+
+    private fun retryOppfolgingstilfelleWithMissingValue(
+        missingValue: MissingValue
+    ): Boolean {
+        when (missingValue) {
+            MissingValue.BEHANDLENDEENHET -> COUNT_OPPFOLGINGSTILFELLE_SKIPPED_BEHANDLENDEENHET.inc()
+            MissingValue.FODSELSNUMMER -> COUNT_OPPFOLGINGSTILFELLE_SKIPPED_FODSELSNUMMER.inc()
+        }
+        return false
     }
 
     companion object {

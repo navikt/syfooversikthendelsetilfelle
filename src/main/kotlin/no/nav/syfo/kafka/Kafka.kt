@@ -9,6 +9,7 @@ import no.nav.syfo.client.pdl.PdlClient
 import no.nav.syfo.client.syketilfelle.SyketilfelleClient
 import no.nav.syfo.oppfolgingstilfelle.OppfolgingstilfelleService
 import no.nav.syfo.oppfolgingstilfelle.domain.KOversikthendelsetilfelle
+import no.nav.syfo.oppfolgingstilfelle.retry.*
 import org.apache.kafka.clients.producer.KafkaProducer
 
 suspend fun CoroutineScope.setupKafka(
@@ -22,12 +23,17 @@ suspend fun CoroutineScope.setupKafka(
     val producerProperties = kafkaOversikthendelsetilfelleProducerProperties(env, vaultSecrets)
     val oversikthendelseTilfelleProducer = KafkaProducer<String, KOversikthendelsetilfelle>(producerProperties)
 
+    val producerOppfolgingstilfelleRetryProperties = kafkaOppfolgingstilfelleRetryProducerConfig(env, vaultSecrets)
+    val oppfolgingstilfelleRetryRecordProducer = KafkaProducer<String, KOppfolgingstilfelleRetry>(producerOppfolgingstilfelleRetryProperties)
+    val oppfolgingstilfelleRetryProducer = OppfolgingstilfelleRetryProducer(oppfolgingstilfelleRetryRecordProducer)
+
     val oppfolgingstilfelleService = OppfolgingstilfelleService(
         aktorService,
         eregService,
         behandlendeEnhetClient,
         pdlClient,
         syketilfelleClient,
+        oppfolgingstilfelleRetryProducer,
         oversikthendelseTilfelleProducer
     )
 
@@ -37,6 +43,20 @@ suspend fun CoroutineScope.setupKafka(
             env,
             vaultSecrets,
             oppfolgingstilfelleService
+        )
+    }
+
+    val oppfolgingstilfelleRetryService = OppfolgingstilfelleRetryService(
+        oppfolgingstilfelleService = oppfolgingstilfelleService,
+        oppfolgingstilfelleRetryProducer = oppfolgingstilfelleRetryProducer
+    )
+
+    createListenerOppfolgingstilfelleRetry(state) {
+        blockingApplicationLogicOppfolgingstilfelleRetry(
+            state,
+            env,
+            vaultSecrets,
+            oppfolgingstilfelleRetryService
         )
     }
 
