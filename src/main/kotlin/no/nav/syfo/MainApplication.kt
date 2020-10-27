@@ -6,18 +6,18 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import com.typesafe.config.ConfigFactory
 import io.ktor.application.*
-import io.ktor.config.HoconApplicationConfig
+import io.ktor.config.*
 import io.ktor.features.*
-import io.ktor.http.HttpHeaders
-import io.ktor.http.HttpStatusCode
-import io.ktor.jackson.jackson
-import io.ktor.request.uri
-import io.ktor.response.respond
-import io.ktor.routing.routing
+import io.ktor.http.*
+import io.ktor.jackson.*
+import io.ktor.request.*
+import io.ktor.response.*
+import io.ktor.routing.*
 import io.ktor.server.engine.*
-import io.ktor.server.netty.Netty
-import io.ktor.util.KtorExperimentalAPI
-import kotlinx.coroutines.*
+import io.ktor.server.netty.*
+import io.ktor.util.*
+import kotlinx.coroutines.asCoroutineDispatcher
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.slf4j.MDCContext
 import no.nav.syfo.api.registerPodApi
 import no.nav.syfo.api.registerPrometheusApi
@@ -164,15 +164,6 @@ fun Application.serverModule() {
 
     state.initialized = true
 }
-
-fun CoroutineScope.createListener(applicationState: ApplicationState, action: suspend CoroutineScope.() -> Unit): Job =
-    launch {
-        try {
-            action()
-        } finally {
-            applicationState.running = false
-        }
-    }
 
 val Application.envKind get() = environment.config.property("ktor.environment").getString()
 
