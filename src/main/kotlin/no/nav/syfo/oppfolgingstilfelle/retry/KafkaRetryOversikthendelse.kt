@@ -64,8 +64,8 @@ suspend fun pollAndProcessOppfolgingstilfelleRetryTopic(
         )
         LOG.info("Received KOppfolgingstilfelleRetry, ready to process, $logKeys, {}", *logValues, callIdArgument(callId))
         oppfolgingstilfelleRetryService.receiveOversikthendelseRetry(kOppfolgingstilfelleRetry)
-        kafkaConsumer.commitSync()
     }
+    kafkaConsumer.commitSync()
 }
 
 fun CoroutineScope.createListenerOppfolgingstilfelleRetry(

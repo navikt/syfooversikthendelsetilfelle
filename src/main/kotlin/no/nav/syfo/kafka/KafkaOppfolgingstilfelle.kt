@@ -84,6 +84,7 @@ suspend fun pollAndProcessOppfolgingstilfelle(
             Virksomhetsnummer(oppfolgingstilfellePeker.orgnummer),
             callId
         )
+        kafkaConsumer.commitSync()
     }
 }
 
