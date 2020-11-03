@@ -13,6 +13,7 @@ import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import no.nav.syfo.client.syketilfelle.KOppfolgingstilfelle
 import no.nav.syfo.oppfolgingstilfelle.domain.KSyketilfelledag
+import no.nav.syfo.testutil.UserConstants.ARBEIDSTAKER_2_AKTORID
 import no.nav.syfo.testutil.UserConstants.ARBEIDSTAKER_AKTORID
 import no.nav.syfo.testutil.UserConstants.VIRKSOMHETSNUMMER
 import no.nav.syfo.testutil.UserConstants.VIRKSOMHETSNUMMER_ANNET
@@ -45,6 +46,13 @@ class SyketilfelleMock {
                 get("/kafka/oppfolgingstilfelle/beregn/${ARBEIDSTAKER_AKTORID.aktor}/$VIRKSOMHETSNUMMER") {
                     call.respond(kOppfolgingstilfelle)
                 }
+                get("/kafka/oppfolgingstilfelle/beregn/${ARBEIDSTAKER_2_AKTORID.aktor}/$VIRKSOMHETSNUMMER") {
+                    call.respond(
+                        kOppfolgingstilfelle.copy(
+                            aktorId = ARBEIDSTAKER_2_AKTORID.aktor
+                        )
+                    )
+                }
                 get("/kafka/oppfolgingstilfelle/beregn/${ARBEIDSTAKER_AKTORID.aktor}/$VIRKSOMHETSNUMMER_ANNET") {
                     call.respond(HttpStatusCode.NoContent)
                 }
@@ -56,7 +64,16 @@ class SyketilfelleMock {
         KOppfolgingstilfelle(
             ARBEIDSTAKER_AKTORID.aktor,
             VIRKSOMHETSNUMMER,
-            emptyList(),
+            listOf(
+                KSyketilfelledag(
+                    LocalDate.now().minusDays(10),
+                    null
+                ),
+                KSyketilfelledag(
+                    LocalDate.now().plusDays(10),
+                    null
+                )
+            ),
             KSyketilfelledag(
                 LocalDate.now().minusDays(1),
                 null

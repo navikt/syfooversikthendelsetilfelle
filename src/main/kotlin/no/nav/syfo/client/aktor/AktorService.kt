@@ -2,24 +2,26 @@ package no.nav.syfo.client.aktor
 
 import no.nav.syfo.domain.AktorId
 
-import no.nav.syfo.log
+import org.slf4j.LoggerFactory
 
 class AktorService(
     private val aktorregisterClient: AktorregisterClient
 ) {
-    suspend fun getFodselsnummerForAktor(aktorId: AktorId, callId: String) =
-            aktorregisterClient.getNorskIdent(aktorId.aktor, callId).mapLeft {
-                throw IllegalStateException("Fant ikke aktor")
-            }
-
-    suspend fun fodselsnummerForAktor(aktorId: AktorId, callId: String): String? {
+    suspend fun fodselsnummerForAktor(
+        aktorId: AktorId,
+        callId: String
+    ): String? {
         var fnr: String? = null
-        getFodselsnummerForAktor(aktorId, callId).mapLeft {
-            log.info("Fant ikke fnr for Aktor")
-            throw IllegalStateException("Fant ikke aktor")
+        aktorregisterClient.getNorskIdent(aktorId.aktor, callId).mapLeft {
+            LOG.info("Did not find Fodselsnummer for AktorId")
+            fnr = null
         }.map {
             fnr = it
         }
         return fnr
+    }
+
+    companion object {
+        private val LOG = LoggerFactory.getLogger(AktorService::class.java)
     }
 }

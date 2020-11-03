@@ -1,10 +1,11 @@
 package no.nav.syfo.domain
 
 data class AktorId(val aktor: String) {
+    private val thirteenDigits = Regex("^\\d{13}\$")
 
     init {
-        if (aktor.isEmpty()) {
-            throw IllegalArgumentException("$aktor cannot be empty")
+        if (!thirteenDigits.matches(aktor)) {
+            throw IllegalArgumentException("$aktor is not a valid aktorId")
         }
     }
 }
