@@ -17,12 +17,6 @@ spec:
       description: "Det er ingen pods for app kjørende i namespace og dermed er appen nede"
       action: "Undersøk hvofor pods er nede og få den kjørende igjen!"
       severity: danger
-    - alert: SYFOOVERSIKTHENDELSETILFELLE prøver å sende Oppfolgingstilfelle(r) på nytt
-      expr: sum(increase(syfooversikthendelsetilfelle_oppfolgingstilfelle_retry_new_count{app="syfooversikthendelsetilfelle"} [15m])) > 50
-      for: 5m
-      description: "Veldig mange nye Oppfolgingstilfeller har ikke blitt sent til topic og app er i gang med retry"
-      action: "Overvåk situasjonen og se etter feil."
-      severity: warning
     - alert: SYFOOVERSIKTHENDELSETILFELLE mislykkes i å sende Oversikthendelsetilfelle for Oppfolgingstilfelle
       expr: sum(increase(syfooversikthendelsetilfelle_oppfolgingstilfelle_skipped_retry_count{app="syfooversikthendelsetilfelle"} [1h])) > 0
       for: 30m
