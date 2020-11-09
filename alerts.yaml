@@ -18,7 +18,7 @@ spec:
       action: "Undersøk hvofor pods er nede og få den kjørende igjen!"
       severity: danger
     - alert: SYFOOVERSIKTHENDELSETILFELLE mislykkes i å sende Oversikthendelsetilfelle for Oppfolgingstilfelle
-      expr: sum(increase(syfooversikthendelsetilfelle_oppfolgingstilfelle_skipped_retry_count{app="syfooversikthendelsetilfelle"} [1h])) > 0
+      expr: sum(increase(syfooversikthendelsetilfelle_oppfolgingstilfelle_skipped_retry_count{app="syfooversikthendelsetilfelle"} [1h])) > 10
       for: 30m
       description: "Minst 1 Oppfolgingstilfelle har ikke produsert Oversikthendelse til topic."
       action: "Minst 1 hendelse har ikke kommet frem dit den skal. Dette må håndteres manuelt slik at Oversikthendelse blir sendt."
