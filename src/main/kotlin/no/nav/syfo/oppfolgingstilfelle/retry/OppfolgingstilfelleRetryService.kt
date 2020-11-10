@@ -19,11 +19,11 @@ class OppfolgingstilfelleRetryService(
                 skip(kOppfolgingstilfelleRetry)
             }
             kOppfolgingstilfelleRetry.isReadyToRetry() -> {
-                val isMissingMandatoryValue = oppfolgingstilfelleService.processOppfolgingstilfelle(
+                val isMissingMandatoryValue = !oppfolgingstilfelleService.processOppfolgingstilfelle(
                     AktorId(kOppfolgingstilfelleRetry.aktorId),
                     Virksomhetsnummer(kOppfolgingstilfelleRetry.orgnummer),
                     callId
-                ) != null
+                )
                 if (isMissingMandatoryValue) {
                     oppfolgingstilfelleRetryProducer.sendRetriedOppfolgingstilfelleRetry(
                         kOppfolgingstilfelleRetry,
