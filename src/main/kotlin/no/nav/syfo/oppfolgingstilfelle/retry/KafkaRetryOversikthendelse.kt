@@ -61,6 +61,11 @@ suspend fun pollAndProcessOppfolgingstilfelleRetryTopic(
             StructuredArguments.keyValue("timestamp", it.timestamp())
         )
         val callIdHeader = it.headers().toArray().find { header -> header.key() == NAV_CALL_ID }
+        LOG.info("JTRACE: callId ${callIdHeader?.value()?.decodeToString()}")
+        it.headers().toArray().forEach { header ->
+            LOG.info("JTRACE: header key ${header.key()} value ${header.value()?.decodeToString()}")
+        }
+
         val callId = callIdHeader?.value()?.decodeToString() ?: kafkaCallId()
 
         LOG.info("Received KOppfolgingstilfelleRetry, ready to process, $logKeys, {}", *logValues, callIdArgument(callId))
