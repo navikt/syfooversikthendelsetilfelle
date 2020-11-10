@@ -204,8 +204,8 @@ object KafkaOversikthendelseRetrySpek : Spek({
 
         describe("Resend KOversikthendelseRetry") {
             val mockOppfolgingstilfelleRetryProducer = mockk<OppfolgingstilfelleRetryProducer>()
-            justRun { mockOppfolgingstilfelleRetryProducer.sendAgainOppfolgingstilfelleRetry(any()) }
-            justRun { mockOppfolgingstilfelleRetryProducer.sendRetriedOppfolgingstilfelleRetry(any()) }
+            justRun { mockOppfolgingstilfelleRetryProducer.sendAgainOppfolgingstilfelleRetry(any(), any()) }
+            justRun { mockOppfolgingstilfelleRetryProducer.sendRetriedOppfolgingstilfelleRetry(any(), any()) }
 
             val oppfolgingstilfelleRetryService = OppfolgingstilfelleRetryService(
                 oppfolgingstilfelleService = oppfolgingstilfelleService,
@@ -237,14 +237,16 @@ object KafkaOversikthendelseRetrySpek : Spek({
                 val messages = getMessagesOversikthendelsetilfelle(consumerOversikthendelsetilfelle)
                 messages.size shouldBeEqualTo 0
 
-                verify(exactly = 1) { mockOppfolgingstilfelleRetryProducer.sendAgainOppfolgingstilfelleRetry(kOppfolgingstilfelleRetry) }
+                verify(exactly = 1) {
+                    mockOppfolgingstilfelleRetryProducer.sendAgainOppfolgingstilfelleRetry(kOppfolgingstilfelleRetry, any())
+                }
             }
         }
 
         describe("Read and process KOversikthendelseRetry with unavailable Aktorregister") {
             val mockOppfolgingstilfelleRetryProducer = mockk<OppfolgingstilfelleRetryProducer>()
-            justRun { mockOppfolgingstilfelleRetryProducer.sendAgainOppfolgingstilfelleRetry(any()) }
-            justRun { mockOppfolgingstilfelleRetryProducer.sendRetriedOppfolgingstilfelleRetry(any()) }
+            justRun { mockOppfolgingstilfelleRetryProducer.sendAgainOppfolgingstilfelleRetry(any(), any()) }
+            justRun { mockOppfolgingstilfelleRetryProducer.sendRetriedOppfolgingstilfelleRetry(any(), any()) }
 
             val oppfolgingstilfelleRetryService = OppfolgingstilfelleRetryService(
                 oppfolgingstilfelleService = oppfolgingstilfelleService,
@@ -276,14 +278,16 @@ object KafkaOversikthendelseRetrySpek : Spek({
                 val messages = getMessagesOversikthendelsetilfelle(consumerOversikthendelsetilfelle)
                 messages.size shouldBeEqualTo 0
 
-                verify(exactly = 1) { mockOppfolgingstilfelleRetryProducer.sendRetriedOppfolgingstilfelleRetry(kOppfolgingstilfelleRetry) }
+                verify(exactly = 1) {
+                    mockOppfolgingstilfelleRetryProducer.sendRetriedOppfolgingstilfelleRetry(kOppfolgingstilfelleRetry, any())
+                }
             }
         }
 
         describe("Read and process KOversikthendelseRetry with unavailable BehandlendeEnhet") {
             val mockOppfolgingstilfelleRetryProducer = mockk<OppfolgingstilfelleRetryProducer>()
-            justRun { mockOppfolgingstilfelleRetryProducer.sendAgainOppfolgingstilfelleRetry(any()) }
-            justRun { mockOppfolgingstilfelleRetryProducer.sendRetriedOppfolgingstilfelleRetry(any()) }
+            justRun { mockOppfolgingstilfelleRetryProducer.sendAgainOppfolgingstilfelleRetry(any(), any()) }
+            justRun { mockOppfolgingstilfelleRetryProducer.sendRetriedOppfolgingstilfelleRetry(any(), any()) }
 
             val oppfolgingstilfelleRetryService = OppfolgingstilfelleRetryService(
                 oppfolgingstilfelleService = oppfolgingstilfelleService,
@@ -315,7 +319,9 @@ object KafkaOversikthendelseRetrySpek : Spek({
                 val messages = getMessagesOversikthendelsetilfelle(consumerOversikthendelsetilfelle)
                 messages.size shouldBeEqualTo 0
 
-                verify(exactly = 1) { mockOppfolgingstilfelleRetryProducer.sendRetriedOppfolgingstilfelleRetry(kOppfolgingstilfelleRetry) }
+                verify(exactly = 1) {
+                    mockOppfolgingstilfelleRetryProducer.sendRetriedOppfolgingstilfelleRetry(kOppfolgingstilfelleRetry, any())
+                }
             }
         }
     }

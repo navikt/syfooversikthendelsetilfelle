@@ -12,7 +12,7 @@ class OppfolgingstilfelleRetryService(
 ) {
     suspend fun receiveOversikthendelseRetry(
         kOppfolgingstilfelleRetry: KOppfolgingstilfelleRetry,
-        callId: String = ""
+        callId: String
     ) {
         when {
             kOppfolgingstilfelleRetry.hasExceededRetryLimit() -> {
