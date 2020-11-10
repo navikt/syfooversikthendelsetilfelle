@@ -8,8 +8,7 @@ import kotlinx.coroutines.*
 import net.logstash.logback.argument.StructuredArguments
 import no.nav.syfo.*
 import no.nav.syfo.kafka.kafkaOppfolgingstilfelleRetryConsumerProperties
-import no.nav.syfo.util.callIdArgument
-import no.nav.syfo.util.kafkaCallId
+import no.nav.syfo.util.*
 import org.apache.kafka.clients.consumer.KafkaConsumer
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -56,14 +55,16 @@ suspend fun pollAndProcessOppfolgingstilfelleRetryTopic(
 
     val messages = kafkaConsumer.poll(Duration.ofMillis(1000))
     messages.forEach {
-        val callId = kafkaCallId()
         val kOppfolgingstilfelleRetry: KOppfolgingstilfelleRetry = objectMapper.readValue(it.value())
         logValues = arrayOf(
             StructuredArguments.keyValue("id", it.key()),
             StructuredArguments.keyValue("timestamp", it.timestamp())
         )
+        val callIdHeader = it.headers().toArray().find { header -> header.key() == NAV_CALL_ID }
+        val callId = callIdHeader?.value()?.decodeToString() ?: kafkaCallId()
+
         LOG.info("Received KOppfolgingstilfelleRetry, ready to process, $logKeys, {}", *logValues, callIdArgument(callId))
-        oppfolgingstilfelleRetryService.receiveOversikthendelseRetry(kOppfolgingstilfelleRetry)
+        oppfolgingstilfelleRetryService.receiveOversikthendelseRetry(kOppfolgingstilfelleRetry, callId)
     }
     kafkaConsumer.commitSync()
 }

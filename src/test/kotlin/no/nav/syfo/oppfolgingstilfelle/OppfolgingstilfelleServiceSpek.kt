@@ -152,7 +152,8 @@ object OppfolgingstilfelleServiceSpek : Spek({
                 runBlocking {
                     oppfolgingstilfelleService.receiveOppfolgingstilfelle(
                         aktorId = ARBEIDSTAKER_AKTORID,
-                        orgnummer = Virksomhetsnummer(VIRKSOMHETSNUMMER)
+                        orgnummer = Virksomhetsnummer(VIRKSOMHETSNUMMER),
+                        callId = ""
                     )
                 }
 
@@ -167,7 +168,7 @@ object OppfolgingstilfelleServiceSpek : Spek({
 
         describe("Error handling") {
             val mockOppfolgingstilfelleRetryProducer = mockk<OppfolgingstilfelleRetryProducer>()
-            justRun { mockOppfolgingstilfelleRetryProducer.sendFirstOppfolgingstilfelleRetry(any(), any()) }
+            justRun { mockOppfolgingstilfelleRetryProducer.sendFirstOppfolgingstilfelleRetry(any(), any(), any()) }
 
             val consumerPropertiesOppfolgingstilfelleRetry = kafkaOppfolgingstilfelleRetryConsumerProperties(env, vaultSecrets)
                 .overrideForTest()
@@ -191,7 +192,8 @@ object OppfolgingstilfelleServiceSpek : Spek({
                 runBlocking {
                     oppfolgingstilfelleServiceWithMockRetry.receiveOppfolgingstilfelle(
                         aktorId = aktorId,
-                        orgnummer = orgnummer
+                        orgnummer = orgnummer,
+                        callId = ""
                     )
                 }
 

@@ -34,7 +34,7 @@ class OppfolgingstilfelleService(
     suspend fun receiveOppfolgingstilfelle(
         aktorId: AktorId,
         orgnummer: Virksomhetsnummer,
-        callId: String = ""
+        callId: String
     ) {
         val isSuccessful = processOppfolgingstilfelle(
             aktorId,
@@ -47,7 +47,7 @@ class OppfolgingstilfelleService(
             oppfolgingstilfelleRetryProducer.sendFirstOppfolgingstilfelleRetry(
                 aktorId,
                 orgnummer,
-                ""
+                callId
             )
         }
     }

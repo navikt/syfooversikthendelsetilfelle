@@ -16,12 +16,10 @@ const val TEMA = "Tema"
 const val ALLE_TEMA_HEADERVERDI = "GEN"
 
 const val NAV_PERSONIDENTER = "Nav-Personidenter"
-const val MDC_CALL_ID = "callId"
 const val NAV_CALL_ID = "Nav-Call-Id"
-const val NAV_CALL_ID_HEADER = "X-Nav-CallId"
 
 fun PipelineContext<out Unit, ApplicationCall>.getCallId(): String {
-    return this.call.request.headers[NAV_CALL_ID_HEADER].toString()
+    return this.call.request.headers[NAV_CALL_ID].toString()
 }
 
 fun callIdArgument(callId: String) = StructuredArguments.keyValue("callId", callId)!!

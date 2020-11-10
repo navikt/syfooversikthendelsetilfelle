@@ -5,6 +5,7 @@ import no.nav.syfo.domain.AktorId
 import no.nav.syfo.domain.Virksomhetsnummer
 import no.nav.syfo.metric.*
 import no.nav.syfo.oppfolgingstilfelle.domain.SyfoProducerRecord
+import no.nav.syfo.util.NAV_CALL_ID
 import no.nav.syfo.util.callIdArgument
 import org.apache.kafka.clients.producer.KafkaProducer
 import org.slf4j.Logger
@@ -20,7 +21,7 @@ class OppfolgingstilfelleRetryProducer(
     fun sendFirstOppfolgingstilfelleRetry(
         aktorId: AktorId,
         orgnummer: Virksomhetsnummer,
-        callId: String = ""
+        callId: String
     ) {
         val now = LocalDateTime.now()
         val firstKOppfolgingstilfelleRetry = KOppfolgingstilfelleRetry(
@@ -30,9 +31,9 @@ class OppfolgingstilfelleRetryProducer(
             aktorId = aktorId.aktor,
             orgnummer = orgnummer.value
         )
-        producer.send(producerRecord(firstKOppfolgingstilfelleRetry))
+        producer.send(producerRecord(callId, firstKOppfolgingstilfelleRetry))
         log.warn(
-            "Sent first KOppfolgingstilfelleRetry: {}, {}, {}, {}",
+            "Sent first KOppfolgingstilfelleRetry: {}, {}, {}",
             StructuredArguments.keyValue("retriedCount", firstKOppfolgingstilfelleRetry.retriedCount)!!,
             StructuredArguments.keyValue("retryTime", firstKOppfolgingstilfelleRetry.retryTime)!!,
             callIdArgument(callId)
@@ -42,7 +43,7 @@ class OppfolgingstilfelleRetryProducer(
 
     fun sendRetriedOppfolgingstilfelleRetry(
         kOppfolgingstilfelleRetry: KOppfolgingstilfelleRetry,
-        callId: String = ""
+        callId: String
     ) {
         val now = LocalDateTime.now()
         val newRetryCounter = kOppfolgingstilfelleRetry.retriedCount.plus(1)
@@ -51,9 +52,9 @@ class OppfolgingstilfelleRetryProducer(
             retryTime = now.plusMinutes(RETRY_OPPFOLGINGSTILFELLE_INTERVAL_MINUTES),
             retriedCount = newRetryCounter
         )
-        producer.send(producerRecord(newKOppfolgingstilfelleRetry))
+        producer.send(producerRecord(callId, newKOppfolgingstilfelleRetry))
         log.warn(
-            "Sent KOppfolgingstilfelleRetry retried: {}, {}, {}, {}",
+            "Sent KOppfolgingstilfelleRetry retried: {}, {}, {}",
             StructuredArguments.keyValue("retriedCount", newKOppfolgingstilfelleRetry.retriedCount)!!,
             StructuredArguments.keyValue("retryTime", newKOppfolgingstilfelleRetry.retryTime)!!,
             callIdArgument(callId)
@@ -63,11 +64,11 @@ class OppfolgingstilfelleRetryProducer(
 
     fun sendAgainOppfolgingstilfelleRetry(
         kOppfolgingstilfelleRetry: KOppfolgingstilfelleRetry,
-        callId: String = ""
+        callId: String
     ) {
-        producer.send(producerRecord(kOppfolgingstilfelleRetry))
+        producer.send(producerRecord(callId, kOppfolgingstilfelleRetry))
         log.info(
-            "Sent KOppfolgingstilfelleRetry again: {}, {}. {}, {}",
+            "Sent KOppfolgingstilfelleRetry again: {}, {}, {}",
             StructuredArguments.keyValue("retriedCount", kOppfolgingstilfelleRetry.retriedCount)!!,
             StructuredArguments.keyValue("retryTime", kOppfolgingstilfelleRetry.retryTime)!!,
             callIdArgument(callId)
@@ -75,12 +76,15 @@ class OppfolgingstilfelleRetryProducer(
         COUNT_OPPFOLGINGSTILFELLE_RETRY_AGAIN.inc()
     }
 
-    private fun producerRecord(oppfolgingstilfelleRetry: KOppfolgingstilfelleRetry) =
-        SyfoProducerRecord(
-            topic = OPPFOLGINGSTILFELLE_RETRY_TOPIC,
-            key = UUID.randomUUID().toString(),
-            value = oppfolgingstilfelleRetry
-        )
+    private fun producerRecord(
+        callId: String,
+        oppfolgingstilfelleRetry: KOppfolgingstilfelleRetry
+    ) = SyfoProducerRecord(
+        topic = OPPFOLGINGSTILFELLE_RETRY_TOPIC,
+        key = UUID.randomUUID().toString(),
+        value = oppfolgingstilfelleRetry,
+        headers = mapOf(NAV_CALL_ID to callId)
+    )
 
     companion object {
         private val log: Logger = LoggerFactory.getLogger(OppfolgingstilfelleRetryProducer::class.java)

@@ -30,7 +30,7 @@ import no.nav.syfo.client.pdl.PdlClient
 import no.nav.syfo.client.sts.StsRestClient
 import no.nav.syfo.client.syketilfelle.SyketilfelleClient
 import no.nav.syfo.kafka.setupKafka
-import no.nav.syfo.util.NAV_CALL_ID_HEADER
+import no.nav.syfo.util.NAV_CALL_ID
 import no.nav.syfo.util.getCallId
 import org.slf4j.LoggerFactory
 import java.nio.file.Paths
@@ -133,11 +133,10 @@ fun Application.serverModule() {
     }
 
     install(CallId) {
-        retrieve { it.request.headers["X-Nav-CallId"] }
-        retrieve { it.request.headers[HttpHeaders.XCorrelationId] }
+        retrieve { it.request.headers[NAV_CALL_ID] }
         generate { UUID.randomUUID().toString() }
         verify { callId: String -> callId.isNotEmpty() }
-        header(NAV_CALL_ID_HEADER)
+        header(NAV_CALL_ID)
     }
 
     install(StatusPages) {
