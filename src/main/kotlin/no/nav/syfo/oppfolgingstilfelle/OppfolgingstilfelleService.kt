@@ -3,8 +3,7 @@ package no.nav.syfo.oppfolgingstilfelle
 import no.nav.syfo.client.aktor.AktorService
 import no.nav.syfo.client.enhet.BehandlendeEnhetClient
 import no.nav.syfo.client.ereg.EregService
-import no.nav.syfo.client.pdl.PdlClient
-import no.nav.syfo.client.pdl.fullName
+import no.nav.syfo.client.pdl.*
 import no.nav.syfo.client.syketilfelle.SyketilfelleClient
 import no.nav.syfo.domain.AktorId
 import no.nav.syfo.domain.Virksomhetsnummer
@@ -59,6 +58,14 @@ class OppfolgingstilfelleService(
     ): Boolean {
         val fnr: String = aktorService.fodselsnummerForAktor(aktorId, callId)
             ?: return retryOppfolgingstilfelleWithMissingValue(MissingValue.FODSELSNUMMER)
+
+        val person = pdlClient.person(fnr, callId)
+
+        if (person.isKode6()) {
+            COUNT_OPPFOLGINGSTILFELLE_SKIPPED_STRENGT_FORTROLIG.inc()
+            return true
+        }
+
         val organisasjonNavn = eregService.finnOrganisasjonsNavn(orgnummer.value, callId)
 
         val oppfolgingstilfelle = syketilfelleClient.getOppfolgingstilfelle(
@@ -75,7 +82,7 @@ class OppfolgingstilfelleService(
             } else {
                 COUNT_OPPFOLGINGSTILFELLE_RECEIVED.inc()
             }
-            val fnrFullName = pdlClient.person(fnr, callId)?.fullName() ?: ""
+            val fnrFullName = person?.fullName() ?: ""
 
             val enhet = behandlendeEnhetClient.getEnhet(fnr, callId)
                 ?: return retryOppfolgingstilfelleWithMissingValue(MissingValue.BEHANDLENDEENHET)

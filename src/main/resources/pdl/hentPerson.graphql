@@ -11,5 +11,8 @@ query($ident: ID!, $navnHistorikk: Boolean!){
   	    etternavn
   	  }
     }
+    adressebeskyttelse(historikk: false) {
+      gradering
+    }
   }
 }

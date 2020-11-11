@@ -14,6 +14,7 @@ import no.nav.syfo.client.aktor.AktorregisterClient
 import no.nav.syfo.client.enhet.BehandlendeEnhetClient
 import no.nav.syfo.client.ereg.EregClient
 import no.nav.syfo.client.ereg.EregService
+import no.nav.syfo.client.pdl.Gradering
 import no.nav.syfo.client.pdl.PdlClient
 import no.nav.syfo.client.sts.StsRestClient
 import no.nav.syfo.client.syketilfelle.SyketilfelleClient
@@ -163,6 +164,55 @@ object OppfolgingstilfelleServiceSpek : Spek({
                 messages.first().fnr shouldBeEqualTo ARBEIDSTAKER_FNR.value
                 messages.first().enhetId shouldBeEqualTo behandlendeEnhetMock.behandlendeEnhet.enhetId
                 messages.first().virksomhetsnummer shouldBeEqualTo VIRKSOMHETSNUMMER
+            }
+        }
+
+        describe("Receive kOppfolgingsplanLPSNAV") {
+            val mockOppfolgingstilfelleRetryProducer = mockk<OppfolgingstilfelleRetryProducer>()
+            justRun { mockOppfolgingstilfelleRetryProducer.sendFirstOppfolgingstilfelleRetry(any(), any(), any()) }
+
+            val pdlMockGradering = PdlMock(Gradering.STRENGT_FORTROLIG)
+            val pdlClientMockGradering = PdlClient(
+                baseUrl = pdlMockGradering.url,
+                stsRestClient = stsRestClient
+            )
+            val oppfolgingstilfelleServiceGradering = OppfolgingstilfelleService(
+                aktorService = aktorService,
+                eregService = eregService,
+                behandlendeEnhetClient = behandlendeEnhetClient,
+                pdlClient = pdlClientMockGradering,
+                syketilfelleClient = syketilfelleClient,
+                oppfolgingstilfelleRetryProducer = mockOppfolgingstilfelleRetryProducer,
+                producer = oversikthendelsetilfelleRecordProducer
+            )
+
+            beforeEachTest {
+                pdlMockGradering.server.start()
+            }
+
+            afterEachTest {
+                pdlMockGradering.server.stop(1L, 10L)
+            }
+
+            it("Should skip and not send KOversikthendelsetilfelle when person is ${Gradering.STRENGT_FORTROLIG}") {
+                runBlocking {
+                    oppfolgingstilfelleServiceGradering.receiveOppfolgingstilfelle(
+                        aktorId = ARBEIDSTAKER_AKTORID,
+                        orgnummer = Virksomhetsnummer(VIRKSOMHETSNUMMER),
+                        callId = ""
+                    )
+                }
+
+                val messages = getMessagesOversikthendelsetilfelle(consumerOversikthendelsetilfelle)
+                messages.size shouldBeEqualTo 0
+
+                verify(exactly = 0) {
+                    mockOppfolgingstilfelleRetryProducer.sendFirstOppfolgingstilfelleRetry(
+                        any(),
+                        any(),
+                        any()
+                    )
+                }
             }
         }
 

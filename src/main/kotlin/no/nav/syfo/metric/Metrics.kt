@@ -90,6 +90,12 @@ val COUNT_CALL_PDL_FAIL: Counter = Counter.build()
     .help("Counts the number of failed calls to persondatalosningen")
     .register()
 
+const val OPPFOLGINGSTILFELLE_SKIPPED_STRENGT_FORTROLIG = "oppfolgingstilfelle_skipped_strengt_fortrolig_count"
+val COUNT_OPPFOLGINGSTILFELLE_SKIPPED_STRENGT_FORTROLIG: Counter = Counter.build()
+    .namespace(METRICS_NS)
+    .name(OPPFOLGINGSTILFELLE_SKIPPED_STRENGT_FORTROLIG)
+    .help("Counts the number of Oppfolgingstilfeller skipped because person has Gradering STRENGT_FORTROLIG(Kode6)")
+    .register()
 const val OPPFOLGINGSTILFELLE_SKIPPED_BEHANDLENDEENHET = "oppfolgingstilfelle_skipped_behandlendeenhet_count"
 val COUNT_OPPFOLGINGSTILFELLE_SKIPPED_BEHANDLENDEENHET: Counter = Counter.build()
     .namespace(METRICS_NS)
