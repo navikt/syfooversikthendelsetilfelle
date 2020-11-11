@@ -43,7 +43,7 @@ fun PdlHentPerson.fullName(): String? {
     if (nameList.isNullOrEmpty()) {
         return null
     }
-    nameList[0].let {
+    nameList.first().let {
         val firstName = it.fornavn.lowerCapitalize()
         val middleName = it.mellomnavn
         val surName = it.etternavn.lowerCapitalize()
