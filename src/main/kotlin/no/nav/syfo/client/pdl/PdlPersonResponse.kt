@@ -29,7 +29,8 @@ data class PdlHentPerson(
 )
 
 data class PdlPerson(
-    val navn: List<PdlPersonNavn>
+    val navn: List<PdlPersonNavn>,
+    val adressebeskyttelse: List<Adressebeskyttelse>?
 )
 
 data class PdlPersonNavn(
@@ -37,6 +38,17 @@ data class PdlPersonNavn(
     val mellomnavn: String?,
     val etternavn: String
 )
+
+data class Adressebeskyttelse(
+    val gradering: Gradering
+)
+
+enum class Gradering {
+    STRENGT_FORTROLIG_UTLAND,
+    STRENGT_FORTROLIG,
+    FORTROLIG,
+    UGRADERT
+}
 
 fun PdlHentPerson.fullName(): String? {
     val nameList = this.hentPerson?.navn
@@ -54,6 +66,21 @@ fun PdlHentPerson.fullName(): String? {
             "$firstName ${middleName.lowerCapitalize()} $surName"
         }
     }
+}
+
+fun PdlHentPerson?.isKode6(): Boolean {
+    val adressebeskyttelse = this?.hentPerson?.adressebeskyttelse
+    return if (adressebeskyttelse.isNullOrEmpty()) {
+        false
+    } else {
+        return adressebeskyttelse.any {
+            it.isKode6()
+        }
+    }
+}
+
+fun Adressebeskyttelse.isKode6(): Boolean {
+    return this.gradering == Gradering.STRENGT_FORTROLIG || this.gradering == Gradering.STRENGT_FORTROLIG_UTLAND
 }
 
 fun PdlError.errorMessage(): String {
