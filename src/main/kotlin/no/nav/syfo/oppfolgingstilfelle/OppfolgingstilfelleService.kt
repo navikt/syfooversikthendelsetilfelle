@@ -12,7 +12,7 @@ import no.nav.syfo.oppfolgingstilfelle.domain.*
 import no.nav.syfo.oppfolgingstilfelle.retry.OppfolgingstilfelleRetryProducer
 import org.apache.kafka.clients.producer.KafkaProducer
 import org.slf4j.LoggerFactory
-import java.util.UUID.randomUUID
+import java.util.UUID
 
 enum class MissingValue {
     BEHANDLENDEENHET,
@@ -96,7 +96,8 @@ class OppfolgingstilfelleService(
                 oppfolgingstilfelle.tidslinje.sortedBy { it.dag },
                 isGradertToday
             )
-            producer.send(producerRecord(hendelse))
+            val recordKey = UUID.nameUUIDFromBytes(oppfolgingstilfelle.orgnummer.toByteArray())
+            producer.send(producerRecord(recordKey, hendelse))
             COUNT_OVERSIKTHENDELSE_TILFELLE_PRODUCED.inc()
             return true
         } else {
@@ -119,9 +120,12 @@ class OppfolgingstilfelleService(
     }
 }
 
-private fun producerRecord(hendelse: KOversikthendelsetilfelle) =
+private fun producerRecord(
+    key: UUID,
+    hendelse: KOversikthendelsetilfelle
+) =
     SyfoProducerRecord(
         topic = OVERSIKTHENDELSE_OPPFOLGINGSTILFELLE_TOPIC,
-        key = randomUUID().toString(),
+        key = key.toString(),
         value = hendelse
     )
