@@ -23,7 +23,6 @@ fun getEnvironment(): Environment {
             getEnvVar("PDL_URL", "http://pdl-api.default/graphql"),
             getEnvVar("SYFOBEHANDLENDEENHET_URL", "http://syfobehandlendeenhet"),
             getEnvVar("SYFOSYKETILFELLE_URL", "http://syfosyketilfelle"),
-            getEnvVar("TOOGLE_OVERSIKTHENDELSETILFELLE", "false").toBoolean(),
             getEnvVar("AKTORREGISTER_V1_URL"),
             getEnvVar("SECURITY_TOKEN_SERVICE_REST_URL"),
             getEnvVar("EREG_API_BASE_URL", "https://ereg/")
@@ -43,7 +42,6 @@ data class Environment(
     val pdlUrl: String,
     val behandlendeenhetUrl: String,
     val syketilfelleUrl: String,
-    val toggleOversikthendelsetilfelle: Boolean,
     val aktoerregisterV1Url: String,
     val stsRestUrl: String,
     val eregApiBaseUrl: String

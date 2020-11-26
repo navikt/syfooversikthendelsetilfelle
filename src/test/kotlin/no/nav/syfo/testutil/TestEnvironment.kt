@@ -14,7 +14,6 @@ fun testEnvironment(port: Int, kafkaBootstrapServers: String) = Environment(
     behandlendeenhetUrl = "behandlendeenhet",
     pdlUrl = "pdlurl",
     syketilfelleUrl = "syketilfelle",
-    toggleOversikthendelsetilfelle = true,
     oversikthendelseOppfolgingstilfelleTopicSeekToBeginning = false,
     aktoerregisterV1Url = "aktorurl",
     stsRestUrl = "stsurl",
