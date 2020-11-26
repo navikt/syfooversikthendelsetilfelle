@@ -154,7 +154,6 @@ fun Application.serverModule() {
         registerPodApi(state)
         registerPrometheusApi()
     }
-
     state.initialized = true
 }
 
