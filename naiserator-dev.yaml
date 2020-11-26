@@ -38,6 +38,9 @@ spec:
     - "https://syfooversikthendelsetilfelle.nais.preprod.local"
   vault:
     enabled: true
+    paths:
+      - kvPath: "/serviceuser/data/dev/srvsyfooversikthendelsetilfelle"
+        mountPath: "/secrets/serviceuser/syfooversikthendelsetilfelle"
   webproxy: true
   env:
     - name: KTOR_ENV

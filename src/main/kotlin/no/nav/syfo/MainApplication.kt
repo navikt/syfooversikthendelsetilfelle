@@ -2,7 +2,6 @@ package no.nav.syfo
 
 import com.fasterxml.jackson.databind.*
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import com.fasterxml.jackson.module.kotlin.readValue
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import com.typesafe.config.ConfigFactory
 import io.ktor.application.*
@@ -32,8 +31,8 @@ import no.nav.syfo.client.syketilfelle.SyketilfelleClient
 import no.nav.syfo.kafka.setupKafka
 import no.nav.syfo.util.NAV_CALL_ID
 import no.nav.syfo.util.getCallId
+import no.nav.syfo.util.getFileAsString
 import org.slf4j.LoggerFactory
-import java.nio.file.Paths
 import java.util.*
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
@@ -42,18 +41,13 @@ data class ApplicationState(var running: Boolean = true, var initialized: Boolea
 
 val log: org.slf4j.Logger = LoggerFactory.getLogger("no.nav.syfo.MainApplicationKt")
 
-private val objectMapper: ObjectMapper = ObjectMapper().apply {
-    registerKotlinModule()
-    registerModule(JavaTimeModule())
-    configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-    configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
-}
-
 val backgroundTasksContext = Executors.newFixedThreadPool(4).asCoroutineDispatcher() + MDCContext()
 
 fun main() {
-    val vaultSecrets =
-        objectMapper.readValue<VaultSecrets>(Paths.get("/var/run/secrets/nais.io/vault/credentials.json").toFile())
+    val vaultSecrets = VaultSecrets(
+        serviceuserPassword = getFileAsString("/secrets/serviceuser/syfooversikthendelsetilfelle/password"),
+        serviceuserUsername = getFileAsString("/secrets/serviceuser/syfooversikthendelsetilfelle/username")
+    )
     val server = embeddedServer(Netty, applicationEngineEnvironment {
         log = LoggerFactory.getLogger("ktor.application")
         config = HoconApplicationConfig(ConfigFactory.load())
