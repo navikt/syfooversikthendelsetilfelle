@@ -7,7 +7,7 @@ version = "1.0-SNAPSHOT"
 
 val arrowVersion = "0.11.0"
 val coroutinesVersion = "1.4.2"
-val jacksonVersion = "2.10.0"
+val jacksonVersion = "2.11.3"
 val kafkaVersion = "2.7.0"
 val kafkaEmbeddedVersion = "2.5.0"
 val kluentVersion = "1.61"
