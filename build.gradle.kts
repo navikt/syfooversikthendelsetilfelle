@@ -19,10 +19,6 @@ val mockkVersion = "1.10.5"
 val prometheusVersion = "0.9.0"
 val spekVersion = "2.0.15"
 
-tasks.withType<Jar> {
-    manifest.attributes["Main-Class"] = "no.nav.syfo.MainApplicationKt"
-}
-
 plugins {
     kotlin("jvm") version "1.4.10"
     id("com.github.johnrengelman.shadow") version "6.1.0"
@@ -79,6 +75,10 @@ dependencies {
 }
 
 tasks {
+    withType<Jar> {
+        manifest.attributes["Main-Class"] = "no.nav.syfo.MainApplicationKt"
+    }
+
     create("printVersion") {
         println(project.version)
     }
