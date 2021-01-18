@@ -8,8 +8,8 @@ version = "1.0-SNAPSHOT"
 val arrowVersion = "0.11.0"
 val coroutinesVersion = "1.3.9"
 val jacksonVersion = "2.10.0"
-val kafkaVersion = "2.4.0"
-val kafkaEmbeddedVersion = "2.4.0"
+val kafkaVersion = "2.7.0"
+val kafkaEmbeddedVersion = "2.5.0"
 val kluentVersion = "1.61"
 val kotlinSerializationVersion = "0.20.0"
 val ktorVersion = "1.4.3"
@@ -33,6 +33,7 @@ repositories {
     mavenCentral()
     jcenter()
     maven(url = "http://packages.confluent.io/maven/")
+    maven(url = "https://repository.mulesoft.org/nexus/content/repositories/public/")
 }
 
 dependencies {
