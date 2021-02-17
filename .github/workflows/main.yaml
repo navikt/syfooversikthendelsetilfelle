@@ -3,7 +3,6 @@ name: main
 on: push
 
 env:
-  APP_NAME: syfooversikthendelsetilfelle
   IMAGE: docker.pkg.github.com/${{ github.repository }}/syfooversikthendelsetilfelle:${{ github.sha }}
 
 jobs:
