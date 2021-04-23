@@ -35,6 +35,7 @@ spec:
     enabled: true
     path: /prometheus
   ingresses:
+    - "https://syfooversikthendelsetilfelle.intern.nav.no"
     - "https://syfooversikthendelsetilfelle.nais.adeo.no"
   vault:
     enabled: true
