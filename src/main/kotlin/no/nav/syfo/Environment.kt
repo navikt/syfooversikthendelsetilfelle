@@ -20,12 +20,12 @@ fun getEnvironment(): Environment {
             getEnvVar("OPPFOLGINGSTILFELLE_TOPIC"),
             getEnvVar("OVERSIKTHENDELSE_OPPFOLGINGSTILFELLE_TOPIC_SEEK_TO_START", "false").toBoolean(),
             getEnvVar("KAFKA_BOOTSTRAP_SERVERS_URL"),
-            getEnvVar("PDL_URL", "http://pdl-api.default/graphql"),
-            getEnvVar("SYFOBEHANDLENDEENHET_URL", "http://syfobehandlendeenhet"),
-            getEnvVar("SYFOSYKETILFELLE_URL", "http://syfosyketilfelle"),
+            getEnvVar("PDL_URL"),
+            getEnvVar("SYFOBEHANDLENDEENHET_URL"),
+            getEnvVar("SYFOSYKETILFELLE_URL"),
             getEnvVar("AKTORREGISTER_V1_URL"),
             getEnvVar("SECURITY_TOKEN_SERVICE_REST_URL"),
-            getEnvVar("EREG_API_BASE_URL", "https://ereg/")
+            getEnvVar("EREG_API_BASE_URL")
         )
     }
 }
