@@ -2,7 +2,7 @@ apiVersion: "nais.io/v1"
 kind: "Alert"
 metadata:
   name: syfooversikthendelsetilfelle-alerts
-  namespace: default
+  namespace: teamsykefravr
   labels:
     team: teamsykefravr
 spec:
