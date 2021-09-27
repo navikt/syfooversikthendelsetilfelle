@@ -21,10 +21,20 @@ suspend fun CoroutineScope.setupKafka(
     syketilfelleClient: SyketilfelleClient
 ) {
     val producerProperties = kafkaOversikthendelsetilfelleProducerProperties(env, vaultSecrets)
-    val oversikthendelseTilfelleProducer = KafkaProducer<String, KOversikthendelsetilfelle>(producerProperties)
+    val oversikthendelseTilfelleProducer: KafkaProducer<String, KOversikthendelsetilfelle>
 
     val producerOppfolgingstilfelleRetryProperties = kafkaOppfolgingstilfelleRetryProducerConfig(env, vaultSecrets)
-    val oppfolgingstilfelleRetryRecordProducer = KafkaProducer<String, KOppfolgingstilfelleRetry>(producerOppfolgingstilfelleRetryProperties)
+    val oppfolgingstilfelleRetryRecordProducer: KafkaProducer<String, KOppfolgingstilfelleRetry>
+
+    try {
+        oversikthendelseTilfelleProducer = KafkaProducer<String, KOversikthendelsetilfelle>(producerProperties)
+        oppfolgingstilfelleRetryRecordProducer = KafkaProducer<String, KOppfolgingstilfelleRetry>(producerOppfolgingstilfelleRetryProperties)
+    } catch (e: Exception) {
+        log.error("Fikk en feil ved oppretting av Kafka Producer, restarter pod", e)
+        state.running = false
+        throw e
+    }
+
     val oppfolgingstilfelleRetryProducer = OppfolgingstilfelleRetryProducer(oppfolgingstilfelleRetryRecordProducer)
 
     val oppfolgingstilfelleService = OppfolgingstilfelleService(
