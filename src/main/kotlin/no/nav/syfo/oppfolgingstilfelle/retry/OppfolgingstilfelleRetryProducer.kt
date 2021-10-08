@@ -81,7 +81,7 @@ class OppfolgingstilfelleRetryProducer(
         oppfolgingstilfelleRetry: KOppfolgingstilfelleRetry
     ) = SyfoProducerRecord(
         topic = OPPFOLGINGSTILFELLE_RETRY_TOPIC,
-        key = UUID.randomUUID().toString(),
+        key = UUID.nameUUIDFromBytes(oppfolgingstilfelleRetry.orgnummer.toByteArray()).toString(),
         value = oppfolgingstilfelleRetry,
         headers = mapOf(NAV_CALL_ID to callId)
     )
