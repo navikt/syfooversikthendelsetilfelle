@@ -63,7 +63,9 @@ suspend fun pollAndProcessOppfolgingstilfelle(
 ) {
     var logValues = arrayOf(
         StructuredArguments.keyValue("oppfolgingstilfelleId", "missing"),
-        StructuredArguments.keyValue("timestamp", "missing")
+        StructuredArguments.keyValue("timestamp", "missing"),
+        StructuredArguments.keyValue("offset", "missing"),
+        StructuredArguments.keyValue("partition", "missing")
     )
 
     val logKeys = logValues.joinToString(prefix = "(", postfix = ")", separator = ",") {
