@@ -75,7 +75,9 @@ suspend fun pollAndProcessOppfolgingstilfelle(
             objectMapper.readValue(it.value())
         logValues = arrayOf(
             StructuredArguments.keyValue("oppfolgingstilfelleId", it.key()),
-            StructuredArguments.keyValue("timestamp", it.timestamp())
+            StructuredArguments.keyValue("timestamp", it.timestamp()),
+            StructuredArguments.keyValue("offset", it.offset()),
+            StructuredArguments.keyValue("partition", it.partition())
         )
         LOG.info("Mottatt oppfolgingstilfellePeker, klar for behandling, $logKeys, {}", *logValues, callIdArgument(callId))
 
