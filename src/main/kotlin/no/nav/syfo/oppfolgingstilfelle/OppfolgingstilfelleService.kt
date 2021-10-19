@@ -12,6 +12,7 @@ import no.nav.syfo.oppfolgingstilfelle.domain.*
 import no.nav.syfo.oppfolgingstilfelle.retry.OppfolgingstilfelleRetryProducer
 import org.apache.kafka.clients.producer.KafkaProducer
 import org.slf4j.LoggerFactory
+import java.time.LocalDateTime
 import java.util.UUID
 
 enum class MissingValue {
@@ -31,11 +32,13 @@ class OppfolgingstilfelleService(
     private val producer: KafkaProducer<String, KOversikthendelsetilfelle>
 ) {
     suspend fun receiveOppfolgingstilfelle(
+        oppfolgingstilfelleRecordTimestamp: LocalDateTime,
         aktorId: AktorId,
         orgnummer: Virksomhetsnummer,
         callId: String
     ) {
         val isSuccessful = processOppfolgingstilfelle(
+            oppfolgingstilfelleRecordTimestamp,
             aktorId,
             orgnummer,
             callId
@@ -44,6 +47,7 @@ class OppfolgingstilfelleService(
             LOG.info("Sent Oversikthendelsetilfelle on first attempt")
         } else {
             oppfolgingstilfelleRetryProducer.sendFirstOppfolgingstilfelleRetry(
+                oppfolgingstilfelleRecordTimestamp,
                 aktorId,
                 orgnummer,
                 callId
@@ -52,6 +56,7 @@ class OppfolgingstilfelleService(
     }
 
     suspend fun processOppfolgingstilfelle(
+        oppfolgingstilfelleRecordTimestamp: LocalDateTime,
         aktorId: AktorId,
         orgnummer: Virksomhetsnummer,
         callId: String
@@ -94,6 +99,7 @@ class OppfolgingstilfelleService(
                 oppfolgingstilfelle.orgnummer,
                 organisasjonNavn,
                 oppfolgingstilfelle.tidslinje.sortedBy { it.dag },
+                oppfolgingstilfelleRecordTimestamp,
                 isGradertToday
             )
             val recordKey = UUID.nameUUIDFromBytes(oppfolgingstilfelle.orgnummer.toByteArray())

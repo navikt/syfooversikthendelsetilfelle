@@ -11,5 +11,6 @@ val generateKOppfolgingstilfelleRetry =
         retryTime = LocalDateTime.now(),
         retriedCount = 0,
         aktorId = ARBEIDSTAKER_AKTORID.aktor,
-        orgnummer = VIRKSOMHETSNUMMER
+        orgnummer = VIRKSOMHETSNUMMER,
+        oppfolgingstilfelleRecordTimestamp = LocalDateTime.now()
     ).copy()

@@ -34,6 +34,7 @@ import org.apache.kafka.clients.producer.KafkaProducer
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.specification.describe
 import java.time.Duration
+import java.time.LocalDateTime
 import java.util.*
 
 @InternalAPI
@@ -152,6 +153,7 @@ object OppfolgingstilfelleServiceSpek : Spek({
             it("Should send KOversikthendelsetilfelle ") {
                 runBlocking {
                     oppfolgingstilfelleService.receiveOppfolgingstilfelle(
+                        oppfolgingstilfelleRecordTimestamp = LocalDateTime.now(),
                         aktorId = ARBEIDSTAKER_AKTORID,
                         orgnummer = Virksomhetsnummer(VIRKSOMHETSNUMMER),
                         callId = ""
@@ -169,7 +171,7 @@ object OppfolgingstilfelleServiceSpek : Spek({
 
         describe("Receive kOppfolgingsplanLPSNAV") {
             val mockOppfolgingstilfelleRetryProducer = mockk<OppfolgingstilfelleRetryProducer>()
-            justRun { mockOppfolgingstilfelleRetryProducer.sendFirstOppfolgingstilfelleRetry(any(), any(), any()) }
+            justRun { mockOppfolgingstilfelleRetryProducer.sendFirstOppfolgingstilfelleRetry(any(), any(), any(), any()) }
 
             val pdlMockGradering = PdlMock(Gradering.STRENGT_FORTROLIG)
             val pdlClientMockGradering = PdlClient(
@@ -197,6 +199,7 @@ object OppfolgingstilfelleServiceSpek : Spek({
             it("Should skip and not send KOversikthendelsetilfelle when person is ${Gradering.STRENGT_FORTROLIG}") {
                 runBlocking {
                     oppfolgingstilfelleServiceGradering.receiveOppfolgingstilfelle(
+                        oppfolgingstilfelleRecordTimestamp = LocalDateTime.now(),
                         aktorId = ARBEIDSTAKER_AKTORID,
                         orgnummer = Virksomhetsnummer(VIRKSOMHETSNUMMER),
                         callId = ""
@@ -210,6 +213,7 @@ object OppfolgingstilfelleServiceSpek : Spek({
                     mockOppfolgingstilfelleRetryProducer.sendFirstOppfolgingstilfelleRetry(
                         any(),
                         any(),
+                        any(),
                         any()
                     )
                 }
@@ -218,7 +222,7 @@ object OppfolgingstilfelleServiceSpek : Spek({
 
         describe("Error handling") {
             val mockOppfolgingstilfelleRetryProducer = mockk<OppfolgingstilfelleRetryProducer>()
-            justRun { mockOppfolgingstilfelleRetryProducer.sendFirstOppfolgingstilfelleRetry(any(), any(), any()) }
+            justRun { mockOppfolgingstilfelleRetryProducer.sendFirstOppfolgingstilfelleRetry(any(), any(), any(), any()) }
 
             val consumerPropertiesOppfolgingstilfelleRetry = kafkaOppfolgingstilfelleRetryConsumerProperties(env, vaultSecrets)
                 .overrideForTest()
@@ -241,6 +245,7 @@ object OppfolgingstilfelleServiceSpek : Spek({
                 val orgnummer = Virksomhetsnummer(VIRKSOMHETSNUMMER)
                 runBlocking {
                     oppfolgingstilfelleServiceWithMockRetry.receiveOppfolgingstilfelle(
+                        oppfolgingstilfelleRecordTimestamp = LocalDateTime.now(),
                         aktorId = aktorId,
                         orgnummer = orgnummer,
                         callId = ""
@@ -252,6 +257,7 @@ object OppfolgingstilfelleServiceSpek : Spek({
 
                 verify(exactly = 1) {
                     mockOppfolgingstilfelleRetryProducer.sendFirstOppfolgingstilfelleRetry(
+                        any(),
                         aktorId,
                         orgnummer,
                         ""

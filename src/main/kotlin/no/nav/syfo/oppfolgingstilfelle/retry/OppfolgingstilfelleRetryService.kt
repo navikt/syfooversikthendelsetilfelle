@@ -5,6 +5,7 @@ import no.nav.syfo.domain.Virksomhetsnummer
 import no.nav.syfo.metric.COUNT_OPPFOLGINGSTILFELLE_RETRY_SKIPPED
 import no.nav.syfo.oppfolgingstilfelle.OppfolgingstilfelleService
 import org.slf4j.LoggerFactory
+import java.time.LocalDateTime
 
 class OppfolgingstilfelleRetryService(
     private val oppfolgingstilfelleService: OppfolgingstilfelleService,
@@ -20,6 +21,7 @@ class OppfolgingstilfelleRetryService(
             }
             kOppfolgingstilfelleRetry.isReadyToRetry() -> {
                 val isMissingMandatoryValue = !oppfolgingstilfelleService.processOppfolgingstilfelle(
+                    kOppfolgingstilfelleRetry.oppfolgingstilfelleRecordTimestamp ?: LocalDateTime.now(),
                     AktorId(kOppfolgingstilfelleRetry.aktorId),
                     Virksomhetsnummer(kOppfolgingstilfelleRetry.orgnummer),
                     callId

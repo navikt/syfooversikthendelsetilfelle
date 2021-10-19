@@ -17,7 +17,7 @@ import org.apache.kafka.clients.consumer.KafkaConsumer
 import org.apache.kafka.common.TopicPartition
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import java.time.Duration
+import java.time.*
 
 private val LOG: Logger = LoggerFactory.getLogger("no.nav.syfo.kafka")
 
@@ -82,8 +82,12 @@ suspend fun pollAndProcessOppfolgingstilfelle(
             StructuredArguments.keyValue("partition", it.partition())
         )
         LOG.info("Mottatt oppfolgingstilfellePeker, klar for behandling, $logKeys, {}", *logValues, callIdArgument(callId))
-
+        val oppfolgingstilfelleRecordTimestamp = LocalDateTime.ofInstant(
+            Instant.ofEpochSecond(it.timestamp()),
+            ZoneId.systemDefault()
+        )
         oppfolgingstilfelleService.receiveOppfolgingstilfelle(
+            oppfolgingstilfelleRecordTimestamp,
             AktorId(oppfolgingstilfellePeker.aktorId),
             Virksomhetsnummer(oppfolgingstilfellePeker.orgnummer),
             callId

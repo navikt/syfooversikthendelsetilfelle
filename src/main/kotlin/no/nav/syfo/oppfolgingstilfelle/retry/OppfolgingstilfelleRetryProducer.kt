@@ -19,6 +19,7 @@ class OppfolgingstilfelleRetryProducer(
     private val producer: KafkaProducer<String, KOppfolgingstilfelleRetry>
 ) {
     fun sendFirstOppfolgingstilfelleRetry(
+        oppfolgingstilfelleRecordTimestamp: LocalDateTime,
         aktorId: AktorId,
         orgnummer: Virksomhetsnummer,
         callId: String
@@ -29,7 +30,8 @@ class OppfolgingstilfelleRetryProducer(
             retryTime = now.plusMinutes(RETRY_OPPFOLGINGSTILFELLE_INTERVAL_MINUTES),
             retriedCount = 0,
             aktorId = aktorId.aktor,
-            orgnummer = orgnummer.value
+            orgnummer = orgnummer.value,
+            oppfolgingstilfelleRecordTimestamp = oppfolgingstilfelleRecordTimestamp
         )
         producer.send(producerRecord(callId, firstKOppfolgingstilfelleRetry))
         log.warn(
