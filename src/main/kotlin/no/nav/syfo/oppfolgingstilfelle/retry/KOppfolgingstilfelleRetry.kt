@@ -12,7 +12,7 @@ data class KOppfolgingstilfelleRetry(
     val retriedCount: Int,
     val aktorId: String,
     val orgnummer: String,
-    val oppfolgingstilfelleRecordTimestamp: LocalDateTime?
+    val oppfolgingstilfelleRecordTimestamp: LocalDateTime
 )
 
 fun KOppfolgingstilfelleRetry.hasExceededRetryLimit(): Boolean {
