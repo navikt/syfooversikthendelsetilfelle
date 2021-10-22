@@ -22,6 +22,7 @@ import no.nav.syfo.api.registerPodApi
 import no.nav.syfo.api.registerPrometheusApi
 import no.nav.syfo.client.aktor.AktorService
 import no.nav.syfo.client.aktor.AktorregisterClient
+import no.nav.syfo.client.azuread.AzureAdClient
 import no.nav.syfo.client.enhet.BehandlendeEnhetClient
 import no.nav.syfo.client.ereg.EregClient
 import no.nav.syfo.client.ereg.EregService
@@ -57,13 +58,22 @@ fun main() {
         }
 
         val stsClientRest = StsRestClient(env.stsRestUrl, vaultSecrets.serviceuserUsername, vaultSecrets.serviceuserPassword)
+        val azureAdClient = AzureAdClient(
+            azureAppClientId = env.azureAppClientId,
+            azureAppClientSecret = env.azureAppClientSecret,
+            azureOpenidConfigTokenEndpoint = env.azureOpenidConfigTokenEndpoint
+        )
 
         val eregClient = EregClient(env.eregApiBaseUrl, stsClientRest)
         val eregService = EregService(eregClient)
 
         val aktorregisterClient = AktorregisterClient(env.aktoerregisterV1Url, stsClientRest)
         val aktorService = AktorService(aktorregisterClient)
-        val behandlendeEnhetClient = BehandlendeEnhetClient(env.behandlendeenhetUrl, stsClientRest)
+        val behandlendeEnhetClient = BehandlendeEnhetClient(
+            azureAdClient = azureAdClient,
+            baseUrl = env.behandlendeenhetUrl,
+            syfobehandlendeenhetClientId = env.syfobehandlendeenhetClientId
+        )
         val pdlClient = PdlClient(env.pdlUrl, stsClientRest)
         val syketilfelleClient = SyketilfelleClient(env.syketilfelleUrl, stsClientRest)
 

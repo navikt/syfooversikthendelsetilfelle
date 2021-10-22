@@ -50,9 +50,13 @@ object KafkaITSpek : Spek({
     val env = Environment(
         applicationPort = getRandomPort(),
         applicationThreads = 1,
+        azureAppClientId = "app-client-id",
+        azureAppClientSecret = "app-secret",
+        azureOpenidConfigTokenEndpoint = "azureOpenidConfigTokenEndpoint",
         oppfolgingstilfelleTopic = oppfolgingstilfelleTopic,
         kafkaBootstrapServers = embeddedEnvironment.brokersURL,
         applicationName = "syfooversikthendelsetilfelle",
+        syfobehandlendeenhetClientId = "syfobehandlendeenhetClientId",
         behandlendeenhetUrl = "behandlendeenhet",
         pdlUrl = "pdlurl",
         syketilfelleUrl = "syketilfelle",

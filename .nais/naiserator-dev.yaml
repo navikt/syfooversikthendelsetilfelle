@@ -61,6 +61,8 @@ spec:
       value: aapen-syfo-oppfolgingstilfelle-v1
     - name: PDL_URL
       value: https://pdl-api.nais.preprod.local/graphql
+    - name: SYFOBEHANDLENDEENHET_CLIENT_ID
+      value: "dev-fss.teamsykefravr.syfobehandlendeenhet"
     - name: SYFOBEHANDLENDEENHET_URL
       value: https://syfobehandlendeenhet.nais.preprod.local
     - name: SYFOSYKETILFELLE_URL

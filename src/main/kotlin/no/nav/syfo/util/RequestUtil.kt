@@ -11,6 +11,8 @@ import java.util.concurrent.atomic.AtomicInteger
 const val APP_CONSUMER_ID = "syfooversikthendelsetilfelle"
 const val NAV_CONSUMER_ID = "Nav-Consumer-Id"
 
+const val NAV_PERSONIDENT_HEADER = "nav-personident"
+
 const val NAV_CONSUMER_TOKEN = "Nav-Consumer-Token"
 const val TEMA = "Tema"
 const val ALLE_TEMA_HEADERVERDI = "GEN"

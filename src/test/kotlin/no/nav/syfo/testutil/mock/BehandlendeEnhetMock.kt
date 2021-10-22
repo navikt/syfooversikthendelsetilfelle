@@ -12,9 +12,10 @@ import io.ktor.routing.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import no.nav.syfo.client.enhet.BehandlendeEnhet
-import no.nav.syfo.testutil.UserConstants.ARBEIDSTAKER_FNR
 import no.nav.syfo.testutil.UserConstants.ARBEIDSTAKER_2_FNR
+import no.nav.syfo.testutil.UserConstants.ARBEIDSTAKER_FNR
 import no.nav.syfo.testutil.getRandomPort
+import no.nav.syfo.util.NAV_PERSONIDENT_HEADER
 
 class BehandlendeEnhetMock {
     private val port = getRandomPort()
@@ -38,11 +39,15 @@ class BehandlendeEnhetMock {
                 }
             }
             routing {
-                get("/api/${ARBEIDSTAKER_FNR.value}") {
-                    call.respond(behandlendeEnhet)
-                }
-                get("/api/${ARBEIDSTAKER_2_FNR.value}") {
-                    call.respond(HttpStatusCode.InternalServerError)
+                get("/api/system/v2/personident") {
+                    when {
+                        call.request.headers[NAV_PERSONIDENT_HEADER] == ARBEIDSTAKER_FNR.value -> {
+                            call.respond(behandlendeEnhet)
+                        }
+                        call.request.headers[NAV_PERSONIDENT_HEADER] == ARBEIDSTAKER_2_FNR.value -> {
+                            call.respond(HttpStatusCode.InternalServerError)
+                        }
+                    }
                 }
             }
         }

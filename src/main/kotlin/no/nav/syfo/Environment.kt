@@ -14,18 +14,19 @@ fun getEnvironment(): Environment {
         objectMapper.readValue(firstExistingFile(localEnvironmentPropertiesPath, defaultlocalEnvironmentPropertiesPath), Environment::class.java)
     } else {
         Environment(
-            getEnvVar("APPLICATION_PORT", "8080").toInt(),
-            getEnvVar("APPLICATION_THREADS", "1").toInt(),
-            getEnvVar("APPLICATION_NAME", "syfooversikthendelsetilfelle"),
-            getEnvVar("OPPFOLGINGSTILFELLE_TOPIC"),
-            getEnvVar("OVERSIKTHENDELSE_OPPFOLGINGSTILFELLE_TOPIC_SEEK_TO_START", "false").toBoolean(),
-            getEnvVar("KAFKA_BOOTSTRAP_SERVERS_URL"),
-            getEnvVar("PDL_URL"),
-            getEnvVar("SYFOBEHANDLENDEENHET_URL"),
-            getEnvVar("SYFOSYKETILFELLE_URL"),
-            getEnvVar("AKTORREGISTER_V1_URL"),
-            getEnvVar("SECURITY_TOKEN_SERVICE_REST_URL"),
-            getEnvVar("EREG_API_BASE_URL")
+            applicationPort = getEnvVar("APPLICATION_PORT", "8080").toInt(),
+            applicationThreads = getEnvVar("APPLICATION_THREADS", "1").toInt(),
+            applicationName = getEnvVar("APPLICATION_NAME", "syfooversikthendelsetilfelle"),
+            oppfolgingstilfelleTopic = getEnvVar("OPPFOLGINGSTILFELLE_TOPIC"),
+            oversikthendelseOppfolgingstilfelleTopicSeekToBeginning = getEnvVar("OVERSIKTHENDELSE_OPPFOLGINGSTILFELLE_TOPIC_SEEK_TO_START", "false").toBoolean(),
+            kafkaBootstrapServers = getEnvVar("KAFKA_BOOTSTRAP_SERVERS_URL"),
+            pdlUrl = getEnvVar("PDL_URL"),
+            syfobehandlendeenhetClientId = getEnvVar("SYFOBEHANDLENDEENHET_CLIENT_ID"),
+            behandlendeenhetUrl = getEnvVar("SYFOBEHANDLENDEENHET_URL"),
+            syketilfelleUrl = getEnvVar("SYFOSYKETILFELLE_URL"),
+            aktoerregisterV1Url = getEnvVar("AKTORREGISTER_V1_URL"),
+            stsRestUrl = getEnvVar("SECURITY_TOKEN_SERVICE_REST_URL"),
+            eregApiBaseUrl = getEnvVar("EREG_API_BASE_URL")
         )
     }
 }
@@ -36,10 +37,16 @@ data class Environment(
     val applicationPort: Int,
     val applicationThreads: Int,
     val applicationName: String,
+
+    val azureAppClientId: String = getEnvVar("AZURE_APP_CLIENT_ID"),
+    val azureAppClientSecret: String = getEnvVar("AZURE_APP_CLIENT_SECRET"),
+    val azureOpenidConfigTokenEndpoint: String = getEnvVar("AZURE_OPENID_CONFIG_TOKEN_ENDPOINT"),
+
     val oppfolgingstilfelleTopic: String,
     val oversikthendelseOppfolgingstilfelleTopicSeekToBeginning: Boolean,
     val kafkaBootstrapServers: String,
     val pdlUrl: String,
+    val syfobehandlendeenhetClientId: String,
     val behandlendeenhetUrl: String,
     val syketilfelleUrl: String,
     val aktoerregisterV1Url: String,

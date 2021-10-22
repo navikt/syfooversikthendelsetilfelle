@@ -10,14 +10,15 @@ import io.ktor.client.features.json.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
-import no.nav.syfo.client.sts.StsRestClient
+import no.nav.syfo.client.azuread.AzureAdClient
 import no.nav.syfo.metric.*
 import no.nav.syfo.util.*
 import org.slf4j.LoggerFactory
 
 class BehandlendeEnhetClient(
+    private val azureAdClient: AzureAdClient,
     private val baseUrl: String,
-    private val stsRestClient: StsRestClient
+    private val syfobehandlendeenhetClientId: String
 ) {
     private val client = HttpClient(CIO) {
         install(JsonFeature) {
@@ -29,15 +30,19 @@ class BehandlendeEnhetClient(
         }
     }
 
-    suspend fun getEnhet(fnr: String, callId: String): BehandlendeEnhet? {
-        val bearer = stsRestClient.token()
+    suspend fun getEnhet(personIdentNumber: String, callId: String): BehandlendeEnhet? {
+        val systemToken = azureAdClient.getSystemToken(
+            scopeClientId = syfobehandlendeenhetClientId
+        )?.accessToken ?: throw RuntimeException("Failed to request access to Person: Failed to get OBO token")
 
         COUNT_CALL_BEHANDLENDEENHET.inc()
 
-        val response: HttpResponse = client.get(getBehandlendeEnhetUrl(fnr)) {
-            header(HttpHeaders.Authorization, bearerHeader(bearer))
+        val url = "$baseUrl/api/system/v2/personident"
+        val response: HttpResponse = client.get(url) {
+            header(HttpHeaders.Authorization, bearerHeader(systemToken))
             header(NAV_CALL_ID, callId)
             header(NAV_CONSUMER_ID, APP_CONSUMER_ID)
+            header(NAV_PERSONIDENT_HEADER, personIdentNumber)
             accept(ContentType.Application.Json)
         }
 
@@ -64,10 +69,6 @@ class BehandlendeEnhetClient(
                 return null
             }
         }
-    }
-
-    private fun getBehandlendeEnhetUrl(bruker: String): String {
-        return "$baseUrl/api/$bruker"
     }
 
     private fun isValid(behandlendeEnhet: BehandlendeEnhet): Boolean {

@@ -11,6 +11,7 @@ import kotlinx.coroutines.runBlocking
 import no.nav.common.KafkaEnvironment
 import no.nav.syfo.client.aktor.AktorService
 import no.nav.syfo.client.aktor.AktorregisterClient
+import no.nav.syfo.client.azuread.AzureAdClient
 import no.nav.syfo.client.enhet.BehandlendeEnhetClient
 import no.nav.syfo.client.ereg.EregClient
 import no.nav.syfo.client.ereg.EregService
@@ -59,6 +60,13 @@ object OppfolgingstilfelleServiceSpek : Spek({
 
         val vaultSecrets = vaultSecrets
 
+        val azureAdClientMock = AzureAdMock()
+        val azureAdClient = AzureAdClient(
+            azureAppClientId = "azureAppClientId",
+            azureAppClientSecret = "azureAppClientSecret",
+            azureOpenidConfigTokenEndpoint = azureAdClientMock.url
+        )
+
         val stsRestMock = StsRestMock()
         val stsRestClient = StsRestClient(
             baseUrl = stsRestMock.url,
@@ -75,8 +83,9 @@ object OppfolgingstilfelleServiceSpek : Spek({
 
         val behandlendeEnhetMock = BehandlendeEnhetMock()
         val behandlendeEnhetClient = BehandlendeEnhetClient(
+            azureAdClient = azureAdClient,
             baseUrl = behandlendeEnhetMock.url,
-            stsRestClient = stsRestClient
+            syfobehandlendeenhetClientId = "syfobehandlendeenhetClientId"
         )
 
         val eregMock = EregMock()
@@ -130,6 +139,7 @@ object OppfolgingstilfelleServiceSpek : Spek({
         beforeGroup {
             embeddedEnvironment.start()
 
+            azureAdClientMock.server.start()
             aktorregisterMock.server.start()
             behandlendeEnhetMock.server.start()
             eregMock.server.start()
@@ -141,6 +151,7 @@ object OppfolgingstilfelleServiceSpek : Spek({
         afterGroup {
             embeddedEnvironment.tearDown()
 
+            azureAdClientMock.server.stop(1L, 10L)
             aktorregisterMock.server.stop(1L, 10L)
             behandlendeEnhetMock.server.stop(1L, 10L)
             eregMock.server.stop(1L, 10L)
