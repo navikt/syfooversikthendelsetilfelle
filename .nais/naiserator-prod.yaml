@@ -36,6 +36,10 @@ spec:
   ingresses:
     - "https://syfooversikthendelsetilfelle.intern.nav.no"
     - "https://syfooversikthendelsetilfelle.nais.adeo.no"
+  azure:
+    application:
+      enabled: true
+      tenant: nav.no
   vault:
     enabled: true
     paths:

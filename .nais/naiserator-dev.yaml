@@ -36,6 +36,10 @@ spec:
   ingresses:
     - "https://syfooversikthendelsetilfelle.dev.intern.nav.no"
     - "https://syfooversikthendelsetilfelle.nais.preprod.local"
+  azure:
+    application:
+      enabled: true
+      tenant: trygdeetaten.no
   vault:
     enabled: true
     paths:
