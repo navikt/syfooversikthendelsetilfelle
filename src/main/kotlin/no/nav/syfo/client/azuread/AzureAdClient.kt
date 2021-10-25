@@ -38,7 +38,11 @@ class AzureAdClient(
                                 append("grant_type", "client_credentials")
                                 append("scope", "api://$scopeClientId/.default")
                             }
-                        )?.toAzureAdToken()
+                        )?.let {
+                            val azureadToken = it.toAzureAdToken()
+                            tokenMap[scopeClientId] = azureadToken
+                            azureadToken
+                        }
                     }
                 )
         }
