@@ -62,8 +62,8 @@ spec:
     - name: PDL_URL
       value: https://pdl-api.nais.adeo.no/graphql
     - name: SYFOBEHANDLENDEENHET_CLIENT_ID
-      value: "prod-fss.teamsykefravr.syfobehandlendeenhet"
+      value: "prod-gcp.teamsykefravr.syfobehandlendeenhet"
     - name: SYFOBEHANDLENDEENHET_URL
-      value: https://syfobehandlendeenhet.nais.adeo.no
+      value: "https://syfobehandlendeenhet.intern.nav.no"
     - name: SYFOSYKETILFELLE_URL
       value: https://syfosyketilfelle.nais.adeo.no
