@@ -11,9 +11,9 @@ import no.nav.syfo.testutil.mock.AktorregisterMock
 import no.nav.syfo.testutil.mock.StsRestMock
 import no.nav.syfo.testutil.vaultSecrets
 import org.amshove.kluent.shouldBeEqualTo
+import org.junit.Assert.assertTrue
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.specification.describe
-import kotlin.test.assertTrue
 
 @InternalAPI
 object AktorregisterClientTest : Spek({
@@ -52,7 +52,7 @@ object AktorregisterClientTest : Spek({
                 runBlocking {
                     val lookupResult = aktorregisterClient.getIdenter(ARBEIDSTAKER_FNR.value, "callId")
                     assertTrue(lookupResult is Either.Right)
-                    fnr = lookupResult.b.first { it.type == IdentType.NorskIdent }.ident
+                    fnr = lookupResult.orNull()?.first { it -> it.type == IdentType.NorskIdent }?.ident
                 }
 
                 fnr shouldBeEqualTo ARBEIDSTAKER_FNR.value
@@ -63,7 +63,7 @@ object AktorregisterClientTest : Spek({
                 runBlocking {
                     val lookupResult = aktorregisterClient.getIdenter(ARBEIDSTAKER_AKTORID.aktor, "callId")
                     assertTrue(lookupResult is Either.Right)
-                    aktorId = lookupResult.b.first { it.type == IdentType.AktoerId }.ident
+                    aktorId = lookupResult.orNull()?.first { it -> it.type == IdentType.AktoerId }?.ident
                 }
 
                 aktorId shouldBeEqualTo ARBEIDSTAKER_AKTORID.aktor

@@ -16,11 +16,6 @@ fun List<KSyketilfelledag>.isLatestSykmeldingGradert(): Boolean {
     val sykmeldingerDager = this
         .filter { it.prioritertSyketilfellebit?.tags?.contains(SYKMELDING) ?: false }
 
-    return if (sykmeldingerDager.isNullOrEmpty()) {
-        false
-    } else {
-        sykmeldingerDager.minBy { ChronoUnit.DAYS.between(it.dag, LocalDate.now()) }!!
-            .prioritertSyketilfellebit!!.tags.contains(GRADERT_AKTIVITET)
-            .or(false)
-    }
+    return sykmeldingerDager.minByOrNull { ChronoUnit.DAYS.between(it.dag, LocalDate.now()) }
+        ?.prioritertSyketilfellebit?.tags?.contains(GRADERT_AKTIVITET) ?: false
 }

@@ -12,6 +12,7 @@ import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import no.nav.syfo.client.sts.StsRestClient
+import no.nav.syfo.metric.COUNT_CALL_EREG_FAIL
 import no.nav.syfo.metric.COUNT_CALL_EREG_SUCCESS
 import no.nav.syfo.util.bearerHeader
 import org.slf4j.LoggerFactory
@@ -56,7 +57,7 @@ class EregClient(
                 eregOrganisasjonResponse
             }
             else -> {
-                COUNT_CALL_EREG_SUCCESS.inc()
+                COUNT_CALL_EREG_FAIL.inc()
                 LOG.error("Error with responseCode=${response.status.value} with callId=$callId while requesting Organisasjon from Ereg")
                 null
             }

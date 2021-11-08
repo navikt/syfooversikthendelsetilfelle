@@ -9,9 +9,9 @@ val coroutinesVersion = "1.4.2"
 val jacksonVersion = "2.11.3"
 val kafkaVersion = "2.7.0"
 val kafkaEmbeddedVersion = "2.5.0"
-val kluentVersion = "1.61"
+val kluentVersion = "1.68"
 val kotlinSerializationVersion = "0.20.0"
-val ktorVersion = "1.3.2"
+val ktorVersion = "1.6.5"
 val logbackVersion = "1.2.3"
 val logstashEncoderVersion = "6.3"
 val mockkVersion = "1.10.5"
@@ -26,7 +26,6 @@ plugins {
 
 repositories {
     mavenCentral()
-    jcenter()
     maven(url = "http://packages.confluent.io/maven/")
     maven(url = "https://jitpack.io")
     maven(url = "https://repository.mulesoft.org/nexus/content/repositories/public/")
