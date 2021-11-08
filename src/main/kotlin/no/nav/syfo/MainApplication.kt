@@ -14,7 +14,6 @@ import io.ktor.response.*
 import io.ktor.routing.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
-import io.ktor.util.*
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.slf4j.MDCContext
@@ -126,7 +125,6 @@ fun Application.kafkaModule(
     }
 }
 
-@KtorExperimentalAPI
 fun Application.serverModule() {
     install(ContentNegotiation) {
         jackson {

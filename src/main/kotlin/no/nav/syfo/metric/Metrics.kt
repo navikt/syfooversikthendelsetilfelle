@@ -76,7 +76,6 @@ val COUNT_CALL_EREG_FAIL: Counter = Counter.build()
     .help("Counts the number of failed calls to EREG")
     .register()
 
-const val CALL_PDL = "call_pdl_count"
 const val CALL_PDL_SUCCESS = "call_pdl_success_count"
 const val CALL_PDL_FAIL = "call_pdl_fail_count"
 val COUNT_CALL_PDL_SUCCESS: Counter = Counter.build()

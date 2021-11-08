@@ -15,12 +15,6 @@ const val CREATED_DATE = "createdDate"
 class SyfoProducerRecord<K, V>(topic: String, key: K, value: V, headers: Map<String, Any> = emptyMap()) :
     ProducerRecord<K, V>(topic, null, System.currentTimeMillis(), key, value, defaultHeaders<V>(value, headers)) {
 
-    fun addHeaders(headers: Map<String, Any>) {
-        headers.entries
-            .map { entry -> RecordHeader(entry.key, toUtf8Bytes(entry.value)) }
-            .forEach { headers().add(it) }
-    }
-
     companion object {
         private fun <V> defaultHeaders(value: V, additionalHeaders: Map<String, Any>): Iterable<Header> {
             val guid = RecordHeader(GUID, toUtf8Bytes(UUID.randomUUID()))
