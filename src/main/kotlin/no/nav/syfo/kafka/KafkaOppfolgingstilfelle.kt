@@ -71,12 +71,18 @@ suspend fun pollAndProcessOppfolgingstilfelle(
     val logKeys = logValues.joinToString(prefix = "(", postfix = ")", separator = ",") {
         "{}"
     }
-    kafkaConsumer.poll(Duration.ofMillis(0)).forEach {
+    val tilfeller = kafkaConsumer.poll(Duration.ofMillis(0))
+    if (tilfeller.count() > 0) {
+        LOG.info("Mottatt ${tilfeller.count()} oppfolgingstilfellepekere")
+    }
+
+    tilfeller.forEach {
         val callId = kafkaCallId()
+        val oppfolgingstilfelleId = it.key()
         val oppfolgingstilfellePeker: KOppfolgingstilfellePeker =
             objectMapper.readValue(it.value())
         logValues = arrayOf(
-            StructuredArguments.keyValue("oppfolgingstilfelleId", it.key()),
+            StructuredArguments.keyValue("oppfolgingstilfelleId", oppfolgingstilfelleId),
             StructuredArguments.keyValue("timestamp", it.timestamp()),
             StructuredArguments.keyValue("offset", it.offset()),
             StructuredArguments.keyValue("partition", it.partition())
@@ -90,6 +96,7 @@ suspend fun pollAndProcessOppfolgingstilfelle(
             oppfolgingstilfelleRecordTimestamp,
             AktorId(oppfolgingstilfellePeker.aktorId),
             Virksomhetsnummer(oppfolgingstilfellePeker.orgnummer),
+            oppfolgingstilfelleId,
             callId
         )
     }
