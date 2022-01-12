@@ -72,8 +72,8 @@ suspend fun pollAndProcessOppfolgingstilfelle(
         "{}"
     }
     val tilfeller = kafkaConsumer.poll(Duration.ofMillis(0))
-    if (tilfeller.count() > 0) {
-        LOG.info("Mottatt ${tilfeller.count()} oppfolgingstilfellepekere")
+    if (tilfeller.count() > 1) {
+        LOG.info("Mottatt flere oppfolgingstilfellepekere på én poll: ${tilfeller.count()}")
     }
 
     tilfeller.forEach {
