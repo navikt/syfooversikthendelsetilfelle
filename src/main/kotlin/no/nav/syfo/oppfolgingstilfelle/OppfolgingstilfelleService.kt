@@ -35,6 +35,7 @@ class OppfolgingstilfelleService(
         oppfolgingstilfelleRecordTimestamp: LocalDateTime,
         aktorId: AktorId,
         orgnummer: Virksomhetsnummer,
+        oppfolgingstilfelleId: String,
         callId: String
     ) {
         val isSuccessful = processOppfolgingstilfelle(
@@ -44,7 +45,7 @@ class OppfolgingstilfelleService(
             callId
         )
         if (isSuccessful) {
-            LOG.info("Sent Oversikthendelsetilfelle on first attempt")
+            LOG.info("Sent Oversikthendelsetilfelle on first attempt for tilfelle with id: $oppfolgingstilfelleId")
         } else {
             oppfolgingstilfelleRetryProducer.sendFirstOppfolgingstilfelleRetry(
                 oppfolgingstilfelleRecordTimestamp,

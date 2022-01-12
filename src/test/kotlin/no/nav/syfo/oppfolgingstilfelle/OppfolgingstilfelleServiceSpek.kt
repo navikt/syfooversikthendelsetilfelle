@@ -167,6 +167,7 @@ object OppfolgingstilfelleServiceSpek : Spek({
                         oppfolgingstilfelleRecordTimestamp = LocalDateTime.now(),
                         aktorId = ARBEIDSTAKER_AKTORID,
                         orgnummer = Virksomhetsnummer(VIRKSOMHETSNUMMER),
+                        oppfolgingstilfelleId = "123",
                         callId = ""
                     )
                 }
@@ -213,6 +214,7 @@ object OppfolgingstilfelleServiceSpek : Spek({
                         oppfolgingstilfelleRecordTimestamp = LocalDateTime.now(),
                         aktorId = ARBEIDSTAKER_AKTORID,
                         orgnummer = Virksomhetsnummer(VIRKSOMHETSNUMMER),
+                        oppfolgingstilfelleId = "123",
                         callId = ""
                     )
                 }
@@ -259,6 +261,7 @@ object OppfolgingstilfelleServiceSpek : Spek({
                         oppfolgingstilfelleRecordTimestamp = LocalDateTime.now(),
                         aktorId = aktorId,
                         orgnummer = orgnummer,
+                        oppfolgingstilfelleId = "123",
                         callId = ""
                     )
                 }
