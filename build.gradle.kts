@@ -4,31 +4,30 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 group = "no.nav.syfo"
 version = "1.0-SNAPSHOT"
 
-val arrowVersion = "0.11.0"
-val coroutinesVersion = "1.4.2"
-val jacksonVersion = "2.11.3"
-val kafkaVersion = "2.7.0"
-val kafkaEmbeddedVersion = "2.5.0"
+val arrowVersion = "0.12.1"
+val coroutinesVersion = "1.6.0"
+val jacksonVersion = "2.13.1"
+val kafkaVersion = "2.8.1"
+val kafkaEmbeddedVersion = "2.8.1"
 val kluentVersion = "1.68"
 val kotlinSerializationVersion = "0.20.0"
-val ktorVersion = "1.6.5"
-val logbackVersion = "1.2.3"
-val logstashEncoderVersion = "6.3"
-val mockkVersion = "1.10.5"
-val prometheusVersion = "0.9.0"
-val spekVersion = "2.0.15"
+val ktorVersion = "1.6.8"
+val logbackVersion = "1.2.11"
+val logstashEncoderVersion = "7.0.1"
+val mockkVersion = "1.12.3"
+val prometheusVersion = "0.15.0"
+val spekVersion = "2.0.18"
 
 plugins {
-    kotlin("jvm") version "1.4.10"
-    id("com.github.johnrengelman.shadow") version "6.1.0"
-    id("org.jlleitschuh.gradle.ktlint") version "9.2.1"
+    kotlin("jvm") version "1.6.10"
+    id("com.github.johnrengelman.shadow") version "7.1.2"
+    id("org.jlleitschuh.gradle.ktlint") version "10.2.1"
 }
 
 repositories {
     mavenCentral()
-    maven(url = "http://packages.confluent.io/maven/")
+    maven(url = "https://packages.confluent.io/maven/")
     maven(url = "https://jitpack.io")
-    maven(url = "https://repository.mulesoft.org/nexus/content/repositories/public/")
 }
 
 dependencies {
@@ -62,7 +61,7 @@ dependencies {
 
     implementation("io.arrow-kt:arrow-core-data:$arrowVersion")
 
-    implementation("org.apache.kafka:kafka_2.12:$kafkaVersion")
+    implementation("org.apache.kafka:kafka_2.13:$kafkaVersion")
 
     testImplementation("io.ktor:ktor-server-test-host:$ktorVersion")
     testImplementation("io.mockk:mockk:$mockkVersion")

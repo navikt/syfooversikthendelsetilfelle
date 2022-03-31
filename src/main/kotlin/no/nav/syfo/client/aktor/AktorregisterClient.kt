@@ -77,9 +77,11 @@ class AktorregisterClient(
         callId: String
     ): Either<String, String> {
         return getIdenter(ident, callId).flatMap { identList ->
-            Either.Right(identList.first {
-                it.type == type
-            }.ident)
+            Either.Right(
+                identList.first {
+                    it.type == type
+                }.ident
+            )
         }
     }
 

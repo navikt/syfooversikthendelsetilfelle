@@ -48,51 +48,56 @@ fun main() {
         serviceuserPassword = getFileAsString("/secrets/serviceuser/syfooversikthendelsetilfelle/password"),
         serviceuserUsername = getFileAsString("/secrets/serviceuser/syfooversikthendelsetilfelle/username")
     )
-    val server = embeddedServer(Netty, applicationEngineEnvironment {
-        log = LoggerFactory.getLogger("ktor.application")
-        config = HoconApplicationConfig(ConfigFactory.load())
+    val server = embeddedServer(
+        Netty,
+        applicationEngineEnvironment {
+            log = LoggerFactory.getLogger("ktor.application")
+            config = HoconApplicationConfig(ConfigFactory.load())
 
-        connector {
-            port = env.applicationPort
-        }
+            connector {
+                port = env.applicationPort
+            }
 
-        val stsClientRest = StsRestClient(env.stsRestUrl, vaultSecrets.serviceuserUsername, vaultSecrets.serviceuserPassword)
-        val azureAdClient = AzureAdClient(
-            azureAppClientId = env.azureAppClientId,
-            azureAppClientSecret = env.azureAppClientSecret,
-            azureOpenidConfigTokenEndpoint = env.azureOpenidConfigTokenEndpoint
-        )
-
-        val eregClient = EregClient(env.eregApiBaseUrl, stsClientRest)
-        val eregService = EregService(eregClient)
-
-        val aktorregisterClient = AktorregisterClient(env.aktoerregisterV1Url, stsClientRest)
-        val aktorService = AktorService(aktorregisterClient)
-        val behandlendeEnhetClient = BehandlendeEnhetClient(
-            azureAdClient = azureAdClient,
-            baseUrl = env.behandlendeenhetUrl,
-            syfobehandlendeenhetClientId = env.syfobehandlendeenhetClientId
-        )
-        val pdlClient = PdlClient(env.pdlUrl, stsClientRest)
-        val syketilfelleClient = SyketilfelleClient(env.syketilfelleUrl, stsClientRest)
-
-        state.running = true
-
-        module {
-            kafkaModule(
-                vaultSecrets,
-                aktorService,
-                eregService,
-                behandlendeEnhetClient,
-                pdlClient,
-                syketilfelleClient
+            val stsClientRest = StsRestClient(env.stsRestUrl, vaultSecrets.serviceuserUsername, vaultSecrets.serviceuserPassword)
+            val azureAdClient = AzureAdClient(
+                azureAppClientId = env.azureAppClientId,
+                azureAppClientSecret = env.azureAppClientSecret,
+                azureOpenidConfigTokenEndpoint = env.azureOpenidConfigTokenEndpoint
             )
-            serverModule()
+
+            val eregClient = EregClient(env.eregApiBaseUrl, stsClientRest)
+            val eregService = EregService(eregClient)
+
+            val aktorregisterClient = AktorregisterClient(env.aktoerregisterV1Url, stsClientRest)
+            val aktorService = AktorService(aktorregisterClient)
+            val behandlendeEnhetClient = BehandlendeEnhetClient(
+                azureAdClient = azureAdClient,
+                baseUrl = env.behandlendeenhetUrl,
+                syfobehandlendeenhetClientId = env.syfobehandlendeenhetClientId
+            )
+            val pdlClient = PdlClient(env.pdlUrl, stsClientRest)
+            val syketilfelleClient = SyketilfelleClient(env.syketilfelleUrl, stsClientRest)
+
+            state.running = true
+
+            module {
+                kafkaModule(
+                    vaultSecrets,
+                    aktorService,
+                    eregService,
+                    behandlendeEnhetClient,
+                    pdlClient,
+                    syketilfelleClient
+                )
+                serverModule()
+            }
         }
-    })
-    Runtime.getRuntime().addShutdownHook(Thread {
-        server.stop(10, 10, TimeUnit.SECONDS)
-    })
+    )
+    Runtime.getRuntime().addShutdownHook(
+        Thread {
+            server.stop(10, 10, TimeUnit.SECONDS)
+        }
+    )
 
     server.start(wait = false)
 }
