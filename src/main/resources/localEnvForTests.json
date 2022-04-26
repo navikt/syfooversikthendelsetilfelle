@@ -6,9 +6,7 @@
     "oppfolgingstilfelleTopic": "topic",
     "oversikthendelseOppfolgingstilfelleTopicSeekToBeginning": "false",
     "syketilfelleUrl": "http://localhost:8080",
-    "behandlendeenhetUrl": "http://localhost:8080",
     "stsRestUrl": "http://localhost:8080",
     "aktoerregisterV1Url": "http://localhost:8080",
-    "pdlUrl": "http://pdl-api.default/graphql",
-    "eregApiBaseUrl": "http://localhost:8080/ereg/api/"
+    "pdlUrl": "http://pdl-api.default/graphql"
 }

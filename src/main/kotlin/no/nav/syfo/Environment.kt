@@ -21,12 +21,9 @@ fun getEnvironment(): Environment {
             oversikthendelseOppfolgingstilfelleTopicSeekToBeginning = getEnvVar("OVERSIKTHENDELSE_OPPFOLGINGSTILFELLE_TOPIC_SEEK_TO_START", "false").toBoolean(),
             kafkaBootstrapServers = getEnvVar("KAFKA_BOOTSTRAP_SERVERS_URL"),
             pdlUrl = getEnvVar("PDL_URL"),
-            syfobehandlendeenhetClientId = getEnvVar("SYFOBEHANDLENDEENHET_CLIENT_ID"),
-            behandlendeenhetUrl = getEnvVar("SYFOBEHANDLENDEENHET_URL"),
             syketilfelleUrl = getEnvVar("SYFOSYKETILFELLE_URL"),
             aktoerregisterV1Url = getEnvVar("AKTORREGISTER_V1_URL"),
             stsRestUrl = getEnvVar("SECURITY_TOKEN_SERVICE_REST_URL"),
-            eregApiBaseUrl = getEnvVar("EREG_API_BASE_URL")
         )
     }
 }
@@ -38,20 +35,13 @@ data class Environment(
     val applicationThreads: Int,
     val applicationName: String,
 
-    val azureAppClientId: String = getEnvVar("AZURE_APP_CLIENT_ID"),
-    val azureAppClientSecret: String = getEnvVar("AZURE_APP_CLIENT_SECRET"),
-    val azureOpenidConfigTokenEndpoint: String = getEnvVar("AZURE_OPENID_CONFIG_TOKEN_ENDPOINT"),
-
     val oppfolgingstilfelleTopic: String,
     val oversikthendelseOppfolgingstilfelleTopicSeekToBeginning: Boolean,
     val kafkaBootstrapServers: String,
     val pdlUrl: String,
-    val syfobehandlendeenhetClientId: String,
-    val behandlendeenhetUrl: String,
     val syketilfelleUrl: String,
     val aktoerregisterV1Url: String,
     val stsRestUrl: String,
-    val eregApiBaseUrl: String
 )
 
 data class VaultSecrets(

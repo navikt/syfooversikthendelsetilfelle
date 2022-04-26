@@ -11,10 +11,6 @@ import kotlinx.coroutines.runBlocking
 import no.nav.common.KafkaEnvironment
 import no.nav.syfo.client.aktor.AktorService
 import no.nav.syfo.client.aktor.AktorregisterClient
-import no.nav.syfo.client.azuread.AzureAdClient
-import no.nav.syfo.client.enhet.BehandlendeEnhetClient
-import no.nav.syfo.client.ereg.EregClient
-import no.nav.syfo.client.ereg.EregService
 import no.nav.syfo.client.pdl.Gradering
 import no.nav.syfo.client.pdl.PdlClient
 import no.nav.syfo.client.sts.StsRestClient
@@ -24,7 +20,6 @@ import no.nav.syfo.kafka.*
 import no.nav.syfo.oppfolgingstilfelle.domain.KOversikthendelsetilfelle
 import no.nav.syfo.oppfolgingstilfelle.retry.*
 import no.nav.syfo.testutil.*
-import no.nav.syfo.testutil.UserConstants.ARBEIDSTAKER_2_AKTORID
 import no.nav.syfo.testutil.UserConstants.ARBEIDSTAKER_AKTORID
 import no.nav.syfo.testutil.UserConstants.ARBEIDSTAKER_FNR
 import no.nav.syfo.testutil.UserConstants.VIRKSOMHETSNUMMER
@@ -60,13 +55,6 @@ object OppfolgingstilfelleServiceSpek : Spek({
 
         val vaultSecrets = vaultSecrets
 
-        val azureAdClientMock = AzureAdMock()
-        val azureAdClient = AzureAdClient(
-            azureAppClientId = "azureAppClientId",
-            azureAppClientSecret = "azureAppClientSecret",
-            azureOpenidConfigTokenEndpoint = azureAdClientMock.url
-        )
-
         val stsRestMock = StsRestMock()
         val stsRestClient = StsRestClient(
             baseUrl = stsRestMock.url,
@@ -80,20 +68,6 @@ object OppfolgingstilfelleServiceSpek : Spek({
             stsRestClient = stsRestClient
         )
         val aktorService = AktorService(aktorregisterClient)
-
-        val behandlendeEnhetMock = BehandlendeEnhetMock()
-        val behandlendeEnhetClient = BehandlendeEnhetClient(
-            azureAdClient = azureAdClient,
-            baseUrl = behandlendeEnhetMock.url,
-            syfobehandlendeenhetClientId = "syfobehandlendeenhetClientId"
-        )
-
-        val eregMock = EregMock()
-        val eregClient = EregClient(
-            baseUrl = eregMock.url,
-            stsRestClient = stsRestClient
-        )
-        val eregService = EregService(eregClient)
 
         val pdlMock = PdlMock()
         val pdlClient = PdlClient(
@@ -118,8 +92,6 @@ object OppfolgingstilfelleServiceSpek : Spek({
 
         val oppfolgingstilfelleService = OppfolgingstilfelleService(
             aktorService = aktorService,
-            eregService = eregService,
-            behandlendeEnhetClient = behandlendeEnhetClient,
             pdlClient = pdlClient,
             syketilfelleClient = syketilfelleClient,
             oppfolgingstilfelleRetryProducer = oppfolgingstilfelleRetryProducer,
@@ -139,10 +111,7 @@ object OppfolgingstilfelleServiceSpek : Spek({
         beforeGroup {
             embeddedEnvironment.start()
 
-            azureAdClientMock.server.start()
             aktorregisterMock.server.start()
-            behandlendeEnhetMock.server.start()
-            eregMock.server.start()
             pdlMock.server.start()
             stsRestMock.server.start()
             syketilfelleMock.server.start()
@@ -151,10 +120,7 @@ object OppfolgingstilfelleServiceSpek : Spek({
         afterGroup {
             embeddedEnvironment.tearDown()
 
-            azureAdClientMock.server.stop(1L, 10L)
             aktorregisterMock.server.stop(1L, 10L)
-            behandlendeEnhetMock.server.stop(1L, 10L)
-            eregMock.server.stop(1L, 10L)
             pdlMock.server.stop(1L, 10L)
             stsRestMock.server.stop(1L, 10L)
             syketilfelleMock.server.stop(1L, 10L)
@@ -176,7 +142,7 @@ object OppfolgingstilfelleServiceSpek : Spek({
 
                 messages.size shouldBeEqualTo 1
                 messages.first().fnr shouldBeEqualTo ARBEIDSTAKER_FNR.value
-                messages.first().enhetId shouldBeEqualTo behandlendeEnhetMock.behandlendeEnhet.enhetId
+                messages.first().enhetId shouldBeEqualTo ""
                 messages.first().virksomhetsnummer shouldBeEqualTo VIRKSOMHETSNUMMER
             }
         }
@@ -192,8 +158,6 @@ object OppfolgingstilfelleServiceSpek : Spek({
             )
             val oppfolgingstilfelleServiceGradering = OppfolgingstilfelleService(
                 aktorService = aktorService,
-                eregService = eregService,
-                behandlendeEnhetClient = behandlendeEnhetClient,
                 pdlClient = pdlClientMockGradering,
                 syketilfelleClient = syketilfelleClient,
                 oppfolgingstilfelleRetryProducer = mockOppfolgingstilfelleRetryProducer,
@@ -245,8 +209,6 @@ object OppfolgingstilfelleServiceSpek : Spek({
 
             val oppfolgingstilfelleServiceWithMockRetry = OppfolgingstilfelleService(
                 aktorService = aktorService,
-                eregService = eregService,
-                behandlendeEnhetClient = behandlendeEnhetClient,
                 pdlClient = pdlClient,
                 syketilfelleClient = syketilfelleClient,
                 oppfolgingstilfelleRetryProducer = mockOppfolgingstilfelleRetryProducer,
@@ -254,7 +216,7 @@ object OppfolgingstilfelleServiceSpek : Spek({
             )
 
             it("Should send Oppfolgingstilfelle to retry if processing is not successful") {
-                val aktorId = ARBEIDSTAKER_2_AKTORID
+                val aktorId = aktorregisterMock.aktorIdMissingFnr
                 val orgnummer = Virksomhetsnummer(VIRKSOMHETSNUMMER)
                 runBlocking {
                     oppfolgingstilfelleServiceWithMockRetry.receiveOppfolgingstilfelle(

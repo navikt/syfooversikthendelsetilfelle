@@ -1,8 +1,6 @@
 package no.nav.syfo.oppfolgingstilfelle
 
 import no.nav.syfo.client.aktor.AktorService
-import no.nav.syfo.client.enhet.BehandlendeEnhetClient
-import no.nav.syfo.client.ereg.EregService
 import no.nav.syfo.client.pdl.*
 import no.nav.syfo.client.syketilfelle.SyketilfelleClient
 import no.nav.syfo.domain.AktorId
@@ -16,7 +14,6 @@ import java.time.LocalDateTime
 import java.util.UUID
 
 enum class MissingValue {
-    BEHANDLENDEENHET,
     FODSELSNUMMER
 }
 
@@ -24,8 +21,6 @@ const val OVERSIKTHENDELSE_OPPFOLGINGSTILFELLE_TOPIC = "aapen-syfo-oversikthende
 
 class OppfolgingstilfelleService(
     private val aktorService: AktorService,
-    private val eregService: EregService,
-    private val behandlendeEnhetClient: BehandlendeEnhetClient,
     private val pdlClient: PdlClient,
     private val syketilfelleClient: SyketilfelleClient,
     private val oppfolgingstilfelleRetryProducer: OppfolgingstilfelleRetryProducer,
@@ -68,11 +63,8 @@ class OppfolgingstilfelleService(
         val person = pdlClient.person(fnr, callId)
 
         if (person.isKode6()) {
-            COUNT_OPPFOLGINGSTILFELLE_SKIPPED_STRENGT_FORTROLIG.inc()
             return true
         }
-
-        val organisasjonNavn = eregService.finnOrganisasjonsNavn(orgnummer.value, callId)
 
         val oppfolgingstilfelle = syketilfelleClient.getOppfolgingstilfelle(
             aktorId.aktor,
@@ -90,15 +82,10 @@ class OppfolgingstilfelleService(
             }
             val fnrFullName = person?.fullName() ?: ""
 
-            val enhet = behandlendeEnhetClient.getEnhet(fnr, callId)
-                ?: return retryOppfolgingstilfelleWithMissingValue(MissingValue.BEHANDLENDEENHET)
-
             val hendelse = mapKOversikthendelsetilfelle(
                 fnr,
                 fnrFullName,
-                enhet.enhetId,
                 oppfolgingstilfelle.orgnummer,
-                organisasjonNavn,
                 oppfolgingstilfelle.tidslinje.sortedBy { it.dag },
                 oppfolgingstilfelleRecordTimestamp,
                 isGradertToday
@@ -116,7 +103,6 @@ class OppfolgingstilfelleService(
         missingValue: MissingValue
     ): Boolean {
         when (missingValue) {
-            MissingValue.BEHANDLENDEENHET -> COUNT_OPPFOLGINGSTILFELLE_SKIPPED_BEHANDLENDEENHET.inc()
             MissingValue.FODSELSNUMMER -> COUNT_OPPFOLGINGSTILFELLE_SKIPPED_FODSELSNUMMER.inc()
         }
         return false
