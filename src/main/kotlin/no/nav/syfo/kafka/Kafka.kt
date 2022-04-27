@@ -3,8 +3,6 @@ package no.nav.syfo.kafka
 import kotlinx.coroutines.CoroutineScope
 import no.nav.syfo.*
 import no.nav.syfo.client.aktor.AktorService
-import no.nav.syfo.client.enhet.BehandlendeEnhetClient
-import no.nav.syfo.client.ereg.EregService
 import no.nav.syfo.client.pdl.PdlClient
 import no.nav.syfo.client.syketilfelle.SyketilfelleClient
 import no.nav.syfo.oppfolgingstilfelle.OppfolgingstilfelleService
@@ -15,8 +13,6 @@ import org.apache.kafka.clients.producer.KafkaProducer
 suspend fun CoroutineScope.setupKafka(
     vaultSecrets: VaultSecrets,
     aktorService: AktorService,
-    eregService: EregService,
-    behandlendeEnhetClient: BehandlendeEnhetClient,
     pdlClient: PdlClient,
     syketilfelleClient: SyketilfelleClient
 ) {
@@ -39,8 +35,6 @@ suspend fun CoroutineScope.setupKafka(
 
     val oppfolgingstilfelleService = OppfolgingstilfelleService(
         aktorService,
-        eregService,
-        behandlendeEnhetClient,
         pdlClient,
         syketilfelleClient,
         oppfolgingstilfelleRetryProducer,

@@ -7,9 +7,7 @@ import java.time.LocalDateTime
 var mapKOversikthendelsetilfelle = {
     fnr: String,
     navn: String,
-    enhetId: String,
     virksomhetsnummer: String,
-    virksomhetsnavn: String,
     tidslinje: List<KSyketilfelledag>,
     tidspunkt: LocalDateTime,
     gradert: Boolean
@@ -17,9 +15,9 @@ var mapKOversikthendelsetilfelle = {
     KOversikthendelsetilfelle(
         fnr = fnr,
         navn = navn,
-        enhetId = enhetId,
+        enhetId = "",
         virksomhetsnummer = virksomhetsnummer,
-        virksomhetsnavn = virksomhetsnavn,
+        virksomhetsnavn = "",
         gradert = gradert,
         fom = tidslinje.first().dag,
         tom = tidslinje.last().dag,

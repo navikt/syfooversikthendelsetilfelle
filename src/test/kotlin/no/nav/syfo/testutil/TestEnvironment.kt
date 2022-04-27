@@ -8,20 +8,14 @@ import java.util.*
 fun testEnvironment(port: Int, kafkaBootstrapServers: String) = Environment(
     applicationPort = port,
     applicationThreads = 1,
-    azureAppClientId = "app-client-id",
-    azureAppClientSecret = "app-secret",
-    azureOpenidConfigTokenEndpoint = "azureOpenidConfigTokenEndpoint",
     oppfolgingstilfelleTopic = "",
     kafkaBootstrapServers = kafkaBootstrapServers,
     applicationName = "syfooversikthendelsetilfelle",
-    syfobehandlendeenhetClientId = "dev-fss:teamsykefravr:syfobehandlendeenhet",
-    behandlendeenhetUrl = "behandlendeenhet",
     pdlUrl = "pdlurl",
     syketilfelleUrl = "syketilfelle",
     oversikthendelseOppfolgingstilfelleTopicSeekToBeginning = false,
     aktoerregisterV1Url = "aktorurl",
     stsRestUrl = "stsurl",
-    eregApiBaseUrl = ""
 )
 
 val vaultSecrets = VaultSecrets(
