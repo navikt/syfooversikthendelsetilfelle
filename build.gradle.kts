@@ -6,7 +6,8 @@ version = "1.0-SNAPSHOT"
 
 val arrowVersion = "0.12.1"
 val coroutinesVersion = "1.6.0"
-val jacksonVersion = "2.13.1"
+val jacksonVersion = "2.13.2"
+val jacksonDatabindVersion = "2.13.2.2"
 val kafkaVersion = "2.8.1"
 val kafkaEmbeddedVersion = "2.8.1"
 val kluentVersion = "1.68"
@@ -52,7 +53,7 @@ dependencies {
     implementation("io.prometheus:simpleclient_hotspot:$prometheusVersion")
     implementation("io.prometheus:simpleclient_common:$prometheusVersion")
 
-    implementation("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
+    implementation("com.fasterxml.jackson.core:jackson-databind:$jacksonDatabindVersion")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVersion")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion")
 
