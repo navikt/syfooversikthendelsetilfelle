@@ -1,12 +1,12 @@
 package no.nav.syfo.testutil.mock
 
-import io.ktor.application.*
-import io.ktor.features.*
-import io.ktor.jackson.*
-import io.ktor.response.*
-import io.ktor.routing.*
+import io.ktor.serialization.jackson.*
+import io.ktor.server.application.*
+import io.ktor.server.routing.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
+import io.ktor.server.plugins.contentnegotiation.*
+import io.ktor.server.response.*
 import no.nav.syfo.testutil.getRandomPort
 
 class StsRestMock {

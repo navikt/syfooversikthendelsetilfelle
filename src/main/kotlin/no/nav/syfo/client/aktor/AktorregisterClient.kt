@@ -2,16 +2,14 @@ package no.nav.syfo.client.aktor
 
 import arrow.core.Either
 import arrow.core.flatMap
-import com.fasterxml.jackson.databind.DeserializationFeature
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.engine.cio.*
-import io.ktor.client.features.json.*
+import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
+import io.ktor.serialization.jackson.*
 import no.nav.syfo.client.aktor.domain.IdentinfoListe
 import no.nav.syfo.client.sts.StsRestClient
 import no.nav.syfo.util.*
@@ -22,13 +20,12 @@ class AktorregisterClient(
     val stsRestClient: StsRestClient
 ) {
     private val client = HttpClient(CIO) {
-        install(JsonFeature) {
-            serializer = JacksonSerializer {
-                registerKotlinModule()
-                registerModule(JavaTimeModule())
-                configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+        install(ContentNegotiation) {
+            jackson {
+                configure()
             }
         }
+        expectSuccess = true
     }
 
     suspend fun getIdenter(ident: String, callId: String): Either<String, List<Ident>> {
@@ -43,7 +40,7 @@ class AktorregisterClient(
             accept(ContentType.Application.Json)
         }
 
-        val mapResponse = response.receive<Map<String, IdentinfoListe>>()
+        val mapResponse = response.body<Map<String, IdentinfoListe>>()
         val identResponse: IdentinfoListe? = mapResponse[ident]
 
         return when {

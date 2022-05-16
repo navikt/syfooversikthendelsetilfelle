@@ -4,16 +4,18 @@ import com.fasterxml.jackson.databind.*
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import com.typesafe.config.ConfigFactory
-import io.ktor.application.*
-import io.ktor.config.*
-import io.ktor.features.*
+import io.ktor.server.config.*
+import io.ktor.server.application.*
 import io.ktor.http.*
-import io.ktor.jackson.*
-import io.ktor.request.*
-import io.ktor.response.*
-import io.ktor.routing.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
+import io.ktor.server.plugins.callid.*
+import io.ktor.server.plugins.statuspages.*
+import io.ktor.server.request.*
+import io.ktor.server.routing.*
+import io.ktor.serialization.jackson.*
+import io.ktor.server.plugins.contentnegotiation.*
+import io.ktor.server.response.*
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.slf4j.MDCContext
@@ -26,7 +28,6 @@ import no.nav.syfo.client.sts.StsRestClient
 import no.nav.syfo.client.syketilfelle.SyketilfelleClient
 import no.nav.syfo.kafka.setupKafka
 import no.nav.syfo.util.NAV_CALL_ID
-import no.nav.syfo.util.getCallId
 import no.nav.syfo.util.getFileAsString
 import org.slf4j.LoggerFactory
 import java.util.*
@@ -124,9 +125,9 @@ fun Application.serverModule() {
     }
 
     install(StatusPages) {
-        exception<Throwable> { cause ->
+        exception<Throwable> { call, cause ->
             call.respond(HttpStatusCode.InternalServerError, cause.message ?: "Unknown error")
-            log.error("Caught exception", cause, getCallId())
+            call.application.log.error("Caught exception", cause, call.callId)
             throw cause
         }
     }
