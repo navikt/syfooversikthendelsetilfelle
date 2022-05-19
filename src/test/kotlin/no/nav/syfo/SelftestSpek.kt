@@ -1,7 +1,7 @@
 package no.nav.syfo
 
 import io.ktor.http.*
-import io.ktor.routing.routing
+import io.ktor.server.routing.routing
 import io.ktor.server.testing.TestApplicationEngine
 import io.ktor.server.testing.handleRequest
 import no.nav.syfo.api.registerPodApi

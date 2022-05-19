@@ -1,11 +1,11 @@
 package no.nav.syfo.util
 
-import io.ktor.application.ApplicationCall
-import io.ktor.application.call
+import io.ktor.server.application.*
 import io.ktor.util.pipeline.PipelineContext
 import net.logstash.logback.argument.StructuredArguments
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import java.util.UUID
 import java.util.concurrent.atomic.AtomicInteger
 
 const val APP_CONSUMER_ID = "syfooversikthendelsetilfelle"
@@ -21,8 +21,16 @@ const val NAV_PERSONIDENTER = "Nav-Personidenter"
 const val NAV_CALL_ID = "Nav-Call-Id"
 
 fun PipelineContext<out Unit, ApplicationCall>.getCallId(): String {
-    return this.call.request.headers[NAV_CALL_ID].toString()
+    return this.call.getCallId()
 }
+
+fun ApplicationCall.getCallId(): String {
+    this.request.headers[NAV_CALL_ID].let {
+        return it ?: createCallId()
+    }
+}
+
+fun createCallId(): String = UUID.randomUUID().toString()
 
 fun callIdArgument(callId: String) = StructuredArguments.keyValue("callId", callId)!!
 

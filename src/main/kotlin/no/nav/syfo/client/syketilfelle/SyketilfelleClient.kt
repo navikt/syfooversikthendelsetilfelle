@@ -1,15 +1,13 @@
 package no.nav.syfo.client.syketilfelle
 
-import com.fasterxml.jackson.databind.DeserializationFeature
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.engine.cio.*
-import io.ktor.client.features.json.*
+import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
+import io.ktor.serialization.jackson.*
 import no.nav.syfo.client.sts.StsRestClient
 import no.nav.syfo.metric.*
 import no.nav.syfo.util.*
@@ -20,13 +18,12 @@ class SyketilfelleClient(
     private val stsRestClient: StsRestClient
 ) {
     private val client = HttpClient(CIO) {
-        install(JsonFeature) {
-            serializer = JacksonSerializer {
-                registerKotlinModule()
-                registerModule(JavaTimeModule())
-                configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+        install(ContentNegotiation) {
+            jackson {
+                configure()
             }
         }
+        expectSuccess = true
     }
 
     suspend fun getOppfolgingstilfelle(
@@ -46,7 +43,7 @@ class SyketilfelleClient(
         when (response.status) {
             HttpStatusCode.OK -> {
                 COUNT_CALL_SYKETILFELLE_OPPFOLGINGSTILFELLE_AKTOR_SUCCESS.inc()
-                return response.receive<KOppfolgingstilfelle>()
+                return response.body<KOppfolgingstilfelle>()
             }
             HttpStatusCode.NoContent -> {
                 LOG.error("Syketilfelle returned HTTP-${response.status.value}: No Oppfolgingstilfelle was found for AktorId")
